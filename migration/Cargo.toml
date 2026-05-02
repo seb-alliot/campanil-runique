@@ -1,0 +1,22 @@
+[package]
+edition      = "2024"
+name         = "campanile-migration"
+publish      = false
+rust-version = "1.88.0"
+version      = "0.1.0"
+
+[lib]
+name = "campanile_migration"
+path = "src/lib.rs"
+
+[[bin]]
+name = "campanile-migration"
+path = "src/main.rs"
+
+[dependencies]
+tokio = { version = "1", features = ["macros", "rt", "rt-multi-thread"] }
+runique = { path = "../../runique", features = ["orm", "postgres"] }
+
+[dependencies.sea-orm-migration]
+version = "=2.0.0-rc.38"
+features = ["runtime-tokio-rustls", "sqlx-postgres"]

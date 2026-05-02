@@ -1,0 +1,10 @@
+# Fichiers et dossiers à ignorer par Git
+/target/
+/migration/target/
+*.db
+*.sqlite
+.env
+/runique/
+
+# Rust
+Cargo.lock

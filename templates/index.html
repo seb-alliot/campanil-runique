@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}U Campanile — Restaurant corse à Corte{% endblock %}
+
+{% block header %}
+<section class="hero">
+    <img src='{% media "campanile-corte.avif" %}' alt="U Campanile Corte" class="hero-img">
+    <div class="hero-overlay">
+        <div class="hero-content">
+            <h1>U Campanile</h1>
+            <p class="hero-sub">Cuisine corse traditionnelle au cœur de Corte</p>
+            <div class="hero-actions">
+                <a href="/carte" class="btn-primary">Découvrir la carte</a>
+                <a href="/commande/panier" class="btn-outline">Commander</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="section presentation">
+    <div class="container">
+        <div class="section-grid">
+            <div>
+                <h2>Le restaurant</h2>
+                <p>Depuis 2004, U Campanile vous accueille Place Gaffory, dans la vieille ville de Corte. Jean-François Sialelli et son équipe vous proposent une cuisine maison corse, élaborée avec des produits locaux de qualité.</p>
+                <p>Parmi nos spécialités : lasagnes de foie gras sauce morilles et châtaignes, charcuteries et fromages corses, poissons frais de la Méditerranée.</p>
+                <a href="/carte" class="btn-secondary">Voir la carte</a>
+            </div>
+            <div class="presentation-img">
+                <img src='{% media "og-campanile.jpg" %}' alt="Salle du restaurant U Campanile">
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section section-dark cta-commander">
+    <div class="container text-center">
+        <h2>Commander en ligne</h2>
+        <p>Récupérez votre commande sur place. La livraison est disponible hors saison.</p>
+        <a href="/commande/panier" class="btn-primary">Passer une commande</a>
+    </div>
+</section>
+
+<section class="section horaires">
+    <div class="container text-center">
+        <h2>Horaires d'ouverture</h2>
+        <p class="horaires-periode">Ouvert du 1<sup>er</sup> mai au 30 septembre</p>
+        <div class="horaires-grid">
+            <div class="horaire-item">
+                <span class="horaire-label">Service midi</span>
+                <span class="horaire-time">12h00 — 15h00</span>
+            </div>
+            <div class="horaire-item">
+                <span class="horaire-label">Service soir</span>
+                <span class="horaire-time">19h00 — 22h30</span>
+            </div>
+        </div>
+        <p class="horaires-note">Fermé le mercredi en mai et juin</p>
+    </div>
+</section>
+
+<section class="section section-light acces">
+    <div class="container text-center">
+        <h2>Nous trouver</h2>
+        <p>Place Gaffory, 20250 Corte — <a href="tel:+33685659626">06 85 65 96 26</a></p>
+        <a href="/contact" class="btn-secondary">Nous contacter</a>
+    </div>
+</section>
+{% endblock %}

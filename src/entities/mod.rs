@@ -1,0 +1,15 @@
+pub mod allergene;
+pub mod avis;
+pub mod commande;
+pub mod commande_plat;
+pub mod commande_statut;
+pub mod contact;
+pub mod horaire;
+pub mod menu;
+pub mod menu_image;
+pub mod menu_plat;
+pub mod plat;
+pub mod plat_allergene;
+pub mod regime;
+pub mod theme;
+pub mod user_profil;

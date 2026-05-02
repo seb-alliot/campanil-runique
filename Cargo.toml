@@ -1,0 +1,17 @@
+[package]
+name = "campanile"
+version = "1.0.0"
+edition = "2024"
+rust-version = "1.85"
+
+[dependencies]
+
+# Base de données : sqlite (défaut) | postgres | mysql | mariadb | all-databases
+runique = { version = "2.1.1",  features = ["orm", "postgres"] }
+
+serde ="1"
+
+chrono = "0.4"
+tracing-subscriber = "0.3.22"
+sea-orm = "=2.0.0-rc.38"
+sea-orm-migration = "=2.0.0-rc.38"
