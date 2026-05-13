@@ -1,0 +1,180 @@
+{% macro svc_card(c) %}
+<article class="svc-card svc-card--{{ c.statut_valeur | replace(from="_", to="-") }}" data-numero="{{ c.numero }}">
+    <div class="svc-card-header">
+        <span class="svc-heure">{{ c.heure }}</span>
+        <span class="svc-numero">#{{ c.numero }}</span>
+        <span class="svc-badge svc-badge--{{ c.statut_valeur | replace(from="_", to="-") }}">{{ c.statut }}</span>
+    </div>
+    <div class="svc-card-body">
+        <p class="svc-client">{{ c.client }}</p>
+        {% if c.adresse_livraison %}<p class="svc-adresse">{{ c.adresse_livraison }}</p>{% endif %}
+        <ul class="svc-lignes">
+            {% for l in c.lignes %}
+            <li class="svc-ligne">
+                <div class="svc-ligne-top">
+                    <span class="svc-qte">×{{ l.quantite }}</span>
+                    <span class="svc-titre">{{ l.titre }}</span>
+                    {% if l.cuisson %}<span class="svc-detail">{{ l.cuisson }}</span>{% endif %}
+                    {% if l.sans_sel %}<span class="svc-detail svc-detail--alert">sans sel</span>{% endif %}
+                </div>
+                {% if l.garnitures %}
+                <ul class="svc-composition">
+                    {% for g in l.garnitures %}<li>{{ g }}</li>{% endfor %}
+                    {% if l.avec_legumes %}<li>+ légumes</li>{% endif %}
+                </ul>
+                {% elif l.avec_legumes %}
+                <ul class="svc-composition"><li>+ légumes</li></ul>
+                {% endif %}
+                {% if l.note %}<p class="svc-note">{{ l.note }}</p>{% endif %}
+                {% if l.menu_choix %}
+                <ul class="svc-menu-choix">
+                    {% for choix in l.menu_choix %}
+                    <li class="svc-menu-cours">
+                        <span class="svc-menu-cours-label">{{ choix.cours_label }}</span>
+                        <span class="svc-menu-cours-titre">{{ choix.titre }}</span>
+                        {% if choix.cuisson %}<span class="svc-detail">{{ choix.cuisson }}</span>{% endif %}
+                        {% if choix.sans_sel %}<span class="svc-detail svc-detail--alert">sans sel</span>{% endif %}
+                        {% if choix.garnitures or choix.avec_legumes %}
+                        <ul class="svc-composition">
+                            {% for g in choix.garnitures %}<li>{{ g }}</li>{% endfor %}
+                            {% if choix.avec_legumes %}<li>+ légumes</li>{% endif %}
+                        </ul>
+                        {% endif %}
+                        {% if choix.note %}<p class="svc-note">{{ choix.note }}</p>{% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="svc-card-footer">
+        <span class="svc-prix">{{ c.prix_total }} €</span>
+        <span class="svc-paiement">{{ c.mode_paiement }}</span>
+        <div class="svc-actions" data-numero="{{ c.numero }}" data-statut="{{ c.statut_valeur }}">
+            {% if c.statut_valeur == "en_attente" %}
+            <button class="svc-btn svc-btn--accepter" data-next="accepte">Accepter</button>
+            <button class="svc-btn svc-btn--annuler" data-next="annule">Annuler</button>
+            {% elif c.statut_valeur == "accepte" %}
+            <button class="svc-btn svc-btn--preparer" data-next="en_preparation">En préparation</button>
+            <button class="svc-btn svc-btn--annuler" data-next="annule">Annuler</button>
+            {% elif c.statut_valeur == "en_preparation" %}
+            <button class="svc-btn svc-btn--pret" data-next="pret">Prêt</button>
+            {% elif c.statut_valeur == "pret" %}
+            {% if c.avec_livraison %}
+            <button class="svc-btn svc-btn--livrer" data-next="en_cours_livraison">En livraison</button>
+            {% else %}
+            <button class="svc-btn svc-btn--terminer" data-next="termine">Terminé</button>
+            {% endif %}
+            {% elif c.statut_valeur == "en_cours_livraison" %}
+            <button class="svc-btn svc-btn--terminer" data-next="livre">Livré</button>
+            {% endif %}
+        </div>
+    </div>
+</article>
+{% endmacro svc_card %}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <title>Service du jour — U Campanile</title>
+    <link rel="icon" href='{% media "favicon/images.ico" %}'>
+    <link rel="stylesheet" href='{% static "css/service.css" %}'>
+</head>
+<body>
+<header class="svc-header">
+    <div class="svc-header-left">
+        <a href="/" class="svc-retour"><span class="svc-logo">U Campanile</span></a>
+        <span class="svc-date">{{ today }}</span>
+    </div>
+    <div class="svc-header-right">
+        <span class="svc-clock" id="svcClock"></span>
+        <span class="svc-sync" id="svcSync"></span>
+    </div>
+</header>
+
+<main class="svc-main">
+
+    <section class="svc-section">
+        <h2 class="svc-section-titre">
+            Retrait sur place
+            <span class="svc-count" id="countRetrait">{{ nb_retraits }}</span>
+        </h2>
+
+        <div class="svc-groupe svc-groupe--attente" id="groupeRetraitAttente"{% if not retraits_attente %} hidden{% endif %}>
+            <h3 class="svc-groupe-titre">En attente</h3>
+            <div class="svc-grille" id="grilleRetraitAttente">
+                {% for c in retraits_attente %}{{ self::svc_card(c=c) }}{% endfor %}
+            </div>
+        </div>
+
+        <div class="svc-groupe svc-groupe--accepte" id="groupeRetraitAccepte"{% if not retraits_accepte %} hidden{% endif %}>
+            <h3 class="svc-groupe-titre">Accepté</h3>
+            <div class="svc-grille" id="grilleRetraitAccepte">
+                {% for c in retraits_accepte %}{{ self::svc_card(c=c) }}{% endfor %}
+            </div>
+        </div>
+
+        <div class="svc-groupe svc-groupe--preparation" id="groupeRetraitPreparation"{% if not retraits_preparation %} hidden{% endif %}>
+            <h3 class="svc-groupe-titre">En préparation</h3>
+            <div class="svc-grille" id="grilleRetraitPreparation">
+                {% for c in retraits_preparation %}{{ self::svc_card(c=c) }}{% endfor %}
+            </div>
+        </div>
+
+        <div class="svc-groupe svc-groupe--pret" id="groupeRetraitPret"{% if not retraits_pret %} hidden{% endif %}>
+            <h3 class="svc-groupe-titre">Prêt</h3>
+            <div class="svc-grille" id="grilleRetraitPret">
+                {% for c in retraits_pret %}{{ self::svc_card(c=c) }}{% endfor %}
+            </div>
+        </div>
+
+        <p class="svc-vide" id="videRetrait"{% if nb_retraits > 0 %} hidden{% endif %}>Aucune commande en retrait pour aujourd'hui.</p>
+    </section>
+
+    <section class="svc-section">
+        <h2 class="svc-section-titre">
+            Livraison
+            <span class="svc-count" id="countLivraison">{{ nb_livraisons }}</span>
+        </h2>
+
+        <div class="svc-groupe svc-groupe--attente" id="groupeLivraisonAttente"{% if not livraisons_attente %} hidden{% endif %}>
+            <h3 class="svc-groupe-titre">En attente</h3>
+            <div class="svc-grille" id="grilleLivraisonAttente">
+                {% for c in livraisons_attente %}{{ self::svc_card(c=c) }}{% endfor %}
+            </div>
+        </div>
+
+        <div class="svc-groupe svc-groupe--accepte" id="groupeLivraisonAccepte"{% if not livraisons_accepte %} hidden{% endif %}>
+            <h3 class="svc-groupe-titre">Accepté</h3>
+            <div class="svc-grille" id="grilleLivraisonAccepte">
+                {% for c in livraisons_accepte %}{{ self::svc_card(c=c) }}{% endfor %}
+            </div>
+        </div>
+
+        <div class="svc-groupe svc-groupe--preparation" id="groupeLivraisonPreparation"{% if not livraisons_preparation %} hidden{% endif %}>
+            <h3 class="svc-groupe-titre">En préparation</h3>
+            <div class="svc-grille" id="grilleLivraisonPreparation">
+                {% for c in livraisons_preparation %}{{ self::svc_card(c=c) }}{% endfor %}
+            </div>
+        </div>
+
+        <div class="svc-groupe svc-groupe--pret" id="groupeLivraisonPret"{% if not livraisons_pret %} hidden{% endif %}>
+            <h3 class="svc-groupe-titre">Prêt / En livraison</h3>
+            <div class="svc-grille" id="grilleLivraisonPret">
+                {% for c in livraisons_pret %}{{ self::svc_card(c=c) }}{% endfor %}
+            </div>
+        </div>
+
+        <p class="svc-vide" id="videLivraison"{% if nb_livraisons > 0 %} hidden{% endif %}>Aucune livraison pour aujourd'hui.</p>
+    </section>
+
+</main>
+
+<script {% csp %} src="{% static "js/service.js" %}"></script>
+</body>
+</html>

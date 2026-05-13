@@ -15,7 +15,7 @@ async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
                     .col(ColumnDef::new(Alias::new("commande_id")).integer().not_null().unique_key())
                     .col(ColumnDef::new(Alias::new("note")).integer().not_null())
                     .col(ColumnDef::new(Alias::new("commentaire")).text().not_null())
-                    .col(ColumnDef::new_with_type(Alias::new("statut"), ColumnType::Enum { name: Alias::new("StatutAvis").into_iden(), variants: vec![Alias::new("EnAttente").into_iden(), Alias::new("Valide").into_iden(), Alias::new("Refuse").into_iden()] }).not_null())
+                    .col(ColumnDef::new_with_type(Alias::new("statut"), ColumnType::Enum { name: Alias::new("StatutAvis").into_iden(), variants: vec![Alias::new("en_attente").into_iden(), Alias::new("valide").into_iden(), Alias::new("refuse").into_iden()] }).not_null())
                     .col(ColumnDef::new(Alias::new("created_at")).date_time().not_null().default(Expr::current_timestamp()))
                     .to_owned()
             )

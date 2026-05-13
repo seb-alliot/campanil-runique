@@ -13,7 +13,7 @@ async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
                     .if_not_exists()
                     .col(ColumnDef::new(Alias::new("id")).integer().not_null().auto_increment().primary_key())
                     .col(ColumnDef::new(Alias::new("titre")).string().not_null())
-                    .col(ColumnDef::new_with_type(Alias::new("type_plat"), ColumnType::Enum { name: Alias::new("TypePlat").into_iden(), variants: vec![Alias::new("Entree").into_iden(), Alias::new("Plat").into_iden(), Alias::new("Dessert").into_iden()] }).not_null())
+                    .col(ColumnDef::new_with_type(Alias::new("type_plat"), ColumnType::Enum { name: Alias::new("TypePlat").into_iden(), variants: vec![Alias::new("entree").into_iden(), Alias::new("plat").into_iden(), Alias::new("dessert").into_iden()] }).not_null())
                     .col(ColumnDef::new(Alias::new("prix")).decimal().not_null())
                     .col(ColumnDef::new(Alias::new("description")).text().null())
                     .col(ColumnDef::new(Alias::new("image")).string().null())

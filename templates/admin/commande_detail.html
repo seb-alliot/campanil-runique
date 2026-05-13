@@ -1,0 +1,138 @@
+{% extends "admin_base" %}
+{% block extra_css %}
+{{ super() }}
+<link rel="stylesheet" href="{% static "css/admin-surcharge.css" %}">
+{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div class="page-header-left">
+        <h1 class="page-title">Commande {{ detail.numero }}</h1>
+    </div>
+    <div class="page-header-actions">
+        <a href="{{ admin_prefix }}/commandes/list" class="btn btn-secondary btn-sm">← Retour</a>
+    </div>
+</div>
+{% messages %}
+<div class="commande-detail-grid">
+    <div class="card">
+        <div class="card-header"><h2 class="card-title">Informations</h2></div>
+        <div class="card-body">
+            <table class="data-table">
+                <tbody>
+                    <tr><th>Client</th><td>{{ detail.client }}</td></tr>
+                    <tr><th>Type</th><td>
+                        {% if detail.avec_livraison %}Livraison à domicile
+                        {% else %}À emporter
+                        {% endif %}
+                    </td></tr>
+                    <tr><th>Paiement</th><td>{{ detail.mode_paiement }}</td></tr>
+                    <tr><th>Total</th><td><strong>{{ detail.prix_total }} €</strong></td></tr>
+                    {% if detail.avec_livraison %}
+                    <tr><th>Livraison</th><td>
+                        {% if detail.adresse_livraison %}{{ detail.adresse_livraison }}{% endif %}
+                        {% if detail.cp_livraison %}, {{ detail.cp_livraison }}{% endif %}
+                        {% if detail.ville_livraison %} {{ detail.ville_livraison }}{% endif %}
+                    </td></tr>
+                    {% if detail.heure_livraison %}
+                    <tr><th>Heure livraison</th><td>{{ detail.heure_livraison }}</td></tr>
+                    {% endif %}
+                    {% elif detail.heure_retrait %}
+                    <tr><th>Heure retrait</th><td>{{ detail.heure_retrait }}</td></tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header"><h2 class="card-title">Statut</h2></div>
+        <div class="card-body">
+            <p class="statut-actuel">Statut actuel :
+                <span class="badge-statut badge-statut--{{ detail.statut_valeur }}">{{ detail.statut }}</span>
+            </p>
+            {% if detail.motif_annulation %}
+            <div style="background:#fff3f3;border-left:4px solid #c0392b;padding:12px 16px;margin-bottom:16px;border-radius:0 4px 4px 0;">
+                <p style="margin:0 0 4px;font-size:12px;color:#999;text-transform:uppercase;">Motif d'annulation</p>
+                <p style="margin:0;font-size:14px;color:#333;">{{ detail.motif_annulation }}</p>
+                {% if detail.mode_contact_annulation %}
+                <p style="margin:6px 0 0;font-size:12px;color:#888;">Contact : {{ detail.mode_contact_annulation }}</p>
+                {% endif %}
+            </div>
+            {% endif %}
+            <form method="POST" action="/admin-campanile/commandes/{{ detail.numero }}/detail">
+                {% csrf %}
+                <div class="statut-form-row">
+                    <select name="statut" class="form-control statut" id="select-statut">
+                        {% for s in statuts %}
+                        <option value="{{ s.0 }}"{% if s.0 == detail.statut_valeur %} selected{% endif %}>{{ s.1 }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-primary btn-detail">Mettre à jour</button>
+                </div>
+                <div id="annulation-fields" style="margin-top:12px;{% if detail.statut_valeur != 'annule' %}display:none;{% endif %}">
+                    <div class="form-group" style="margin-bottom:8px;">
+                        <label style="font-size:13px;font-weight:600;">Mode de contact</label>
+                        <select name="mode_contact_annulation" class="form-control">
+                            <option value="">— Choisir —</option>
+                            <option value="Téléphone"{% if detail.mode_contact_annulation == "Téléphone" %} selected{% endif %}>Téléphone</option>
+                            <option value="Email"{% if detail.mode_contact_annulation == "Email" %} selected{% endif %}>Email</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label style="font-size:13px;font-weight:600;">Motif d'annulation</label>
+                        <textarea name="motif_annulation" class="form-control" rows="3" placeholder="Expliquer le motif au client…">{{ detail.motif_annulation | default(value="") }}</textarea>
+                    </div>
+                </div>
+            </form>
+            <script>
+                document.getElementById('select-statut').addEventListener('change', function() {
+                    document.getElementById('annulation-fields').style.display =
+                        this.value === 'annule' ? 'block' : 'none';
+                });
+            </script>
+        </div>
+    </div>
+</div>
+<div class="card card-articles">
+    <div class="card-header"><h2 class="card-title">Articles commandés</h2></div>
+    <div class="card-body">
+        {% if detail.lignes %}
+        <table class="articles-table">
+            <thead>
+                <tr>
+                    <th>Article</th>
+                    <th>Détails</th>
+                    <th>Quantité</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for l in detail.lignes %}
+                <tr>
+                    <td>
+                        {{ l.titre }}
+                        {% if l.est_boisson %}<span class="badge badge-info badge-boisson">Boisson</span>{% endif %}
+                        {% if l.est_menu %}<span class="badge badge-info">Menu</span>{% endif %}
+                    </td>
+                    <td>
+                        {% if l.note %}
+                            <ul class="commande-composition">
+                                {% for item in l.note | split(pat=" | ") %}
+                                <li>{{ item | trim }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% elif l.cuisson %}
+                            {{ l.cuisson }}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                    <td>{{ l.quantite }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="text-muted">Aucun article.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

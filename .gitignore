@@ -4,7 +4,7 @@
 *.db
 *.sqlite
 .env
-/runique/
 
 # Rust
 Cargo.lock
+.agent.md

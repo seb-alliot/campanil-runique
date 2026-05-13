@@ -795,6 +795,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1e748733b7cbc798e1434b6ac524f0c1ff2ab456fe201501e6497c8417a4fc33"
 
 [[package]]
+name = "campanile-migration"
+version = "0.1.0"
+dependencies = [
+ "runique",
+ "sea-orm-migration",
+ "tokio",
+]
+
+[[package]]
 name = "cc"
 version = "1.2.61"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1347,9 +1356,9 @@ dependencies = [
 
 [[package]]
 name = "derive_form"
-version = "2.0.1"
+version = "2.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1be34352a2dd990765d91969f83087a61b6b14681e7c23eaba3401df2259ef4d"
+checksum = "f10a088ac5891043f4746e773a91cfd6d42b365b61f50c177655ab0b4efd57f0"
 dependencies = [
  "dotenvy",
  "proc-macro2",
@@ -2766,15 +2775,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "migration"
-version = "0.1.0"
-dependencies = [
- "runique",
- "sea-orm-migration",
- "tokio",
-]
-
-[[package]]
 name = "mime"
 version = "0.3.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3923,9 +3923,9 @@ dependencies = [
 
 [[package]]
 name = "runique"
-version = "2.1.1-alpha.1"
+version = "2.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fa051063e377c7e808e8794bc9d20810ed0505265c36957094c3166093bc1f3b"
+checksum = "f9bfd8a68a73b8dba728e4d7457ddfc48d6d1c3b5bb9fc4851e17bfac17011c3"
 dependencies = [
  "ammonia",
  "anyhow",
@@ -4900,7 +4900,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "32497e9a4c7b38532efcdebeef879707aa9f794296a4f0244f6f69e9bc8574bd"
 dependencies = [
  "fastrand",
- "getrandom 0.3.4",
+ "getrandom 0.4.2",
  "once_cell",
  "rustix",
  "windows-sys 0.61.2",

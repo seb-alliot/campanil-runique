@@ -42,6 +42,18 @@ async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
             )
             .await?;
 
+        manager
+            .create_index(
+                Index::create()
+                    .name("plat_allergene_plat_id_allergene_id_uniq")
+                    .table(Alias::new("plat_allergene"))
+                    .col(Alias::new("plat_id"))
+                    .col(Alias::new("allergene_id"))
+                    .unique()
+                    .to_owned(),
+            )
+            .await?;
+
         Ok(())
 }
 
@@ -62,6 +74,10 @@ async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
                     .name("plat_allergene_allergene_id_allergenes_fkey")
                     .to_owned(),
             )
+            .await?;
+
+        manager
+            .drop_index(Index::drop().name("plat_allergene_plat_id_allergene_id_uniq").table(Alias::new("plat_allergene")).to_owned())
             .await?;
 
         manager

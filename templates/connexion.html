@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Connexion — U Campanile{% endblock %}
+{% block title %}Connexion — {{ info_resto.nom | default(value="U Campanile") }}{% endblock %}
 
 {% block content %}
 <div class="auth-page">
@@ -11,12 +11,12 @@
         {% messages %}
 
         <form method="post" action="/connexion">
-            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-            {% form.form %}
+            {% form.login_form %}
             <button type="submit" class="btn-primary btn-full">Se connecter</button>
         </form>
 
         <div class="auth-links">
+            <p><a href="/forgot-password">Mot de passe oublié ?</a></p>
             <p>Pas encore de compte ? <a href="/inscription">Créer un compte</a></p>
         </div>
     </div>

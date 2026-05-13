@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Bienvenue — U Campanile</title>
+</head>
+<body style="margin:0;padding:0;background:#f5ede0;font-family:Georgia,serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5ede0;padding:32px 0;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.1);">
+
+          <!-- Bandeau titre -->
+          <tr>
+            <td style="background:#1a1005;padding:40px 32px;text-align:center;border-radius:8px 8px 0 0;">
+              <p style="margin:0 0 12px;font-size:13px;color:#e8a020;letter-spacing:.45em;text-transform:uppercase;">✦ ✦ ✦</p>
+              <h1 style="margin:0 0 8px;font-size:30px;color:#e8a020;letter-spacing:.12em;font-family:Georgia,serif;">U Campanile</h1>
+              <p style="margin:0;font-size:11px;color:#e8a020;letter-spacing:.35em;text-transform:uppercase;">Corte · Corse</p>
+              <p style="margin:14px 0 0;font-size:11px;color:#e8a020;letter-spacing:.45em;">✦ ✦ ✦</p>
+            </td>
+          </tr>
+
+          <!-- Bande orange séparatrice -->
+          <tr>
+            <td style="background:#d4621a;padding:5px 0;"></td>
+          </tr>
+
+          <!-- Corps -->
+          <tr>
+            <td style="padding:36px 40px;">
+              <h2 style="margin:0 0 16px;font-size:20px;color:#6b2d0f;">Bienvenue, {{ username }} !</h2>
+              <p style="margin:0 0 16px;font-size:15px;color:#444;line-height:1.7;">
+                Votre compte a bien été créé sur le site de <strong style="color:#6b2d0f;">U Campanile</strong>. Il ne vous reste plus qu'à activer votre compte en cliquant sur le bouton ci-dessous.
+              </p>
+              <p style="margin:0 0 28px;font-size:15px;color:#444;line-height:1.7;">
+                Une fois activé, vous pourrez passer commande, suivre vos commandes et laisser vos avis.
+              </p>
+
+              <!-- Bouton CTA -->
+              <table cellpadding="0" cellspacing="0" style="margin:0 auto 28px;">
+                <tr>
+                  <td style="background:#d4621a;border-radius:6px;padding:14px 36px;box-shadow:0 3px 8px rgba(212,98,26,.35);">
+                    <a href="{{ activate_url }}" style="color:#ffffff;font-size:15px;font-weight:bold;text-decoration:none;letter-spacing:.05em;">Activer mon compte</a>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin:0;font-size:13px;color:#888;line-height:1.6;">
+                Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :<br>
+                <a href="{{ activate_url }}" style="color:#d4621a;word-break:break-all;">{{ activate_url }}</a>
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background:#f0e6d8;padding:20px 40px;border-top:2px solid #e8924a;text-align:center;">
+              <p style="margin:0;font-size:12px;color:#999;">
+                U Campanile · Corte, Corse<br>
+                Cet email vous a été envoyé suite à la création de votre compte.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

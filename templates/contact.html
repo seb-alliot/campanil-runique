@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block header %}
+<section class="page-hero">
+    <h1>Nous contacter</h1>
+    <p>Une question, une réservation, un événement ? Écrivez-nous.</p>
+</section>
+{% endblock %}
+
+{% block content %}
+<div class="contact-layout">
+
+    <section class="contact-info">
+        <h2>Informations</h2>
+        <ul class="contact-details">
+            <li>
+                <strong>Adresse</strong>
+                {% if info_resto.google_maps %}
+                <a href="{{ info_resto.google_maps }}" target="_blank" rel="noopener">{{ info_resto.adresse | default(value="Place Gaffory, 20250 Corte") }}</a>
+                {% else %}
+                <span>{{ info_resto.adresse | default(value="Place Gaffory, 20250 Corte") }}</span>
+                {% endif %}
+            </li>
+            <li>
+                <strong>Téléphone</strong>
+                <a href="tel:{{ info_resto.telephone | default(value="+33685659626") }}">{{ info_resto.telephone | default(value="06 85 65 96 26") }}</a>
+            </li>
+            {% for h in horaires %}
+            <li>
+                <strong>{{ h.jour | capitalize }}</strong>
+                {% if h.ferme %}
+                    <span>Fermé</span>
+                {% else %}
+                    <span>
+                        {% if h.ouverture_midi and h.fermeture_midi %}{{ h.ouverture_midi | truncate(length=5, end="") }}–{{ h.fermeture_midi | truncate(length=5, end="") }}{% endif %}
+                        {% if h.ouverture_soir and h.fermeture_soir %} / {{ h.ouverture_soir | truncate(length=5, end="") }}–{{ h.fermeture_soir | truncate(length=5, end="") }}{% endif %}
+                        {% if h.note %} ({{ h.note }}){% endif %}
+                    </span>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <section class="contact-form-section">
+        <h2>Envoyer un message</h2>
+        <form method="post" action="/contact" novalidate>
+            {% form.contact_form %}
+            <button type="submit" class="btn btn-primary">Envoyer</button>
+        </form>
+    </section>
+
+</div>
+{% endblock %}

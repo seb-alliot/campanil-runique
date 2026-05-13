@@ -1,0 +1,57 @@
+use crate::entities::avis;
+use runique::prelude::*;
+use sea_orm::DatabaseConnection;
+use serde::Serialize;
+use std::collections::HashMap;
+
+#[derive(Serialize)]
+pub struct AvisPublic {
+    pub note: i32,
+    pub etoiles: String,
+    pub commentaire: String,
+    pub auteur: String,
+}
+
+pub async fn get_avis_valides(db: &DatabaseConnection) -> Vec<AvisPublic> {
+    let avis_list = avis::Entity::find()
+        .filter(avis::Column::Statut.eq(avis::StatutAvis::Valide))
+        .order_by_desc(avis::Column::CreatedAt)
+        .limit(8)
+        .all(db)
+        .await
+        .unwrap_or_default();
+
+    if avis_list.is_empty() {
+        return vec![];
+    }
+
+    let user_ids: Vec<i32> = avis_list.iter().map(|a| a.user_id).collect();
+
+    let user_name_map: HashMap<i32, String> = runique_users::Entity::find()
+        .filter(runique_users::Column::Id.is_in(user_ids))
+        .all(db)
+        .await
+        .unwrap_or_default()
+        .into_iter()
+        .map(|u| (u.id, u.username))
+        .collect();
+
+    avis_list
+        .into_iter()
+        .map(|a| {
+            let username = user_name_map.get(&a.user_id).cloned().unwrap_or_default();
+            let auteur = if username.is_empty() {
+                "Un client".to_string()
+            } else {
+                username
+            };
+            let etoiles = "★".repeat(a.note as usize) + &"☆".repeat((5 - a.note) as usize);
+            AvisPublic {
+                note: a.note,
+                etoiles,
+                commentaire: a.commentaire,
+                auteur,
+            }
+        })
+        .collect()
+}

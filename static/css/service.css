@@ -1,0 +1,217 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+    --bg:         #0f1117;
+    --surface:    #1a1d27;
+    --border:     #2a2d3a;
+    --text:       #e8eaf0;
+    --muted:      #7a7f9a;
+    --accent:     #c9a96e;
+
+    --c-attente:  #d97706;
+    --c-accepte:  #3b82f6;
+    --c-prep:     #8b5cf6;
+    --c-pret:     #10b981;
+    --c-livraison:#06b6d4;
+    --c-termine:  #4b5563;
+    --c-annule:   #ef4444;
+}
+
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+}
+
+/* ── Header ── */
+.svc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: .75rem 1.5rem;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+.svc-logo   { font-weight: 700; font-size: 1.1rem; color: var(--accent); margin-right: 1rem; }
+.svc-date   { font-size: .9rem; color: var(--muted); text-transform: capitalize; }
+.svc-header-right { display: flex; align-items: center; gap: 1.25rem; }
+.svc-clock  { font-size: 1.1rem; font-variant-numeric: tabular-nums; }
+.svc-sync   { font-size: .75rem; color: var(--muted); }
+.svc-retour { font-size: .85rem; color: var(--muted); text-decoration: none; padding: .3rem .7rem; border: 1px solid var(--border); border-radius: 6px; transition: color .15s, border-color .15s; }
+.svc-retour:hover { color: var(--text); border-color: var(--muted); }
+
+/* ── Main layout ── */
+.svc-main {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* ── Section ── */
+.svc-section {}
+.svc-section-titre {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+}
+.svc-count {
+    background: var(--border);
+    color: var(--text);
+    border-radius: 999px;
+    font-size: .75rem;
+    padding: .1rem .55rem;
+    font-weight: 700;
+}
+.svc-vide   { color: var(--muted); font-size: .9rem; padding: .5rem 0; }
+
+/* ── Grille cartes ── */
+.svc-grille {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+/* ── Carte ── */
+.svc-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border-left: 4px solid var(--border);
+    transition: border-color .2s;
+}
+.svc-card--en-attente        { border-left-color: var(--c-attente); }
+.svc-card--accepte           { border-left-color: var(--c-accepte); }
+.svc-card--en-preparation    { border-left-color: var(--c-prep); }
+.svc-card--pret              { border-left-color: var(--c-pret); }
+.svc-card--en-cours-livraison{ border-left-color: var(--c-livraison); }
+.svc-card--livre             { border-left-color: var(--c-termine); }
+.svc-card--termine           { border-left-color: var(--c-termine); opacity: .6; }
+.svc-card--annule            { border-left-color: var(--c-annule);  opacity: .5; }
+
+/* Header carte */
+.svc-card-header {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .7rem 1rem;
+    border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,.03);
+}
+.svc-heure  { font-size: 1.2rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--accent); flex-shrink: 0; }
+.svc-numero { font-size: .78rem; color: var(--muted); flex: 1; }
+.svc-badge  {
+    font-size: .68rem;
+    font-weight: 700;
+    padding: .2rem .55rem;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    white-space: nowrap;
+}
+.svc-badge--en-attente        { background: rgba(217,119,6,.2);   color: #fbbf24; }
+.svc-badge--accepte           { background: rgba(59,130,246,.2);  color: #93c5fd; }
+.svc-badge--en-preparation    { background: rgba(139,92,246,.2);  color: #c4b5fd; }
+.svc-badge--pret              { background: rgba(16,185,129,.2);  color: #6ee7b7; }
+.svc-badge--en-cours-livraison{ background: rgba(6,182,212,.2);   color: #67e8f9; }
+.svc-badge--livre             { background: rgba(75,85,99,.2);    color: #9ca3af; }
+.svc-badge--termine           { background: rgba(75,85,99,.2);    color: #9ca3af; }
+.svc-badge--annule            { background: rgba(239,68,68,.2);   color: #fca5a5; }
+
+/* Body carte */
+.svc-card-body { padding: .75rem 1rem; flex: 1; }
+.svc-client  { font-weight: 600; margin-bottom: .4rem; }
+.svc-adresse { font-size: .8rem; color: var(--muted); margin-bottom: .5rem; }
+.svc-lignes  { list-style: none; display: flex; flex-direction: column; gap: .3rem; }
+.svc-ligne        { display: flex; flex-direction: column; gap: .2rem; font-size: .88rem; }
+.svc-ligne-top    { display: flex; align-items: baseline; gap: .4rem; flex-wrap: wrap; }
+.svc-qte          { color: var(--accent); font-weight: 700; flex-shrink: 0; }
+.svc-titre        { flex: 1; }
+.svc-detail       { font-size: .78rem; color: var(--muted); background: rgba(255,255,255,.05); padding: .1rem .4rem; border-radius: 4px; }
+.svc-detail--alert { background: rgba(220,53,69,.2); color: #f8a0a8; }
+.svc-composition  { list-style: none; margin: .2rem 0 0; padding-left: 1.4rem; display: flex; flex-direction: column; gap: .15rem; }
+.svc-composition li { font-size: .78rem; color: var(--muted); font-style: italic; }
+
+/* Footer carte */
+.svc-card-footer {
+    padding: .65rem 1rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    flex-wrap: wrap;
+}
+.svc-prix      { font-weight: 700; font-size: .95rem; margin-right: auto; }
+.svc-paiement  { font-size: .75rem; color: var(--muted); }
+.svc-actions   { display: flex; gap: .4rem; flex-wrap: wrap; width: 100%; margin-top: .4rem; }
+
+/* Boutons d'action */
+.svc-btn {
+    font-size: .8rem;
+    font-weight: 600;
+    padding: .35rem .8rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: opacity .15s;
+}
+.svc-btn:disabled { opacity: .5; cursor: not-allowed; }
+.svc-btn:not(:disabled):hover { opacity: .85; }
+
+.svc-btn--accepter   { background: var(--c-accepte);  color: #fff; }
+.svc-btn--preparer   { background: var(--c-prep);     color: #fff; }
+.svc-btn--pret       { background: var(--c-pret);     color: #fff; }
+.svc-btn--livrer     { background: var(--c-livraison);color: #fff; }
+.svc-btn--terminer   { background: var(--c-termine);  color: #fff; }
+.svc-btn--annuler    { background: transparent; color: var(--c-annule); border: 1px solid var(--c-annule); }
+
+@media (max-width: 600px) {
+    .svc-header { flex-direction: column; align-items: flex-start; gap: .4rem; }
+    .svc-heure  { font-size: 1.2rem; }
+}
+
+/* ── Groupes de statut ── */
+.svc-groupe[hidden] { display: none; }
+.svc-groupe {
+    margin-bottom: 1.5rem;
+    border-left: 3px solid var(--border);
+    padding-left: 1rem;
+}
+.svc-groupe--attente    { border-left-color: var(--c-attente); }
+.svc-groupe--accepte    { border-left-color: var(--c-accepte); }
+.svc-groupe--preparation{ border-left-color: var(--c-prep); }
+.svc-groupe--pret       { border-left-color: var(--c-pret); }
+.svc-groupe-titre {
+    font-size: .78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: var(--muted);
+    margin-bottom: .75rem;
+}
+.svc-groupe--attente .svc-groupe-titre    { color: #fbbf24; }
+.svc-groupe--accepte .svc-groupe-titre    { color: #93c5fd; }
+.svc-groupe--preparation .svc-groupe-titre{ color: #c4b5fd; }
+.svc-groupe--pret .svc-groupe-titre       { color: #6ee7b7; }
+
+/* ── Menu choix (composition par cours) ─────────────── */
+.svc-menu-choix { list-style: none; margin: .3rem 0 0 1rem; display: flex; flex-direction: column; gap: .35rem; }
+.svc-menu-cours { display: flex; flex-wrap: wrap; align-items: baseline; gap: .3rem; }
+.svc-menu-cours-label { font-size: .65rem; font-weight: 700; text-transform: uppercase; color: var(--accent); min-width: 3.5rem; }
+.svc-menu-cours-titre { font-size: .85rem; color: var(--text); }
+.svc-note { font-size: .78rem; color: #fde68a; font-style: italic; font-weight: 600; background: rgba(251,191,36,.15); border-left: 2px solid #fbbf24; padding: .2rem .5rem; border-radius: 0 4px 4px 0; margin-top: .2rem; width: 100%; box-sizing: border-box; }

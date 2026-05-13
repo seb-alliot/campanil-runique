@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <h1>Demande de devis traiteur</h1>
+</section>
+
+<div class="container devis-layout">
+
+    {% if menu %}
+    <div class="devis-menu-recap">
+        <h2>{{ menu.titre }}</h2>
+        <p class="devis-menu-prix">{{ menu.prix_par_personne }} € / personne — à partir de {{ menu.nb_personnes_min }} personnes</p>
+        {% if menu.description %}
+        <p class="devis-menu-desc">{{ menu.description }}</p>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="devis-form-wrapper">
+        <p class="devis-intro">Remplissez ce formulaire pour nous soumettre votre demande. Nous vous répondrons par email dans les meilleurs délais.</p>
+
+        <form method="post" action="/traiteur/devis{% if menu %}?menu_id={{ menu.id }}{% endif %}" class="form-contact">
+            {% form.devis_form %}
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Envoyer la demande</button>
+                <a href="/menus" class="btn btn-secondary">Retour aux menus</a>
+            </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}

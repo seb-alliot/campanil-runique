@@ -40,20 +40,24 @@ model! {
         date_prestation: datetime,
         avec_materiel:   bool   [default: false],
 
-        // Livraison
+        // Retrait / Livraison
+        heure_retrait:     datetime,
         avec_livraison:   bool  [required, default: false],
         adresse_livraison: text [max_length: 255],
         ville_livraison:   text [max_length: 100],
         cp_livraison:      text [max_length: 10],
-        heure_livraison:   time,
+        heure_livraison:   datetime,
         prix_livraison:    decimal [default: 0],
 
         // Stripe
         stripe_payment_intent_id: text [max_length: 255, skip],
 
-        // Annulation (gérés côté employé)
+        // Annulation employé
         motif_annulation:        textarea [skip],
         mode_contact_annulation: text     [max_length: 100, skip],
+
+        // Annulation client
+        date_annulation: datetime [skip],
 
         created_at: datetime [auto_now],
         updated_at: datetime [auto_now_update],

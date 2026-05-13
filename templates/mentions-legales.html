@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}Mentions légales — {{ info_resto.nom | default(value="U Campanile") }}{% endblock %}
+
+{% block header %}
+<section class="page-hero">
+    <h1>Mentions légales</h1>
+    <p>Informations légales et politique de confidentialité</p>
+</section>
+{% endblock %}
+
+{% block content %}
+<div class="mentions-layout">
+
+    <nav class="mentions-nav">
+        <ul>
+            <li><a href="#editeur">Éditeur</a></li>
+            <li><a href="#hebergeur">Hébergeur</a></li>
+            <li><a href="#propriete">Propriété intellectuelle</a></li>
+            <li><a href="#donnees">Données personnelles</a></li>
+            <li><a href="#cookies">Cookies et sessions</a></li>
+            <li><a href="#commandes">Conditions de commande</a></li>
+            <li><a href="#droits">Vos droits</a></li>
+        </ul>
+    </nav>
+
+    <div class="mentions-content">
+
+        <section id="editeur">
+            <h2>Éditeur du site</h2>
+            <p>Le site <strong>ucampanile.fr</strong> est édité par :</p>
+            <ul>
+                <li><strong>Raison sociale :</strong> {{ info_resto.nom | default(value="U Campanile") }}</li>
+                <li><strong>Adresse :</strong> {{ info_resto.adresse | default(value="Place Gaffory, 20250 Corte") }}</li>
+                <li><strong>Téléphone :</strong> {{ info_resto.telephone | default(value="06 85 65 96 26") }}</li>
+                {% if info_resto.email %}
+                <li><strong>Email :</strong> <a href="mailto:{{ info_resto.email }}">{{ info_resto.email }}</a></li>
+                {% endif %}
+            </ul>
+        </section>
+
+        <section id="hebergeur">
+            <h2>Hébergeur</h2>
+            <p>Ce site est hébergé par :</p>
+            <ul>
+                <li><strong>Hostinger International Ltd</strong></li>
+                <li>61 Lordou Vironos Street, 6023 Larnaca, Chypre</li>
+                <li><a href="https://www.hostinger.fr" target="_blank" rel="noopener">www.hostinger.fr</a></li>
+            </ul>
+            <p><strong>Conception et développement :</strong> Itsuki</p>
+        </section>
+
+        <section id="propriete">
+            <h2>Propriété intellectuelle</h2>
+            <p>
+                L'ensemble du contenu de ce site (textes, photographies, logos, illustrations) est protégé par le droit d'auteur.
+                Toute reproduction, même partielle, est interdite sans autorisation préalable écrite de l'éditeur.
+            </p>
+        </section>
+
+        <section id="donnees">
+            <h2>Données personnelles</h2>
+
+            <h3>Responsable du traitement</h3>
+            <p>
+                Le responsable du traitement des données est {{ info_resto.nom | default(value="U Campanile") }},
+                {% if info_resto.email %}
+                joignable à l'adresse <a href="mailto:{{ info_resto.email }}">{{ info_resto.email }}</a>.
+                {% else %}
+                joignable via le <a href="/contact">formulaire de contact</a>.
+                {% endif %}
+            </p>
+
+            <h3>Données collectées et finalités</h3>
+            <p>Nous collectons uniquement les données nécessaires aux services proposés :</p>
+
+            <table class="mentions-table">
+                <thead>
+                    <tr>
+                        <th>Traitement</th>
+                        <th>Données collectées</th>
+                        <th>Base légale</th>
+                        <th>Durée de conservation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Formulaire de contact</td>
+                        <td>Nom, email, sujet, message</td>
+                        <td>Intérêt légitime</td>
+                        <td>3 ans à compter du dernier contact</td>
+                    </tr>
+                    <tr>
+                        <td>Création de compte client</td>
+                        <td>Email, mot de passe (haché), nom d'utilisateur</td>
+                        <td>Exécution du contrat</td>
+                        <td>Durée du compte (suppression à la demande de l'utilisateur)</td>
+                    </tr>
+                    <tr>
+                        <td>Commandes en ligne</td>
+                        <td>Contenu du panier, mode de paiement, adresse de livraison</td>
+                        <td>Exécution du contrat</td>
+                        <td>5 ans (obligations comptables)</td>
+                    </tr>
+                    <tr>
+                        <td>Demande de devis traiteur</td>
+                        <td>Nom, email, téléphone, détails de l'événement</td>
+                        <td>Intérêt légitime / pré-contractuel</td>
+                        <td>3 ans à compter de la demande</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Destinataires des données</h3>
+            <p>
+                Vos données sont traitées exclusivement par l'équipe du restaurant.
+                Elles ne sont pas cédées, vendues ni transmises à des tiers à des fins commerciales.
+                Elles peuvent être partagées avec notre hébergeur dans le cadre de l'exploitation technique du site.
+            </p>
+
+            <h3>Transferts hors UE</h3>
+            <p>Aucun transfert de données personnelles n'est effectué en dehors de l'Union européenne.</p>
+        </section>
+
+        <section id="cookies">
+            <h2>Cookies et sessions</h2>
+            <p>
+                Ce site utilise un <strong>cookie de session technique</strong>, strictement nécessaire à son fonctionnement.
+                Il permet de maintenir votre session (panier, connexion à votre compte).
+                Ce cookie ne collecte aucune information à des fins publicitaires ou statistiques.
+            </p>
+            <p>
+                Ce cookie est configuré avec les attributs de sécurité <code>HttpOnly</code> et <code>SameSite=Strict</code>,
+                ce qui le rend inaccessible aux scripts et limite les risques CSRF.
+                Il est automatiquement invalidé après <strong>24 heures</strong> ou à votre déconnexion explicite.
+            </p>
+            <p>
+                Ce site n'utilise <strong>aucun cookie publicitaire, analytique ou tiers</strong> (pas de Google Analytics, pas de pixel de suivi).
+            </p>
+        </section>
+
+        <section id="commandes">
+            <h2>Conditions de commande et annulation</h2>
+
+            <h3>Annulation par le client</h3>
+            <p>
+                Toute commande passée en ligne peut être annulée par le client depuis son espace personnel,
+                <strong>jusqu'à 15 minutes avant l'heure de retrait ou de livraison indiquée</strong>.
+                Passé ce délai, l'annulation n'est plus possible via le site.
+            </p>
+            <p>
+                En cas d'annulation hors délai ou de non-présentation sans annulation préalable,
+                <strong>aucun remboursement ne pourra être effectué</strong>, la commande étant déjà en cours de préparation.
+            </p>
+            <p>
+                Pour toute situation exceptionnelle, vous pouvez nous contacter directement par téléphone ou
+                {% if info_resto.email %}
+                par email à <a href="mailto:{{ info_resto.email }}">{{ info_resto.email }}</a>.
+                {% else %}
+                via notre <a href="/contact">formulaire de contact</a>.
+                {% endif %}
+            </p>
+        </section>
+
+        <section id="droits">
+            <h2>Vos droits</h2>
+            <p>Conformément au RGPD (Règlement UE 2016/679), vous disposez des droits suivants sur vos données :</p>
+            <ul>
+                <li><strong>Droit d'accès</strong> — obtenir une copie des données vous concernant</li>
+                <li><strong>Droit de rectification</strong> — corriger des données inexactes ou incomplètes</li>
+                <li><strong>Droit à l'effacement</strong> — demander la suppression de vos données (sous réserve des obligations légales)</li>
+                <li><strong>Droit à la portabilité</strong> — recevoir vos données dans un format structuré et lisible</li>
+                <li><strong>Droit d'opposition</strong> — vous opposer à un traitement fondé sur l'intérêt légitime</li>
+                <li><strong>Droit à la limitation</strong> — demander le gel temporaire d'un traitement</li>
+            </ul>
+
+            <p>
+                Pour exercer ces droits, contactez-nous
+                {% if info_resto.email %}
+                par email à <a href="mailto:{{ info_resto.email }}">{{ info_resto.email }}</a>
+                {% else %}
+                via notre <a href="/contact">formulaire de contact</a>
+                {% endif %}
+                en précisant votre demande. Nous vous répondrons dans un délai de 30 jours.
+            </p>
+
+            <p>
+                En cas de réponse insatisfaisante, vous pouvez introduire une réclamation auprès de la
+                <a href="https://www.cnil.fr" target="_blank" rel="noopener">CNIL</a>
+                (Commission Nationale de l'Informatique et des Libertés).
+            </p>
+
+            <p class="mentions-update">Dernière mise à jour : mai 2026</p>
+        </section>
+
+    </div>
+
+</div>
+{% endblock %}

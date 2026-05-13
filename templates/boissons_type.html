@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block style %}
+<link rel="stylesheet" href='{% static "css/main.css" %}'>
+<link rel="stylesheet" href='{% static "css/boissons.css" %}'>
+{% endblock %}
+
+{% block content %}
+<div class="btype-hero">
+    <h1>{{ type_label }}</h1>
+    <a class="btype-hero-retour" href="/carte">&#8592; Retour à la carte</a>
+</div>
+
+{% if boissons %}
+<div class="btype-grille">
+    {% for b in boissons %}
+    <div class="btype-card">
+        {% if b.image %}
+        <img class="btype-card-img" src="{{ b.image | media }}" alt="{{ b.titre }}" loading="lazy">
+        {% else %}
+        <div class="btype-card-img-placeholder">&#127863;</div>
+        {% endif %}
+        <div class="btype-card-body">
+            <div class="btype-card-header">
+                <span class="btype-card-titre">{{ b.titre }}</span>
+                <span class="btype-card-prix">{{ b.prix }} €</span>
+            </div>
+            {% if b.description %}
+            <p class="btype-card-desc">{{ b.description }}</p>
+            {% endif %}
+            <div class="btype-card-footer">
+                {% if b.disponible %}
+                <button class="btn btn-sm btn-primary js-ajouter" data-boisson-id="{{ b.id }}">Ajouter au panier</button>
+                {% else %}
+                <span class="btype-indispo">Indisponible</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p class="btype-vide">Cette boisson n'est pas proposée à la carte.<br><a href="/carte">Voir toutes nos boissons</a></p>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script {% csp %} src="{% static "js/carte.js" %}"></script>
+{% endblock %}

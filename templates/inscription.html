@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Créer un compte — U Campanile{% endblock %}
+{% block title %}Créer un compte — {{ info_resto.nom | default(value="U Campanile") }}{% endblock %}
 
 {% block content %}
 <div class="auth-page">
@@ -11,8 +11,7 @@
         {% messages %}
 
         <form method="post" action="/inscription">
-            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-            {% form.form %}
+            {% form.inscription_form %}
             <button type="submit" class="btn-primary btn-full">Créer mon compte</button>
         </form>
 

@@ -1,0 +1,73 @@
+/* ════════════════════════════════════════════════════════
+    Animation v2 — glissement + révélation lumineuse
+    Charge après menu-livre.css, écrase uniquement les animations
+   ════════════════════════════════════════════════════════ */
+
+/* Désactive les volets v1 si présents */
+.spr-volet-depart,
+.spr-volet-arrivee { display: none !important; }
+
+/* ── Keyframes ─────────────────────────────────────────── */
+@keyframes slideLeave {
+  from { transform: translateX(0);    opacity: 1; }
+  to   { transform: translateX(-28%); opacity: 0; }
+}
+@keyframes slideEnter {
+  from { transform: translateX(22%);  opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+@keyframes slideLeaveBwd {
+  from { transform: translateX(0);   opacity: 1; }
+  to   { transform: translateX(28%); opacity: 0; }
+}
+@keyframes slideEnterBwd {
+  from { transform: translateX(-22%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+@keyframes sweepFwd {
+  from { left: 110%; }
+  to   { left: -60%; }
+}
+@keyframes sweepBwd {
+  from { left: -60%; }
+  to   { left: 110%; }
+}
+
+/* ── Classes d'animation sections ─────────────────────── */
+.spr-section--leaving {
+  animation: slideLeave 1000ms cubic-bezier(.7,0,1,1) forwards;
+  pointer-events: none;
+}
+.spr-section--entering {
+  animation: slideEnter 1000ms cubic-bezier(.7,0,1,1) forwards;
+  pointer-events: none;
+}
+.spr-section--leaving-bwd {
+  animation: slideLeaveBwd 1000ms cubic-bezier(.7,0,1,1) forwards;
+  pointer-events: none;
+}
+.spr-section--entering-bwd {
+  animation: slideEnterBwd 1000ms cubic-bezier(.7,0,1,1) forwards;
+  pointer-events: none;
+}
+
+
+/* ── Balayage lumineux ─────────────────────────────────── */
+.spr-sweep {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 55%;
+  pointer-events: none;
+  z-index: 15;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(0, 0, 0, 0.4) 30%,
+    rgba(0, 0, 0, 0.5) 40%,
+    rgba(0, 0, 0, 0.62) 50%,
+    transparent 50%
+  );
+}
+.spr-sweep.fwd { animation: sweepFwd 560ms cubic-bezier(.2,0,.6,1) forwards; }
+.spr-sweep.bwd { animation: sweepBwd 560ms cubic-bezier(.2,0,.6,1) forwards; }

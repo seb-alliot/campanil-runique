@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="confirmation-layout">
+    <div class="confirmation-card">
+        <h2>Commande confirmée</h2>
+        <p>Merci pour votre commande !</p>
+        <div class="confirmation-numero">N° {{ numero }}</div>
+        <p>Votre commande a bien été enregistrée. Vous pouvez suivre son état depuis votre espace client.</p>
+        <div class="confirmation-actions">
+            <a href="/compte" class="btn btn-primary">Voir mes commandes</a>
+            <a href="/carte" class="btn btn-secondary">Retour à la carte</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

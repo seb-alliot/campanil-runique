@@ -16,9 +16,12 @@ model! {
         ],
     },
     {
-        jour:            choice [enum(Jour), required, unique],
-        heure_ouverture: time,
-        heure_fermeture: time,
-        ferme:           bool   [required, default: false],
+        jour:             choice [enum(Jour), required, unique],
+        ouverture_midi:   time,
+        fermeture_midi:   time,
+        ouverture_soir:   time,
+        fermeture_soir:   time,
+        ferme:            bool   [required, default: false],
+        note:             text,
     }
 }

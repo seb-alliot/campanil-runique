@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <h1>Demande envoyée</h1>
+</section>
+
+<div class="container text-center devis-confirmation">
+    <p>Votre demande de devis a bien été transmise.</p>
+    <p>Nous vous répondrons par email dans les meilleurs délais.</p>
+    <div class="btn-block-center">
+        <a href="/menus" class="btn btn-primary">Voir nos menus</a>
+        <a href="/" class="btn btn-secondary">Accueil</a>
+    </div>
+</div>
+{% endblock %}

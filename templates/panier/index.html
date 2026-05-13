@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block style %}
+    {{ super() }}
+    <link rel="stylesheet" href='{% static "css/panier.css" %}'>
+{% endblock %}
+{% block header %}
+<section class="page-hero">
+    <h1>Mon panier</h1>
+</section>
+{% endblock %}
+
+{% block content %}
+<div class="panier-layout">
+
+    {% if erreur is defined and erreur %}
+    <div class="alert alert-error">{{ erreur }}</div>
+    {% endif %}
+
+    {% if panier.lignes %}
+    <section class="panier-lignes">
+        <h2>Articles</h2>
+        <div class="panier-table" id="panier-table">
+            {% for ligne in panier.lignes %}
+            {% if ligne.boisson_id %}
+            <div class="panier-ligne" data-boisson-id="{{ ligne.boisson_id }}">
+                <div class="panier-ligne-info">
+                    <span class="panier-ligne-titre">{{ ligne.titre }}</span>
+                </div>
+                <div class="panier-ligne-meta">
+                    <span class="panier-ligne-prix">{{ ligne.prix_unitaire }} € × {{ ligne.quantite }}</span>
+                    <button type="button" class="btn btn-sm btn-danger js-retirer" data-boisson-id="{{ ligne.boisson_id }}">Retirer</button>
+                </div>
+            </div>
+            {% elif ligne.menu_id %}
+            <div class="panier-ligne" data-menu-id="{{ ligne.menu_id }}">
+                <div class="panier-ligne-info">
+                    <span class="panier-ligne-titre">{{ ligne.titre }}</span>
+                    {% if ligne.menu_choix %}
+                    <ul class="panier-menu-choix">
+                        {% for choix in ligne.menu_choix %}
+                        <li>
+                            <span class="panier-menu-cours">{{ choix.cours }}</span>
+                            {{ choix.plat_titre }}
+                            {% if choix.cuisson %} — {{ choix.cuisson }}{% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+                <div class="panier-ligne-meta">
+                    <span class="panier-ligne-prix">{{ ligne.prix_unitaire }} € × {{ ligne.quantite }}</span>
+                    <button type="button" class="btn btn-sm btn-danger js-retirer" data-menu-id="{{ ligne.menu_id }}">Retirer</button>
+                </div>
+            </div>
+            {% else %}
+            <div class="panier-ligne" data-plat-id="{{ ligne.plat_id }}">
+                <div class="panier-ligne-info">
+                    <span class="panier-ligne-titre">{{ ligne.titre }}</span>
+                    {% if ligne.est_viande and ligne.cuisson %}
+                    <span class="panier-ligne-cuisson">{{ ligne.cuisson }}</span>
+                    {% endif %}
+                </div>
+                <div class="panier-ligne-meta">
+                    <span class="panier-ligne-prix">{{ ligne.prix_unitaire }} € × {{ ligne.quantite }}</span>
+                    <button type="button" class="btn btn-sm btn-danger js-retirer" data-plat-id="{{ ligne.plat_id }}">Retirer</button>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        <div class="panier-total">
+            <strong>Total : <span id="panier-total">{{ total }}</span> €</strong>
+        </div>
+    </section>
+
+    <section class="panier-checkout">
+        <h2>Finaliser la commande</h2>
+        <form method="POST" action="/panier/commander">
+            {% csrf %}
+
+            <div class="form-group">
+                <label class="form-label">Mode de paiement</label>
+                <div class="radio-group">
+                    <label class="radio-choice">
+                        <input type="radio" name="mode_paiement" value="especes" required> Espèces
+                    </label>
+                    <label class="radio-choice">
+                        <input type="radio" name="mode_paiement" value="carte_bancaire"> Carte bancaire
+                    </label>
+                    <label class="radio-choice radio-choice--disabled">
+                        <input type="radio" name="mode_paiement" value="en_ligne" disabled> Paiement en ligne <small>(bientôt disponible)</small>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group" id="retrait-fields">
+                <label class="form-label" for="heure_retrait">Date et heure de retrait souhaitées</label>
+                <input type="datetime-local" id="heure_retrait" name="heure_retrait" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" name="avec_livraison" value="1" id="toggle-livraison">
+                    Livraison à domicile (+{{ prix_livraison }} €)
+                </label>
+            </div>
+
+            <div id="livraison-fields" style="display:none">
+                <div class="form-group">
+                    <label class="form-label" for="adresse_livraison">Adresse</label>
+                    <input type="text" id="adresse_livraison" name="adresse_livraison" class="form-control" maxlength="255">
+                </div>
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label class="form-label" for="cp_livraison">Code postal</label>
+                        <input type="text" id="cp_livraison" name="cp_livraison" class="form-control" maxlength="10">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="ville_livraison">Ville</label>
+                        <input type="text" id="ville_livraison" name="ville_livraison" class="form-control" maxlength="100">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="heure_livraison">Date et heure de livraison souhaitées</label>
+                    <input type="datetime-local" id="heure_livraison" name="heure_livraison" class="form-control">
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <a href="/carte" class="btn btn-secondary">Continuer mes achats</a>
+                <button type="submit" class="btn btn-primary">Commander</button>
+            </div>
+        </form>
+    </section>
+
+    {% else %}
+    <div class="panier-empty">
+        <p>Votre panier est vide.</p>
+        <a href="/carte" class="btn btn-primary">Voir la carte</a>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script {% csp %} src="{% static "js/panier.js" %}"></script>
+<script {% csp %}>
+(function () {
+    const pad = n => String(n).padStart(2, '0');
+    const toLocal = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    const now = new Date();
+    const min = toLocal(now);
+    const def = toLocal(new Date(now.getTime() + 60 * 60 * 1000));
+    ['heure_retrait', 'heure_livraison'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.min = min; el.value = def; }
+    });
+})();
+</script>
+{% endblock %}

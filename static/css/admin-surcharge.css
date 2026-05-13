@@ -1,0 +1,117 @@
+.commande-detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+    align-items: start;
+}
+
+.statut-actuel {
+    margin-bottom: 1.25rem;
+    font-size: .95rem;
+}
+
+.statut-form-row {
+    display: flex;
+    gap: .75rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.statut-select {
+    flex: 1;
+    min-width: 160px;
+}
+
+.card-articles {
+    margin-top: 1.5rem;
+}
+
+.badge-boisson {
+    font-size: .7rem;
+    margin-left: .4rem;
+    vertical-align: middle;
+}
+
+.commande-composition {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: .15rem;
+}
+.commande-composition li {
+    font-size: .85rem;
+    color: #555;
+    font-style: italic;
+}
+
+/* ── Badges statut commande ── */
+.badge-statut {
+    display: inline-block;
+    padding: .25rem .75rem;
+    border-radius: 999px;
+    font-size: .78rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    margin-left: 1.5rem;
+}
+.statut {
+    flex: 1;
+    min-width: 25vw;
+    max-width: 180px;
+}
+.btn-detail {
+    padding: 0.3rem 0.65rem;
+    font-size: 0.88rem;
+}
+.badge-statut--en_attente    { background: #fff3cd; color: #856404; }
+.badge-statut--en_preparation { background: #cce5ff; color: #004085; }
+.badge-statut--pret          { background: #d4edda; color: #155724; }
+.badge-statut--termine       { background: #d4edda; color: #155724; }
+.badge-statut--annule        { background: #f8d7da; color: #721c24; }
+.badge-statut--livre         { background: #d4edda; color: #155724; }
+
+/* ── Table infos ── */
+.data-table th {
+    text-align: right;
+    padding-right: 1rem;
+    white-space: nowrap;
+    opacity: .65;
+    font-weight: 600;
+    font-size: .82rem;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+}
+.articles-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.articles-table thead th {
+    padding: .5rem 1.25rem;
+    font-size: .72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    opacity: .5;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    text-align: left;
+}
+
+.articles-table tbody td {
+    padding: .65rem 1.25rem;
+    font-size: .9rem;
+    border: none;
+}
+
+.articles-table tbody tr:hover {
+    background: rgba(255,255,255,.03);
+}
+@media (max-width: 768px) {
+    .commande-detail-grid {
+        grid-template-columns: 1fr;
+    }
+}

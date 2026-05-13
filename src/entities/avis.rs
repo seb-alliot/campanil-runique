@@ -13,6 +13,7 @@ model! {
     },
     {
         commande_id: int      [required, fk(commandes.id, cascade), unique],
+        user_id:     int      [required, fk(eihwaz_users.id, restrict)],
         note:        int      [required, min: 1, max: 5],
         commentaire: textarea [required],
         statut:      choice   [enum(StatutAvis), required, default: "en_attente"],

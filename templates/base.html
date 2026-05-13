@@ -2,13 +2,23 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="robots" content="index, follow">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token }}">
-    <title>{% block title %}U Campanile — Corte{% endblock %}</title>
+    <title>{% block title %}{{ info_resto.nom | default(value="U Campanile") }}{% endblock %}</title>
+    <link rel="icon" href='{% media "favicon/images.ico" %}'>
+    <link rel="alternate" hreflang="x-default" href="https://U-Campanile-corte.fr/">
+    <link rel="canonical" href="https://U-Campanile-corte.fr{% if canonical %}{{ canonical }}{% else %}/{% endif %}">
+    <meta name="description" content="{% if description %}{{ description }}{% else %}Découvrez notre carte et nos menus traiteur à Corte, U Campanile.{% endif %}">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="U-Campanile-corte.fr">
+    <meta property="og:image" content="{{ og_image }}">
     {% block style %}
     <link rel="stylesheet" href='{% static "css/main.css" %}'>
     {% endblock %}
-    <link rel="icon" href='{% media "favicon/images.ico" %}'>
+
+
 </head>
 <body>
 
@@ -17,23 +27,40 @@
     {% endif %}
 
     <nav class="nav">
-        <a href="/" class="nav-logo">U Campanile</a>
+        <a href="/" class="nav-logo">{{ info_resto.nom | default(value="U Campanile") }}</a>
         <ul class="nav-links">
             <li><a href="/">Accueil</a></li>
             <li><a href="/carte">La Carte</a></li>
             <li><a href="/menus">Menus traiteur</a></li>
             <li><a href="/contact">Contact</a></li>
+            {% if user and user.is_staff %}<li><a href="{% link "service" %}">Service</a></li>{% endif %}
+            {% if user and is_admin %}<li><a href="/admin-campanile">Admin</a></li>{% endif %}
         </ul>
+        <button class="nav-burger" id="navBurger" aria-label="Menu" aria-expanded="false" aria-controls="navMenu">
+            <span></span><span></span><span></span>
+        </button>
         <div class="nav-actions">
             {% if user %}
-            <a href="/compte" class="nav-link">Mon compte</a>
-            <a href="/commande/panier" class="btn-panier">Panier</a>
+                <a href="{% link "compte" %}" class="site-nav-link-action">{{ user.username }}</a>
             {% else %}
-            <a href="/connexion" class="nav-link">Connexion</a>
-            <a href="/commande/panier" class="btn-panier">Panier</a>
+                <a href="{% link "connexion" %}" class="site-nav-link-action">Se connecter</a>
             {% endif %}
+            <a href="/panier" class="btn-panier">
+                Panier
+                <span id="panier-badge" class="panier-badge{% if panier_nb | default(value=0) == 0 %} panier-badge--hidden{% endif %}">{{ panier_nb | default(value=0) }}</span>
+            </a>
         </div>
     </nav>
+    <div class="nav-menu" id="navMenu" hidden>
+        <ul>
+            <li><a href="/">Accueil</a></li>
+            <li><a href="/carte">La Carte</a></li>
+            <li><a href="/menus">Menus traiteur</a></li>
+            <li><a href="/contact">Contact</a></li>
+            {% if user and user.is_staff %}<li><a href="{% link "service" %}">Service</a></li>{% endif %}
+            {% if user and is_admin %}<li><a href="/admin-campanile">Admin</a></li>{% endif %}
+        </ul>
+    </div>
 
     {% block header %}{% endblock %}
 
@@ -47,16 +74,25 @@
     <footer class="footer">
         <div class="footer-grid">
             <div class="footer-section">
-                <h3>U Campanile</h3>
-                <p>Place Gaffory</p>
-                <p>20250 Corte, Corse</p>
-                <p><a href="tel:+33685659626">06 85 65 96 26</a></p>
+                <h3>{{ info_resto.nom | default(value="U Campanile") }}</h3>
+                <p>{{ info_resto.adresse | default(value="Place Gaffory, 20250 Corte") }}</p>
+                <p><a href="tel:{{ info_resto.telephone | default(value="+33685659626") }}">{{ info_resto.telephone | default(value="06 85 65 96 26") }}</a></p>
+                {% if info_resto.google_maps %}
+                <p><a href="{{ info_resto.google_maps }}" target="_blank" rel="noopener">Nous trouver</a></p>
+                {% endif %}
             </div>
             <div class="footer-section">
                 <h3>Horaires</h3>
-                <p>Ouvert mai — septembre</p>
-                <p>7j/7 · 12h–15h et 19h–22h30</p>
-                <p>Fermé le mercredi (mai–juin)</p>
+                {% for h in horaires | default(value=[]) %}
+                <p>
+                    <strong>{{ h.jour | capitalize }}</strong>
+                    {% if h.ferme %} — Fermé
+                    {% else %}
+                        {% if h.ouverture_midi and h.fermeture_midi %} · {{ h.ouverture_midi | truncate(length=5, end="") }}–{{ h.fermeture_midi | truncate(length=5, end="") }}{% endif %}
+                        {% if h.ouverture_soir and h.fermeture_soir %} / {{ h.ouverture_soir | truncate(length=5, end="") }}–{{ h.fermeture_soir | truncate(length=5, end="") }}{% endif %}
+                    {% endif %}
+                </p>
+                {% endfor %}
             </div>
             <div class="footer-section">
                 <h3>Navigation</h3>
@@ -69,9 +105,24 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2026 U Campanile Corte — Tous droits réservés</p>
+            <p>&copy; 2026 {{ info_resto.nom | default(value="U Campanile") }} — Tous droits réservés</p>
         </div>
     </footer>
 
+<script {% csp %} src="{% static "js/nav.js" %}"></script>
+
+<div class="rq-modal-overlay" id="rqModalOverlay" role="dialog" aria-modal="true">
+    <div class="rq-modal-box">
+        <p class="rq-modal-title" id="rqModalTitle"></p>
+        <p class="rq-modal-msg" id="rqModalMsg"></p>
+        <div class="rq-modal-actions">
+            <button type="button" class="rq-modal-cancel" id="rqModalCancel">Annuler</button>
+            <button type="button" class="rq-modal-ok" id="rqModalOk">Confirmer</button>
+        </div>
+    </div>
+</div>
+<script {% csp %} src="{% static "js/modal.js" %}"></script>
+
+{% block extra_js %}{% endblock %}
 </body>
 </html>

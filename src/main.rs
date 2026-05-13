@@ -1,4 +1,5 @@
 use runique::prelude::*;
+mod admin;
 mod admins;
 mod backend;
 mod entities;
@@ -24,15 +25,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .with_password_reset::<BuiltinUserEntity>(|pr| {
             pr.forgot_template("auth/forgot_password.html")
                 .reset_template("auth/reset_password.html")
+                .email_template("emails/reset_password.html")
         })
         .statics()
         .middleware(|m| {
             m.with_session_memory_limit(5 * 1024 * 1024, 10 * 1024 * 1024)
                 .with_session_cleanup_interval(5)
                 .with_allowed_hosts(|h| {
-                    h.enabled(!is_debug())
+                    h.enabled(true)
                         .host("localhost:3000")
                         .host("127.0.0.1:3000")
+                        .host("U-Campanile-corte.fr")
                 })
                 .with_csp(|c| {
                     c.policy(SecurityPolicy::strict())
@@ -42,7 +45,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 })
         })
         .with_admin(|a| {
-            a.routes(admins::routes("/admin-campanile"))
+            a.sitemap("https://ucampanile.fr/sitemap.xml")
+                .routes(admins::routes("/admin-campanile"))
+                .extra_routes(url::admin_extra_routes())
                 .with_state(admins::admin_state())
                 .auth(RuniqueAdminAuth::new())
                 .site_title("Campanile — Administration")
@@ -58,6 +63,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     "allergenes",
                     "horaires",
                     "contacts",
+                    "info_resto",
                 ])
                 .with_rate_limiter(RateLimiter::new().max_requests(20).retry_after(3600))
                 .with_login_guard(LoginGuard::new().max_attempts(20).lockout_secs(300))

@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block header %}
+<section class="page-hero">
+    <h1>Menus traiteur</h1>
+    <p>Des menus élaborés pour vos événements en Corse — mariages, baptêmes, repas d'entreprise</p>
+</section>
+{% endblock %}
+
+{% block content %}
+<div class="menus-layout">
+
+    {# Filtres #}
+    <aside class="menus-filters">
+        <h2>Filtrer</h2>
+
+        <div class="filter-group">
+            <label for="nb_personnes">Nombre de personnes</label>
+            <input type="number" id="f-personnes" min="1" placeholder="ex : 20">
+        </div>
+
+        <div class="filter-group">
+            <label>Prix par personne (€)</label>
+            <div class="filter-range">
+                <input type="number" id="f-prix-min" min="0" step="0.01" placeholder="Min">
+                <span>—</span>
+                <input type="number" id="f-prix-max" min="0" step="0.01" placeholder="Max">
+            </div>
+        </div>
+
+        {% if themes %}
+        <div class="filter-group">
+            <label for="f-theme">Thème</label>
+            <select id="f-theme">
+                <option value="">Tous les thèmes</option>
+                {% for t in themes %}
+                <option value="{{ t.id }}">{{ t.libelle }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        {% endif %}
+
+        {% if regimes %}
+        <div class="filter-group">
+            <label for="f-regime">Régime alimentaire</label>
+            <select id="f-regime">
+                <option value="">Tous les régimes</option>
+                {% for r in regimes %}
+                <option value="{{ r.id }}">{{ r.libelle }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        {% endif %}
+
+        <div class="filter-actions">
+            <button type="button" id="f-reset" class="btn btn-secondary">Réinitialiser</button>
+        </div>
+
+    </aside>
+
+    {# Grille des menus #}
+    <section class="menus-grid-section">
+        {% if cards %}
+        <p class="menus-count" id="menus-count">{{ cards | length }} menu{% if cards | length > 1 %}s{% endif %} disponible{% if cards | length > 1 %}s{% endif %}</p>
+        <div class="menus-grid">
+            {% for card in cards %}
+            <article class="menu-card {% if card.stock == 0 %}menu-card--rupture{% endif %}"
+                data-prix="{{ card.prix_par_personne }}"
+                data-theme="{{ card.theme_id }}"
+                data-regime="{{ card.regime_id }}"
+                data-personnes="{{ card.nb_personnes_min }}">
+
+                {% if card.image %}
+                <div class="menu-card-img">
+                    <img src='{{ card.image | media }}' alt="{{ card.titre }}">
+                    {% if card.stock == 0 %}
+                    <span class="badge-rupture">Indisponible</span>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <div class="menu-card-body">
+                    <div class="menu-card-tags">
+                        <span class="tag tag-theme">{{ card.theme }}</span>
+                        <span class="tag tag-regime">{{ card.regime }}</span>
+                    </div>
+
+                    <h3 class="menu-card-title">{{ card.titre }}</h3>
+                    <p class="menu-card-desc">{{ card.description }}</p>
+
+                    <div class="menu-card-footer">
+                        <div class="menu-card-meta">
+                            <span class="menu-prix">{{ card.prix_par_personne }} € <small>/ pers.</small></span>
+                            <span class="menu-min">À partir de {{ card.nb_personnes_min }} pers.</span>
+                        </div>
+                        {% if card.stock > 0 %}
+                        <a href="/menus/{{ card.id }}" class="btn btn-primary btn-sm">Voir le menu</a>
+                        {% else %}
+                        <span class="btn btn-disabled btn-sm">Indisponible</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="menus-empty">
+            <p>Aucun menu ne correspond à vos critères.</p>
+            <a href="/menus" class="btn btn-secondary">Voir tous les menus</a>
+        </div>
+        {% endif %}
+    </section>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script {% csp %} src="{% static "js/menus-filter.js" %}"></script>
+{% endblock %}

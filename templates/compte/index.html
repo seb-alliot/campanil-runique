@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block title %}Mon compte — {{ info_resto.nom | default(value="U Campanile") }}{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <h1>Mon espace</h1>
+</section>
+
+<div class="compte-layout container">
+
+    <aside class="compte-sidebar">
+        <div class="compte-profil">
+            <div class="compte-avatar">{{ current_user.username | truncate(length=1, end="") | upper }}</div>
+            <strong>{{ current_user.username }}</strong>
+        </div>
+        <a href="/deconnexion" class="btn btn-secondary btn-sm">Se déconnecter</a>
+    </aside>
+
+    <main class="compte-main">
+
+        <nav class="compte-tabs" id="compteTabs">
+            <button class="compte-tab{% if active_tab != "profil" %} active{% endif %}" data-tab="commandes">Mes commandes</button>
+            <button class="compte-tab{% if active_tab == "profil" %} active{% endif %}" data-tab="profil">Informations</button>
+        </nav>
+
+        <section class="compte-section" id="tab-commandes" {% if active_tab == "profil" %}hidden{% endif %}>
+            <h2>Mes commandes</h2>
+
+            {% if commandes %}
+            <div class="commandes-list">
+                {% for c in commandes %}
+                <div class="commande-card">
+                    <div class="commande-card-header">
+                        <span class="commande-numero">N° {{ c.numero }}</span>
+                        <span class="commande-badge statut-{{ c.statut_css }}">{{ c.statut_label }}</span>
+                    </div>
+
+                    <div class="commande-meta">
+                        <span>{{ c.type_commande }}</span>
+                        <span>{{ c.mode_paiement }}</span>
+                        <time class="commande-date local-time" data-utc="{{ c.date_iso }}">{{ c.date }}</time>
+                        {% if c.date_annulation %}
+                        <span class="commande-annulation-date">Annulée le {{ c.date_annulation }}</span>
+                        {% endif %}
+                    </div>
+
+                    {% if c.lignes %}
+                    <ul class="commande-lignes">
+                        {% for l in c.lignes %}
+                        <li>
+                            <span class="commande-ligne-titre">{{ l.titre }}</span>
+                            {% if l.cuisson %}<span class="commande-ligne-cuisson">— {{ l.cuisson }}</span>{% endif %}
+                            <span class="commande-ligne-qte">× {{ l.quantite }}</span>
+                            <span class="commande-ligne-prix">{{ l.prix_unitaire }} €</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+
+                    {% if c.avec_livraison %}
+                    <div class="commande-livraison">
+                        <span>Livraison</span>
+                        {% if c.adresse_livraison %}
+                        <span>{{ c.adresse_livraison }}{% if c.cp_livraison %}, {{ c.cp_livraison }}{% endif %}{% if c.ville_livraison %} {{ c.ville_livraison }}{% endif %}</span>
+                        {% endif %}
+                        {% if c.heure_livraison %}<span>à {{ c.heure_livraison }}</span>{% endif %}
+                    </div>
+                    {% elif c.heure_retrait %}
+                    <div class="commande-retrait">
+                        Retrait prévu à {{ c.heure_retrait }}
+                    </div>
+                    {% endif %}
+
+                    <div class="commande-card-footer">
+                        <strong class="commande-total">Total : {{ c.prix_total }} €</strong>
+                        {% if c.can_cancel %}
+                        <button type="button" class="btn btn-sm btn-danger js-annuler" data-numero="{{ c.numero }}">
+                            Annuler
+                        </button>
+                        {% endif %}
+                    </div>
+
+                    {% if c.can_review %}
+                    <details class="avis-form-wrap">
+                        <summary>Laisser un avis</summary>
+                        <form method="post" action="/compte/avis/{{ c.commande_id }}" class="avis-form">
+                            {% csrf %}
+                            <div class="avis-etoiles">
+                                <input type="radio" name="note" value="5" id="s5-{{ c.commande_id }}" required>
+                                <label for="s5-{{ c.commande_id }}" title="5 étoiles">★</label>
+                                <input type="radio" name="note" value="4" id="s4-{{ c.commande_id }}">
+                                <label for="s4-{{ c.commande_id }}" title="4 étoiles">★</label>
+                                <input type="radio" name="note" value="3" id="s3-{{ c.commande_id }}">
+                                <label for="s3-{{ c.commande_id }}" title="3 étoiles">★</label>
+                                <input type="radio" name="note" value="2" id="s2-{{ c.commande_id }}">
+                                <label for="s2-{{ c.commande_id }}" title="2 étoiles">★</label>
+                                <input type="radio" name="note" value="1" id="s1-{{ c.commande_id }}">
+                                <label for="s1-{{ c.commande_id }}" title="1 étoile">★</label>
+                            </div>
+                            <textarea name="commentaire" rows="3" placeholder="Votre avis..." required class="avis-textarea"></textarea>
+                            <button type="submit" class="btn btn-sm btn-primary">Envoyer</button>
+                        </form>
+                    </details>
+                    {% elif c.avis_statut %}
+                    <div class="avis-existant">
+                        {% if c.avis_statut == "Validé" %}
+                        <span class="avis-badge avis-valide">Avis publié — {{ c.avis_note }}★</span>
+                        {% elif c.avis_statut == "En attente" %}
+                        <span class="avis-badge avis-attente">Avis en attente de modération — {{ c.avis_note }}★</span>
+                        {% else %}
+                        <span class="avis-badge avis-refuse">Avis non publié</span>
+                        {% endif %}
+                        {% if c.avis_commentaire %}
+                        <details class="avis-form-wrap">
+                            <summary>Voir mon commentaire</summary>
+                            <textarea class="avis-textarea" rows="3" readonly>{{ c.avis_commentaire }}</textarea>
+                            <button type="button" class="btn btn-sm btn-danger js-supprimer-avis" data-commande="{{ c.commande_id }}" style="margin-top:.5rem">Supprimer mon avis</button>
+                        </details>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if total_pages > 1 %}
+            <nav class="pagination" aria-label="Pages commandes">
+                {% if page_precedente %}
+                <a href="/compte?tab=commandes&page={{ page_precedente }}" class="btn btn-sm">&larr; Précédent</a>
+                {% else %}
+                <span class="btn btn-sm disabled">&larr; Précédent</span>
+                {% endif %}
+
+                <span class="pagination-info">Page {{ page_courante }} / {{ total_pages }}</span>
+
+                {% if page_suivante %}
+                <a href="/compte?tab=commandes&page={{ page_suivante }}" class="btn btn-sm">Suivant &rarr;</a>
+                {% else %}
+                <span class="btn btn-sm disabled">Suivant &rarr;</span>
+                {% endif %}
+            </nav>
+            {% endif %}
+
+            {% else %}
+            <div class="compte-empty">
+                <p>Vous n'avez pas encore passé de commande.</p>
+                <a href="/carte" class="btn btn-primary">Découvrir la carte</a>
+            </div>
+            {% endif %}
+        </section>
+        <section class="compte-section" id="tab-profil" {% if active_tab != "profil" %}hidden{% endif %}>
+            <h2>Informations personnelles</h2>
+            <form method="post" action="/compte/profil" class="profil-form">
+                {% csrf %}
+                <div class="form-group">
+                    <label for="telephone">Téléphone</label>
+                    <input type="tel" id="telephone" name="telephone" class="form-control"
+                        value="{{ profil.telephone | default(value='') }}" maxlength="20" placeholder="+33 6 00 00 00 00">
+                </div>
+                <div class="form-group">
+                    <label for="adresse">Adresse</label>
+                    <input type="text" id="adresse" name="adresse" class="form-control"
+                        value="{{ profil.adresse | default(value='') }}" maxlength="255" placeholder="Rue, numéro...">
+                </div>
+                <div class="form-group form-row">
+                    <div>
+                        <label for="code_postal">Code postal</label>
+                        <input type="text" id="code_postal" name="code_postal" class="form-control"
+                            value="{{ profil.code_postal | default(value='') }}" maxlength="10" placeholder="20250">
+                    </div>
+                    <div>
+                        <label for="ville">Ville</label>
+                        <input type="text" id="ville" name="ville" class="form-control"
+                            value="{{ profil.ville | default(value='') }}" maxlength="100" placeholder="Corte">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Enregistrer</button>
+            </form>
+        </section>
+
+        <section class="compte-section">
+            <button type="button" class="btn btn-danger btn-sm" id="btn-supprimer-compte">
+                Supprimer mon compte
+            </button>
+        </section>
+
+        <dialog id="modal-supprimer-avis" class="modal-supprimer">
+            <div class="modal-supprimer-body">
+                <h3>Supprimer votre avis ?</h3>
+                <p>Cette action est irréversible. Votre commentaire sera définitivement supprimé.</p>
+                <form method="post" id="form-supprimer-avis" class="modal-supprimer-actions">
+                    {% csrf %}
+                    <button type="submit" class="btn btn-danger">Oui, supprimer</button>
+                    <button type="button" class="btn btn-secondary" id="btn-annuler-avis">Annuler</button>
+                </form>
+            </div>
+        </dialog>
+
+        <dialog id="modal-supprimer" class="modal-supprimer">
+            <div class="modal-supprimer-body">
+                <h3>Supprimer votre compte ?</h3>
+                <p>Cette action est <strong>irréversible</strong>. Votre compte et toutes vos commandes seront définitivement supprimés.</p>
+                <form method="post" action="/compte/supprimer" class="modal-supprimer-actions">
+                    {% csrf %}
+                    <button type="submit" class="btn btn-danger">Oui, supprimer définitivement</button>
+                    <button type="button" class="btn btn-secondary" id="btn-annuler-suppression">Annuler</button>
+                </form>
+            </div>
+        </dialog>
+    </main>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static "js/compte-commandes.js" %}" {% csp %}></script>
+    <script src="{% static "js/compte-tabs.js" %}" {% csp %}></script>
+    <script src="{% static "js/modal-avis.js" %}" {% csp %}></script>
+    <script src="{% static "js/modal-compte.js" %}" {% csp %}></script>
+{% endblock %}

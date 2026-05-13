@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="menu-detail">
+
+    {# Galerie #}
+    {% if menu.images %}
+    <div class="menu-gallery">
+        {% for img in menu.images %}
+        <img src="{{ img | media }}" alt="{{ menu.titre }}" class="{% if loop.first %}gallery-main{% else %}gallery-thumb{% endif %}">
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {# En-tête #}
+    <div class="menu-detail-header">
+        <div class="menu-detail-tags">
+            <span class="tag tag-theme">{{ menu.theme }}</span>
+            <span class="tag tag-regime">{{ menu.regime }}</span>
+        </div>
+        <h1>{{ menu.titre }}</h1>
+        <p class="menu-detail-desc">{{ menu.description }}</p>
+
+        <div class="menu-detail-pricing">
+            <span class="menu-prix-large">{{ menu.prix_par_personne }} €<small> / personne</small></span>
+            <span class="menu-min-large">À partir de {{ menu.nb_personnes_min }} personnes</span>
+        </div>
+
+    </div>
+
+    {# Composition #}
+    <section class="menu-composition">
+        <h2>Composition du menu</h2>
+
+        {% if menu.entrees %}
+        <div class="plat-section">
+            <h3>Entrées</h3>
+            <ul class="plat-list">
+                {% for p in menu.entrees %}
+                <li class="plat-item">
+                    {% if p.image %}
+                    <img src='{{ p.image | media }}' alt="{{ p.titre }}" class="plat-img">
+                    {% endif %}
+                    <div class="plat-info">
+                        <strong>{{ p.titre }}</strong>
+                        {% if p.est_viande %}<span class="badge-viande">Viande</span>{% endif %}
+                        {% if p.description %}<p>{{ p.description }}</p>{% endif %}
+                        {% if p.allergenes %}
+                        <p class="plat-allergenes">Allergènes : {{ p.allergenes | join(sep=", ") }}</p>
+                        {% endif %}
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        {% if menu.plats_principaux %}
+        <div class="plat-section">
+            <h3>Plats</h3>
+            <ul class="plat-list">
+                {% for p in menu.plats_principaux %}
+                <li class="plat-item">
+                    {% if p.image %}
+                    <img src='{{ p.image | media }}' alt="{{ p.titre }}" class="plat-img">
+                    {% endif %}
+                    <div class="plat-info">
+                        <strong>{{ p.titre }}</strong>
+                        {% if p.est_viande %}<span class="badge-viande">Viande</span>{% endif %}
+                        {% if p.description %}<p>{{ p.description }}</p>{% endif %}
+                        {% if p.allergenes %}
+                        <p class="plat-allergenes">Allergènes : {{ p.allergenes | join(sep=", ") }}</p>
+                        {% endif %}
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        {% if menu.desserts %}
+        <div class="plat-section">
+            <h3>Desserts</h3>
+            <ul class="plat-list">
+                {% for p in menu.desserts %}
+                <li class="plat-item">
+                    {% if p.image %}
+                    <img src='{{ p.image | media }}' alt="{{ p.titre }}" class="plat-img">
+                    {% endif %}
+                    <div class="plat-info">
+                        <strong>{{ p.titre }}</strong>
+                        {% if p.est_viande %}<span class="badge-viande">Viande</span>{% endif %}
+                        {% if p.description %}<p>{{ p.description }}</p>{% endif %}
+                        {% if p.allergenes %}
+                        <p class="plat-allergenes">Allergènes : {{ p.allergenes | join(sep=", ") }}</p>
+                        {% endif %}
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+    </section>
+
+    {# Conditions #}
+    {% if menu.conditions %}
+    <section class="menu-conditions">
+        <h2>Conditions</h2>
+        <p>{{ menu.conditions }}</p>
+    </section>
+    {% endif %}
+
+    <div class="menu-detail-footer">
+        <a href="/menus" class="btn btn-secondary">&larr; Retour aux menus</a>
+        <a href="/traiteur/devis?menu_id={{ menu.id }}" class="btn btn-primary">Demander un devis</a>
+    </div>
+
+</div>
+{% endblock %}

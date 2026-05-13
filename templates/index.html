@@ -1,17 +1,18 @@
 {% extends "base.html" %}
 
-{% block title %}U Campanile — Restaurant corse à Corte{% endblock %}
+{% block title %}{{ info_resto.nom | default(value="U Campanile") }} — Restaurant corse à Corte{% endblock %}
 
 {% block header %}
 <section class="hero">
-    <img src='{% media "campanile-corte.avif" %}' alt="U Campanile Corte" class="hero-img">
+    <picture>
+        <img src='{% media "campanile-corte.avif" %}' alt="U Campanile Corte" class="hero-img">
+    </picture>
     <div class="hero-overlay">
         <div class="hero-content">
-            <h1>U Campanile</h1>
-            <p class="hero-sub">Cuisine corse traditionnelle au cœur de Corte</p>
+            <h1>Restaurant<span class="hero-name">{{ info_resto.nom | default(value="U Campanile") }}</span></h1>
             <div class="hero-actions">
                 <a href="/carte" class="btn-primary">Découvrir la carte</a>
-                <a href="/commande/panier" class="btn-outline">Commander</a>
+                <a href="/panier/commander" class="btn-outline">Commander</a>
             </div>
         </div>
     </div>
@@ -24,9 +25,15 @@
         <div class="section-grid">
             <div>
                 <h2>Le restaurant</h2>
+                {% if info_resto.description %}
+                <p>{{ info_resto.description }}</p>
+                {% else %}
                 <p>Depuis 2004, U Campanile vous accueille Place Gaffory, dans la vieille ville de Corte. Jean-François Sialelli et son équipe vous proposent une cuisine maison corse, élaborée avec des produits locaux de qualité.</p>
                 <p>Parmi nos spécialités : lasagnes de foie gras sauce morilles et châtaignes, charcuteries et fromages corses, poissons frais de la Méditerranée.</p>
-                <a href="/carte" class="btn-secondary">Voir la carte</a>
+                {% endif %}
+                <div class="btn-block-center">
+                    <a href="/carte" class="btn-secondary">Voir la carte</a>
+                </div>
             </div>
             <div class="presentation-img">
                 <img src='{% media "og-campanile.jpg" %}' alt="Salle du restaurant U Campanile">
@@ -39,32 +46,67 @@
     <div class="container text-center">
         <h2>Commander en ligne</h2>
         <p>Récupérez votre commande sur place. La livraison est disponible hors saison.</p>
-        <a href="/commande/panier" class="btn-primary">Passer une commande</a>
+        <a href="/panier/commander" class="btn-primary">Passer une commande</a>
     </div>
 </section>
 
 <section class="section horaires">
     <div class="container text-center">
         <h2>Horaires d'ouverture</h2>
-        <p class="horaires-periode">Ouvert du 1<sup>er</sup> mai au 30 septembre</p>
-        <div class="horaires-grid">
-            <div class="horaire-item">
-                <span class="horaire-label">Service midi</span>
-                <span class="horaire-time">12h00 — 15h00</span>
-            </div>
-            <div class="horaire-item">
-                <span class="horaire-label">Service soir</span>
-                <span class="horaire-time">19h00 — 22h30</span>
-            </div>
+        {% if horaires %}
+        <div class="horaires-cadre">
+            <table class="horaires-table">
+                {% for h in horaires %}
+                <tr class="{% if h.ferme %}horaire-ferme{% endif %}">
+                    <td class="horaire-label">{{ h.jour | capitalize }}</td>
+                    <td class="horaire-sep">—</td>
+                    <td class="horaire-time">
+                        {% if h.ferme %}
+                            <span class="horaire-closed">Fermé</span>
+                        {% else %}
+                            {% if h.ouverture_midi and h.fermeture_midi %}
+                            {{ h.ouverture_midi | truncate(length=5, end="") }} – {{ h.fermeture_midi | truncate(length=5, end="") }}
+                            {% endif %}
+                            {% if h.ouverture_midi and h.fermeture_midi and h.ouverture_soir and h.fermeture_soir %}
+                            <span class="horaire-dot">·</span>
+                            {% endif %}
+                            {% if h.ouverture_soir and h.fermeture_soir %}
+                            {{ h.ouverture_soir | truncate(length=5, end="") }} – {{ h.fermeture_soir | truncate(length=5, end="") }}
+                            {% endif %}
+                            {% if h.note %}
+                            <span class="horaire-note">{{ h.note }}</span>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
         </div>
-        <p class="horaires-note">Fermé le mercredi en mai et juin</p>
+        {% endif %}
     </div>
 </section>
+
+{% if avis_list %}
+<section class="section avis-section">
+    <div class="container text-center">
+        <h2>Ce que disent nos clients</h2>
+        <div class="avis-grid">
+            {% for a in avis_list %}
+            <div class="avis-card">
+                <div class="avis-note">{{ a.etoiles }}</div>
+                <blockquote class="avis-commentaire">{{ a.commentaire }}</blockquote>
+                <p class="avis-auteur">— {{ a.auteur }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
 
 <section class="section section-light acces">
     <div class="container text-center">
         <h2>Nous trouver</h2>
-        <p>Place Gaffory, 20250 Corte — <a href="tel:+33685659626">06 85 65 96 26</a></p>
+        <p>{{ info_resto.adresse | default(value="Place Gaffory, 20250 Corte") }} — <a href="tel:{{ info_resto.telephone | default(value="+33685659626") }}">{{ info_resto.telephone | default(value="06 85 65 96 26") }}</a></p>
         <a href="/contact" class="btn-secondary">Nous contacter</a>
     </div>
 </section>
