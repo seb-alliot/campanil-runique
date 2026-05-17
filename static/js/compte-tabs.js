@@ -7,6 +7,7 @@ document.querySelectorAll('.compte-tab').forEach(btn => {
         document.querySelectorAll('.compte-tab').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         document.getElementById('tab-commandes').hidden = (tab !== 'commandes');
+        document.getElementById('tab-plats').hidden = (tab !== 'plats');
         document.getElementById('tab-profil').hidden = (tab !== 'profil');
         const url = new URL(window.location);
         url.searchParams.set('tab', tab);

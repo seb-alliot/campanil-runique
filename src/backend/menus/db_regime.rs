@@ -1,9 +1,9 @@
-use crate::entities::regime;
-use runique::prelude::*;
-
-pub async fn get_regimes_list(db: &DatabaseConnection) -> Vec<regime::Model> {
-    search!(regime::Entity => asc Libelle,)
-        .all(db)
-        .await
-        .unwrap_or_default()
+pub fn get_regimes_static() -> Vec<(&'static str, &'static str)> {
+    vec![
+        ("standard", "Standard"),
+        ("vegetarien", "Végétarien"),
+        ("sans_gluten", "Sans gluten"),
+        ("halal", "Halal"),
+        ("casher", "Casher"),
+    ]
 }

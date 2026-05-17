@@ -1,4 +1,4 @@
-{% macro svc_card(c) %}
+{% macro svc_card(c, readonly) %}
 <article class="svc-card svc-card--{{ c.statut_valeur | replace(from="_", to="-") }}" data-numero="{{ c.numero }}">
     <div class="svc-card-header">
         <span class="svc-heure">{{ c.heure }}</span>
@@ -54,26 +54,92 @@
         <span class="svc-paiement">{{ c.mode_paiement }}</span>
         <div class="svc-actions" data-numero="{{ c.numero }}" data-statut="{{ c.statut_valeur }}">
             {% if c.statut_valeur == "en_attente" %}
-            <button class="svc-btn svc-btn--accepter" data-next="accepte">Accepter</button>
-            <button class="svc-btn svc-btn--annuler" data-next="annule">Annuler</button>
+            <button class="svc-btn svc-btn--accepter" data-next="accepte"{% if readonly %} disabled{% endif %}>Accepter</button>
+            <button class="svc-btn svc-btn--annuler" data-next="annule"{% if readonly %} disabled{% endif %}>Annuler</button>
             {% elif c.statut_valeur == "accepte" %}
-            <button class="svc-btn svc-btn--preparer" data-next="en_preparation">En préparation</button>
-            <button class="svc-btn svc-btn--annuler" data-next="annule">Annuler</button>
+            <button class="svc-btn svc-btn--preparer" data-next="en_preparation"{% if readonly %} disabled{% endif %}>En préparation</button>
+            <button class="svc-btn svc-btn--annuler" data-next="annule"{% if readonly %} disabled{% endif %}>Annuler</button>
             {% elif c.statut_valeur == "en_preparation" %}
-            <button class="svc-btn svc-btn--pret" data-next="pret">Prêt</button>
+            <button class="svc-btn svc-btn--pret" data-next="pret"{% if readonly %} disabled{% endif %}>Prêt</button>
             {% elif c.statut_valeur == "pret" %}
-            {% if c.avec_livraison %}
-            <button class="svc-btn svc-btn--livrer" data-next="en_cours_livraison">En livraison</button>
+            {% if c.type_retrait == "livraison" %}
+            <button class="svc-btn svc-btn--livrer" data-next="en_cours_livraison"{% if readonly %} disabled{% endif %}>En livraison</button>
             {% else %}
-            <button class="svc-btn svc-btn--terminer" data-next="termine">Terminé</button>
+            <button class="svc-btn svc-btn--terminer" data-next="termine"{% if readonly %} disabled{% endif %}>Terminé</button>
             {% endif %}
             {% elif c.statut_valeur == "en_cours_livraison" %}
-            <button class="svc-btn svc-btn--terminer" data-next="livre">Livré</button>
+            <button class="svc-btn svc-btn--terminer" data-next="livre"{% if readonly %} disabled{% endif %}>Livré</button>
             {% endif %}
         </div>
     </div>
 </article>
 {% endmacro svc_card %}
+
+{% macro svc_service(prefix, readonly, retraits_attente, retraits_accepte, retraits_preparation, retraits_pret, livraisons_attente, livraisons_accepte, livraisons_preparation, livraisons_pret) %}
+<section class="svc-section">
+    <h2 class="svc-section-titre">
+        Retrait sur place
+        <span class="svc-count" id="count{{ prefix }}Retrait">{{ retraits_attente | length + retraits_accepte | length + retraits_preparation | length + retraits_pret | length }}</span>
+    </h2>
+    <div class="svc-groupe svc-groupe--attente" id="groupe{{ prefix }}RetraitAttente"{% if not retraits_attente %} hidden{% endif %}>
+        <h3 class="svc-groupe-titre">En attente</h3>
+        <div class="svc-grille" id="grille{{ prefix }}RetraitAttente">
+            {% for c in retraits_attente %}{{ self::svc_card(c=c, readonly=readonly) }}{% endfor %}
+        </div>
+    </div>
+    <div class="svc-groupe svc-groupe--accepte" id="groupe{{ prefix }}RetraitAccepte"{% if not retraits_accepte %} hidden{% endif %}>
+        <h3 class="svc-groupe-titre">Accepté</h3>
+        <div class="svc-grille" id="grille{{ prefix }}RetraitAccepte">
+            {% for c in retraits_accepte %}{{ self::svc_card(c=c, readonly=readonly) }}{% endfor %}
+        </div>
+    </div>
+    <div class="svc-groupe svc-groupe--preparation" id="groupe{{ prefix }}RetraitPreparation"{% if not retraits_preparation %} hidden{% endif %}>
+        <h3 class="svc-groupe-titre">En préparation</h3>
+        <div class="svc-grille" id="grille{{ prefix }}RetraitPreparation">
+            {% for c in retraits_preparation %}{{ self::svc_card(c=c, readonly=readonly) }}{% endfor %}
+        </div>
+    </div>
+    <div class="svc-groupe svc-groupe--pret" id="groupe{{ prefix }}RetraitPret"{% if not retraits_pret %} hidden{% endif %}>
+        <h3 class="svc-groupe-titre">Prêt</h3>
+        <div class="svc-grille" id="grille{{ prefix }}RetraitPret">
+            {% for c in retraits_pret %}{{ self::svc_card(c=c, readonly=readonly) }}{% endfor %}
+        </div>
+    </div>
+    <p class="svc-vide" id="vide{{ prefix }}Retrait"{% if retraits_attente or retraits_accepte or retraits_preparation or retraits_pret %} hidden{% endif %}>Aucune commande en retrait.</p>
+</section>
+
+<section class="svc-section">
+    <h2 class="svc-section-titre">
+        Livraison
+        <span class="svc-count" id="count{{ prefix }}Livraison">{{ livraisons_attente | length + livraisons_accepte | length + livraisons_preparation | length + livraisons_pret | length }}</span>
+    </h2>
+    <div class="svc-groupe svc-groupe--attente" id="groupe{{ prefix }}LivraisonAttente"{% if not livraisons_attente %} hidden{% endif %}>
+        <h3 class="svc-groupe-titre">En attente</h3>
+        <div class="svc-grille" id="grille{{ prefix }}LivraisonAttente">
+            {% for c in livraisons_attente %}{{ self::svc_card(c=c, readonly=readonly) }}{% endfor %}
+        </div>
+    </div>
+    <div class="svc-groupe svc-groupe--accepte" id="groupe{{ prefix }}LivraisonAccepte"{% if not livraisons_accepte %} hidden{% endif %}>
+        <h3 class="svc-groupe-titre">Accepté</h3>
+        <div class="svc-grille" id="grille{{ prefix }}LivraisonAccepte">
+            {% for c in livraisons_accepte %}{{ self::svc_card(c=c, readonly=readonly) }}{% endfor %}
+        </div>
+    </div>
+    <div class="svc-groupe svc-groupe--preparation" id="groupe{{ prefix }}LivraisonPreparation"{% if not livraisons_preparation %} hidden{% endif %}>
+        <h3 class="svc-groupe-titre">En préparation</h3>
+        <div class="svc-grille" id="grille{{ prefix }}LivraisonPreparation">
+            {% for c in livraisons_preparation %}{{ self::svc_card(c=c, readonly=readonly) }}{% endfor %}
+        </div>
+    </div>
+    <div class="svc-groupe svc-groupe--pret" id="groupe{{ prefix }}LivraisonPret"{% if not livraisons_pret %} hidden{% endif %}>
+        <h3 class="svc-groupe-titre">Prêt / En livraison</h3>
+        <div class="svc-grille" id="grille{{ prefix }}LivraisonPret">
+            {% for c in livraisons_pret %}{{ self::svc_card(c=c, readonly=readonly) }}{% endfor %}
+        </div>
+    </div>
+    <p class="svc-vide" id="vide{{ prefix }}Livraison"{% if livraisons_attente or livraisons_accepte or livraisons_preparation or livraisons_pret %} hidden{% endif %}>Aucune livraison.</p>
+</section>
+{% endmacro svc_service %}
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -97,84 +163,116 @@
     </div>
 </header>
 
-<main class="svc-main">
+<div class="svc-tabs">
+    <button class="svc-tab active" data-tab="commandes">Commandes</button>
+    <button class="svc-tab" data-tab="stock">Stock</button>
+    <button class="svc-tab" data-tab="stats">Statistiques</button>
+</div>
 
-    <section class="svc-section">
-        <h2 class="svc-section-titre">
-            Retrait sur place
-            <span class="svc-count" id="countRetrait">{{ nb_retraits }}</span>
-        </h2>
+<main class="svc-main" id="tab-commandes">
+    <div class="svc-subtabs">
+        <button class="svc-subtab active" data-subtab="midi">
+            Service midi <span class="svc-tab-count" id="tabCountMidi">{{ nb_midi }}</span>
+        </button>
+        <button class="svc-subtab" data-subtab="soir">
+            Service soir <span class="svc-tab-count" id="tabCountSoir">{{ nb_soir }}</span>
+        </button>
+    </div>
 
-        <div class="svc-groupe svc-groupe--attente" id="groupeRetraitAttente"{% if not retraits_attente %} hidden{% endif %}>
-            <h3 class="svc-groupe-titre">En attente</h3>
-            <div class="svc-grille" id="grilleRetraitAttente">
-                {% for c in retraits_attente %}{{ self::svc_card(c=c) }}{% endfor %}
-            </div>
-        </div>
+    <div id="subtab-midi">
+        {{ self::svc_service(
+            prefix="Midi",
+            readonly=false,
+            retraits_attente=midi_retraits_attente,
+            retraits_accepte=midi_retraits_accepte,
+            retraits_preparation=midi_retraits_preparation,
+            retraits_pret=midi_retraits_pret,
+            livraisons_attente=midi_livraisons_attente,
+            livraisons_accepte=midi_livraisons_accepte,
+            livraisons_preparation=midi_livraisons_preparation,
+            livraisons_pret=midi_livraisons_pret
+        ) }}
+    </div>
 
-        <div class="svc-groupe svc-groupe--accepte" id="groupeRetraitAccepte"{% if not retraits_accepte %} hidden{% endif %}>
-            <h3 class="svc-groupe-titre">Accepté</h3>
-            <div class="svc-grille" id="grilleRetraitAccepte">
-                {% for c in retraits_accepte %}{{ self::svc_card(c=c) }}{% endfor %}
-            </div>
-        </div>
-
-        <div class="svc-groupe svc-groupe--preparation" id="groupeRetraitPreparation"{% if not retraits_preparation %} hidden{% endif %}>
-            <h3 class="svc-groupe-titre">En préparation</h3>
-            <div class="svc-grille" id="grilleRetraitPreparation">
-                {% for c in retraits_preparation %}{{ self::svc_card(c=c) }}{% endfor %}
-            </div>
-        </div>
-
-        <div class="svc-groupe svc-groupe--pret" id="groupeRetraitPret"{% if not retraits_pret %} hidden{% endif %}>
-            <h3 class="svc-groupe-titre">Prêt</h3>
-            <div class="svc-grille" id="grilleRetraitPret">
-                {% for c in retraits_pret %}{{ self::svc_card(c=c) }}{% endfor %}
-            </div>
-        </div>
-
-        <p class="svc-vide" id="videRetrait"{% if nb_retraits > 0 %} hidden{% endif %}>Aucune commande en retrait pour aujourd'hui.</p>
-    </section>
-
-    <section class="svc-section">
-        <h2 class="svc-section-titre">
-            Livraison
-            <span class="svc-count" id="countLivraison">{{ nb_livraisons }}</span>
-        </h2>
-
-        <div class="svc-groupe svc-groupe--attente" id="groupeLivraisonAttente"{% if not livraisons_attente %} hidden{% endif %}>
-            <h3 class="svc-groupe-titre">En attente</h3>
-            <div class="svc-grille" id="grilleLivraisonAttente">
-                {% for c in livraisons_attente %}{{ self::svc_card(c=c) }}{% endfor %}
-            </div>
-        </div>
-
-        <div class="svc-groupe svc-groupe--accepte" id="groupeLivraisonAccepte"{% if not livraisons_accepte %} hidden{% endif %}>
-            <h3 class="svc-groupe-titre">Accepté</h3>
-            <div class="svc-grille" id="grilleLivraisonAccepte">
-                {% for c in livraisons_accepte %}{{ self::svc_card(c=c) }}{% endfor %}
-            </div>
-        </div>
-
-        <div class="svc-groupe svc-groupe--preparation" id="groupeLivraisonPreparation"{% if not livraisons_preparation %} hidden{% endif %}>
-            <h3 class="svc-groupe-titre">En préparation</h3>
-            <div class="svc-grille" id="grilleLivraisonPreparation">
-                {% for c in livraisons_preparation %}{{ self::svc_card(c=c) }}{% endfor %}
-            </div>
-        </div>
-
-        <div class="svc-groupe svc-groupe--pret" id="groupeLivraisonPret"{% if not livraisons_pret %} hidden{% endif %}>
-            <h3 class="svc-groupe-titre">Prêt / En livraison</h3>
-            <div class="svc-grille" id="grilleLivraisonPret">
-                {% for c in livraisons_pret %}{{ self::svc_card(c=c) }}{% endfor %}
-            </div>
-        </div>
-
-        <p class="svc-vide" id="videLivraison"{% if nb_livraisons > 0 %} hidden{% endif %}>Aucune livraison pour aujourd'hui.</p>
-    </section>
-
+    <div id="subtab-soir" class="svc-hidden">
+        {{ self::svc_service(
+            prefix="Soir",
+            readonly=midi_actif,
+            retraits_attente=soir_retraits_attente,
+            retraits_accepte=soir_retraits_accepte,
+            retraits_preparation=soir_retraits_preparation,
+            retraits_pret=soir_retraits_pret,
+            livraisons_attente=soir_livraisons_attente,
+            livraisons_accepte=soir_livraisons_accepte,
+            livraisons_preparation=soir_livraisons_preparation,
+            livraisons_pret=soir_livraisons_pret
+        ) }}
+    </div>
 </main>
 
+<div id="tab-stock" class="svc-hidden">
+    <div class="stk-header">
+        <h2 class="stk-titre">Stock menus traiteur</h2>
+        <button class="stk-btn-refresh" id="stkRefresh">Actualiser</button>
+    </div>
+    <table class="stk-table">
+        <thead>
+            <tr>
+                <th>Menu</th>
+                <th class="stk-col-num">Stock disponible</th>
+                <th class="stk-col-actions">Ajuster</th>
+            </tr>
+        </thead>
+        <tbody id="stkBody">
+            <tr><td colspan="3" class="stk-loading">Chargement…</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<div id="tab-stats" class="svc-hidden">
+    <div class="s-periode-form">
+        <label class="s-periode-label">Période :</label>
+        <select id="periodeSelect">
+            <option value="1">Aujourd'hui</option>
+            <option value="7" selected>7 derniers jours</option>
+            <option value="30">30 derniers jours</option>
+            <option value="90">3 derniers mois</option>
+            <option value="365">12 derniers mois</option>
+        </select>
+    </div>
+    <div class="s-cards">
+        <div class="s-card"><p class="s-card-label">Commandes total</p><p class="s-card-value" id="sNbCommandes">—</p></div>
+        <div class="s-card"><p class="s-card-label">Carte</p><p class="s-card-value" id="sNbCarte">—</p></div>
+        <div class="s-card"><p class="s-card-label">Traiteur</p><p class="s-card-value" id="sNbTraiteur">—</p></div>
+        <div class="s-card"><p class="s-card-label">CA total</p><p class="s-card-value" id="sCaTotal">—</p></div>
+    </div>
+    <div class="s-panel s-panel--mb">
+        <h3 id="sTitreJours">CA & commandes</h3>
+        <canvas id="chartJours" height="80"></canvas>
+    </div>
+    <div class="s-grid">
+        <div class="s-panel">
+            <h3>Répartition carte / traiteur</h3>
+            <div class="s-donut-wrap"><canvas id="chartTypes"></canvas></div>
+        </div>
+        <div class="s-panel">
+            <h3>Top plats consultés</h3>
+            <div class="s-table-wrap"><table class="s-table">
+                <thead><tr><th>Plat</th><th>Vues</th></tr></thead>
+                <tbody id="tbodyPlats"><tr><td colspan="2" class="s-muted">Chargement…</td></tr></tbody>
+            </table></div>
+        </div>
+    </div>
+    <div class="s-panel">
+        <h3>Filtres menus les plus utilisés</h3>
+        <div class="s-table-wrap"><table class="s-table">
+            <thead><tr><th>Filtre</th><th>Valeur</th><th>Utilisations</th></tr></thead>
+            <tbody id="tbodyFiltres"><tr><td colspan="3" class="s-muted">Chargement…</td></tr></tbody>
+        </table></div>
+    </div>
+</div>
+
+<script {% csp %} src="{% static "js/chart.umd.min.js" %}"></script>
 <script {% csp %} src="{% static "js/service.js" %}"></script>
 </body>
 </html>

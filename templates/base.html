@@ -83,16 +83,18 @@
             </div>
             <div class="footer-section">
                 <h3>Horaires</h3>
-                {% for h in horaires | default(value=[]) %}
+                {% set jours_ouverts = horaires | default(value=[]) | filter(attribute="ferme", value=false) %}
+                {% set jours_fermes  = horaires | default(value=[]) | filter(attribute="ferme", value=true) %}
+                {% if jours_ouverts | length > 0 %}
+                {% set h = jours_ouverts | first %}
                 <p>
-                    <strong>{{ h.jour | capitalize }}</strong>
-                    {% if h.ferme %} — Fermé
-                    {% else %}
-                        {% if h.ouverture_midi and h.fermeture_midi %} · {{ h.ouverture_midi | truncate(length=5, end="") }}–{{ h.fermeture_midi | truncate(length=5, end="") }}{% endif %}
-                        {% if h.ouverture_soir and h.fermeture_soir %} / {{ h.ouverture_soir | truncate(length=5, end="") }}–{{ h.fermeture_soir | truncate(length=5, end="") }}{% endif %}
-                    {% endif %}
+                    {% if h.ouverture_midi and h.fermeture_midi %}{{ h.ouverture_midi | truncate(length=5, end="") }}–{{ h.fermeture_midi | truncate(length=5, end="") }}{% endif %}
+                    {% if h.ouverture_soir and h.fermeture_soir %} / {{ h.ouverture_soir | truncate(length=5, end="") }}–{{ h.fermeture_soir | truncate(length=5, end="") }}{% endif %}
                 </p>
-                {% endfor %}
+                {% endif %}
+                {% if jours_fermes | length > 0 %}
+                <p>Fermé le {% for j in jours_fermes %}{{ j.jour | capitalize }}{% if not loop.last %}, {% endif %}{% endfor %}</p>
+                {% endif %}
             </div>
             <div class="footer-section">
                 <h3>Navigation</h3>

@@ -36,7 +36,7 @@
             <select id="f-theme">
                 <option value="">Tous les thèmes</option>
                 {% for t in themes %}
-                <option value="{{ t.id }}">{{ t.libelle }}</option>
+                <option value="{{ t[0] }}">{{ t[1] }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -48,7 +48,7 @@
             <select id="f-regime">
                 <option value="">Tous les régimes</option>
                 {% for r in regimes %}
-                <option value="{{ r.id }}">{{ r.libelle }}</option>
+                <option value="{{ r[0] }}">{{ r[1] }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -68,8 +68,8 @@
             {% for card in cards %}
             <article class="menu-card {% if card.stock == 0 %}menu-card--rupture{% endif %}"
                 data-prix="{{ card.prix_par_personne }}"
-                data-theme="{{ card.theme_id }}"
-                data-regime="{{ card.regime_id }}"
+                data-theme="{{ card.theme }}"
+                data-regime="{{ card.regime }}"
                 data-personnes="{{ card.nb_personnes_min }}">
 
                 {% if card.image %}

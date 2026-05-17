@@ -1,18 +1,19 @@
 use crate::backend::{
+    panier::{panier_get, panier_save, panier_vider},
     user::{authenticate_user, get_credentials, register_user},
     utils::inject_auth,
 };
 use crate::formulaire::{LoginForm, RegisterForm};
 
-use runique::prelude::*;
 use runique::context;
+use runique::prelude::*;
 
 pub async fn handle_login(request: &mut Request, form: &mut LoginForm) -> AppResult<Response> {
     inject_auth(request).await;
     if is_authenticated(&request.session).await {
         return Ok(Redirect::to("/compte").into_response());
     }
-    let template = "connexion.html";
+    let template = "auth/connexion.html";
     if request.is_get() {
         context_update!(request => {
             "title"         => "Login",
@@ -29,6 +30,17 @@ pub async fn handle_login(request: &mut Request, form: &mut LoginForm) -> AppRes
             auth_login(&request.session, &request.engine.db, user.id)
                 .await
                 .ok();
+            // Vider le panier seulement s'il appartenait à un autre compte.
+            // Un panier guest (user_id: None) est conservé et rattaché au compte.
+            let mut panier = panier_get(&request.session).await;
+            if let Some(existing_uid) = panier.user_id {
+                if existing_uid != user.id {
+                    panier_vider(&request.session).await;
+                }
+            } else if !panier.lignes.is_empty() {
+                panier.user_id = Some(user.id);
+                panier_save(&request.session, &panier).await;
+            }
             return Ok(Redirect::to("/compte").into_response());
         }
         context_update!(request => {
@@ -56,7 +68,7 @@ pub async fn handle_inscription(
         return Ok(Redirect::to("/compte").into_response());
     }
 
-    let template = "inscription.html";
+    let template = "auth/inscription.html";
 
     if request.is_get() {
         context_update!(request => {
@@ -79,7 +91,7 @@ pub async fn handle_inscription(
                 let activate_url = format!("{}/activer/{}/{}", base_url, token, encrypted);
 
                 if mailer_configured() {
-                    let ctx = context!{
+                    let ctx = context! {
                         "username"     => &user.username,
                         "activate_url" => &activate_url,
                     };
@@ -91,16 +103,21 @@ pub async fn handle_inscription(
                         msg.send().await.ok();
                     }
                 }
-                
+
                 return Ok(Redirect::to("/connexion").into_response());
             }
             Err(err) => {
                 let msg = err.to_string();
-                let is_unique = msg.contains("unique") || msg.contains("UNIQUE") || msg.contains("Duplicate");
+                let is_unique =
+                    msg.contains("unique") || msg.contains("UNIQUE") || msg.contains("Duplicate");
                 if is_unique && msg.contains("email") {
-                    form.get_form_mut().errors.push("Un compte avec cet email existe déjà.".to_string());
+                    form.get_form_mut()
+                        .errors
+                        .push("Un compte avec cet email existe déjà.".to_string());
                 } else if is_unique && msg.contains("username") {
-                    form.get_form_mut().errors.push("Ce nom d'utilisateur est déjà pris.".to_string());
+                    form.get_form_mut()
+                        .errors
+                        .push("Ce nom d'utilisateur est déjà pris.".to_string());
                 } else {
                     form.get_form_mut().database_error(&err);
                 }

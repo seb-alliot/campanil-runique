@@ -55,6 +55,10 @@ pub async fn boissons_type(mut request: Request) -> AppResult<Response> {
     vue_boissons_type(&mut request).await
 }
 
+pub async fn plat_avis_json(request: Request) -> AppResult<Response> {
+    ajax_avis_plat(request).await
+}
+
 pub async fn panier_page(mut request: Request) -> AppResult<Response> {
     vue_panier(&mut request).await
 }
@@ -83,11 +87,18 @@ pub async fn compte(mut request: Request) -> AppResult<Response> {
     handle_compte(&mut request).await
 }
 
+pub async fn compte_commandes_json(mut request: Request) -> AppResult<Response> {
+    compte_commandes_ajax(&mut request).await
+}
+
 pub async fn avis_poster(request: Request) -> AppResult<Response> {
     handle_avis(request).await
 }
 pub async fn avis_supprimer(request: Request) -> AppResult<Response> {
     handle_avis_supprimer(request).await
+}
+pub async fn avis_plat_poster(request: Request) -> AppResult<Response> {
+    handle_avis_plat(request).await
 }
 
 pub async fn profil_post(mut request: Request) -> AppResult<Response> {
@@ -98,6 +109,10 @@ pub async fn supprimer_compte(mut request: Request) -> AppResult<Response> {
     handle_supprimer_compte(&mut request).await
 }
 
+pub async fn panier_livraison_prix(request: Request) -> AppResult<Response> {
+    vue_livraison_prix(request).await
+}
+
 pub async fn admin_commande_detail(
     Extension(admin): Extension<Arc<runique::admin::AdminState>>,
     Extension(proto): Extension<Arc<runique::admin::PrototypeAdminState>>,
@@ -106,16 +121,40 @@ pub async fn admin_commande_detail(
     handle_admin_commande_detail(&mut request, &admin, Some(proto)).await
 }
 
+pub async fn admin_menu_resto_composition(
+    Extension(admin): Extension<Arc<runique::admin::AdminState>>,
+    Extension(proto): Extension<Arc<runique::admin::PrototypeAdminState>>,
+    mut request: Request,
+) -> AppResult<Response> {
+    handle_menu_resto_composition(&mut request, &admin, Some(proto)).await
+}
+
+pub async fn track_menu_filters(mut request: Request) -> AppResult<Response> {
+    vue_track_menu_filters(&mut request).await
+}
+
 pub async fn service(mut request: Request) -> AppResult<Response> {
     handle_service(&mut request).await
 }
 
-pub async fn service_json(request: Request) -> AppResult<Response> {
-    handle_service_json(&request).await
+pub async fn service_commandes_json(request: Request) -> AppResult<Response> {
+    ajax_commandes(&request).await
+}
+
+pub async fn service_stats_json(request: Request) -> AppResult<Response> {
+    ajax_stats(&request).await
 }
 
 pub async fn service_statut(mut request: Request) -> AppResult<Response> {
     handle_service_statut(&mut request).await
+}
+
+pub async fn service_stock_json(request: Request) -> AppResult<Response> {
+    ajax_stock_get(&request).await
+}
+
+pub async fn service_stock_update(mut request: Request) -> AppResult<Response> {
+    ajax_stock_update(&mut request).await
 }
 
 pub async fn devis_traiteur(mut request: Request) -> AppResult<Response> {

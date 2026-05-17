@@ -23,7 +23,17 @@
         <h2>Articles</h2>
         <div class="panier-table" id="panier-table">
             {% for ligne in panier.lignes %}
-            {% if ligne.boisson_id %}
+            {% if ligne.supplement_id %}
+            <div class="panier-ligne" data-supplement-id="{{ ligne.supplement_id }}">
+                <div class="panier-ligne-info">
+                    <span class="panier-ligne-titre">{{ ligne.titre }}</span>
+                </div>
+                <div class="panier-ligne-meta">
+                    <span class="panier-ligne-prix">{{ ligne.prix_unitaire }} € × {{ ligne.quantite }}</span>
+                    <button type="button" class="btn btn-sm btn-danger js-retirer" data-supplement-id="{{ ligne.supplement_id }}">Retirer</button>
+                </div>
+            </div>
+            {% elif ligne.boisson_id %}
             <div class="panier-ligne" data-boisson-id="{{ ligne.boisson_id }}">
                 <div class="panier-ligne-info">
                     <span class="panier-ligne-titre">{{ ligne.titre }}</span>
@@ -95,15 +105,17 @@
                 </div>
             </div>
 
-            <div class="form-group" id="retrait-fields">
-                <label class="form-label" for="heure_retrait">Date et heure de retrait souhaitées</label>
+            <input type="hidden" name="type_retrait" id="type_retrait" value="sur_place">
+
+            <div class="form-group">
+                <label class="form-label" id="heure-label" for="heure_retrait">Date et heure de retrait souhaitées</label>
                 <input type="datetime-local" id="heure_retrait" name="heure_retrait" class="form-control" required>
             </div>
 
             <div class="form-group">
                 <label class="checkbox-label">
-                    <input type="checkbox" name="avec_livraison" value="1" id="toggle-livraison">
-                    Livraison à domicile (+{{ prix_livraison }} €)
+                    <input type="checkbox" id="toggle-livraison">
+                    Livraison à domicile (+<span id="prix-livraison-label">{{ prix_livraison }}</span> €)
                 </label>
             </div>
 
@@ -122,10 +134,7 @@
                         <input type="text" id="ville_livraison" name="ville_livraison" class="form-control" maxlength="100">
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label" for="heure_livraison">Date et heure de livraison souhaitées</label>
-                    <input type="datetime-local" id="heure_livraison" name="heure_livraison" class="form-control">
-                </div>
+                <p id="livraison-prix-info" style="font-size:.875rem;color:var(--text-muted);margin-top:.25rem"></p>
             </div>
 
             <div class="form-actions">
@@ -149,15 +158,53 @@
 <script {% csp %} src="{% static "js/panier.js" %}"></script>
 <script {% csp %}>
 (function () {
+    const adresseEl = document.getElementById('adresse_livraison');
+    const cpEl      = document.getElementById('cp_livraison');
+    const villeEl   = document.getElementById('ville_livraison');
+    const labelEl   = document.getElementById('prix-livraison-label');
+    const infoEl    = document.getElementById('livraison-prix-info');
+    if (!adresseEl) return;
+
+    let timer = null;
+
+    function updatePrix() {
+        const adresse = adresseEl.value.trim();
+        const cp      = cpEl.value.trim();
+        const ville   = villeEl.value.trim();
+        if (!adresse || !ville) { infoEl.textContent = ''; return; }
+
+        infoEl.textContent = 'Calcul en cours…';
+        const params = new URLSearchParams({ adresse, cp, ville });
+        fetch('/panier/livraison-prix?' + params)
+            .then(r => r.json())
+            .then(data => {
+                if (data.prix) {
+                    labelEl.textContent = data.prix;
+                    infoEl.textContent  = 'Frais de livraison estimés : ' + data.prix + ' € (selon distance)';
+                } else {
+                    infoEl.textContent = data.erreur || 'Adresse introuvable';
+                }
+            })
+            .catch(() => { infoEl.textContent = ''; });
+    }
+
+    [adresseEl, cpEl, villeEl].forEach(el => {
+        el.addEventListener('input', () => {
+            clearTimeout(timer);
+            timer = setTimeout(updatePrix, 700);
+        });
+    });
+})();
+</script>
+<script {% csp %}>
+(function () {
     const pad = n => String(n).padStart(2, '0');
     const toLocal = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
     const now = new Date();
     const min = toLocal(now);
     const def = toLocal(new Date(now.getTime() + 60 * 60 * 1000));
-    ['heure_retrait', 'heure_livraison'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) { el.min = min; el.value = def; }
-    });
+    const el = document.getElementById('heure_retrait');
+    if (el) { el.min = min; el.value = def; }
 })();
 </script>
 {% endblock %}

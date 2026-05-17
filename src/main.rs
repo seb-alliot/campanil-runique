@@ -6,7 +6,6 @@ mod entities;
 mod formulaire;
 mod url;
 mod views;
-
 use runique::app::builder::RuniqueAppBuilder as builder;
 
 #[tokio::main]
@@ -18,9 +17,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let db_config = DatabaseConfig::from_env()?.build();
     let db = db_config.connect().await?;
 
+    // mongo client for analytics
+    let mongo = mongodb::Client::with_uri_str(
+        std::env::var("MONGO_URI").unwrap_or_else(|_| "mongodb://localhost:27017".into()),
+    )
+    .await?;
+
     builder::new(config)
         .routes(url::routes())
         .with_database(db)
+        .with_custom_db(mongo)
         .with_mailer_from_env()
         .with_password_reset::<BuiltinUserEntity>(|pr| {
             pr.forgot_template("auth/forgot_password.html")

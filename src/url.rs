@@ -8,21 +8,28 @@ pub fn routes() -> Router {
         "/activer/{token}/{encrypted_email}"    => view!{ activer },                name = "activer",
         "/carte"                                => view!{ carte },                  name = "carte",
         "/boissons/{type}"                      => view!{ boissons_type },          name = "boissons_type",
+        "/plat/{id}/avis.json"                  => view!{ plat_avis_json },         name = "plat_avis_json",
         "/menus"                                => view!{ menus },                  name = "menus",
         "/menus/{id}"                           => view!{ menu_detail },            name = "menu_detail",
+        "/menus/track"                          => view!{ track_menu_filters },     name = "track_menu_filters",
         "/compte"                               => view!{ compte },                 name = "compte",
+        "/compte/commandes.json"                => view!{ compte_commandes_json },  name = "compte_commandes_json",
         "/compte/supprimer"                     => view!{ supprimer_compte },       name = "supprimer_compte",
         "/panier"                               => view!{ panier_page },            name = "panier",
         "/panier/ajouter"                       => view!{ panier_ajouter_view },    name = "panier_ajouter",
         "/panier/retirer"                       => view!{ panier_retirer_view },    name = "panier_retirer",
-        "/panier/commander"                     => view!{ panier_commander_view },  name = "panier_commander",
+        "/panier/livraison-prix"                => view!{ panier_livraison_prix },  name = "panier_livraison_prix",
         "/commande/{numero}/confirmation"       => view!{ commande_confirmation },  name = "commande_confirmation",
         "/service"                              => view!{ service },                 name = "service",
-        "/service/commandes.json"               => view!{ service_json },            name = "service_json",
+        "/service/commandes.json"               => view!{ service_commandes_json },   name = "service_commandes_json",
+        "/service/stats.json"                   => view!{ service_stats_json },      name = "service_stats_json",
         "/service/commandes/{numero}/statut"    => view!{ service_statut },          name = "service_statut",
+        "/service/stock.json"                   => view!{ service_stock_json },      name = "service_stock_json",
+        "/service/menus/{id}/stock"             => view!{ service_stock_update },    name = "service_stock_update",
         "/commande/{numero}/annuler"            => view!{ commande_annuler },       name = "commande_annuler",
         "/compte/avis/{commande_id}"            => view!{ avis_poster },            name = "avis_poster",
         "/compte/avis/{commande_id}/supprimer"  => view!{ avis_supprimer },         name = "avis_supprimer",
+        "/compte/avis-plat/{plat_id}"           => view!{ avis_plat_poster },       name = "avis_plat_poster",
         "/compte/profil"                        => view!{ profil_post },            name = "profil_post",
         "/traiteur/devis/confirmation"          => view!{ devis_confirmation },     name = "devis_confirmation",
         "/mentions-legales"                     => view!{ mentions_legales },       name = "mentions_legales",
@@ -39,11 +46,19 @@ pub fn routes() -> Router {
         ("/contact".into(),        "contact".into(),        view!{ contact }),
         ("/traiteur/devis".into(), "devis_traiteur".into(), view!{ devis_traiteur }),
     ])
+    // 3 req / 5 min — anti-spam commandes
+    .rate_limit("/panier/commander", "panier_commander", view!{ panier_commander_view }, 3, 300)
 }
 
 pub fn admin_extra_routes() -> Vec<(&'static str, runique::axum::routing::MethodRouter)> {
-    vec![(
-        "/commandes/{numero}/detail",
-        view! { admin_commande_detail },
-    )]
+    vec![
+        (
+            "/commandes/{numero}/detail",
+            view! { admin_commande_detail },
+        ),
+        (
+            "/menus-resto/{id}/composition",
+            view! { admin_menu_resto_composition },
+        ),
+    ]
 }

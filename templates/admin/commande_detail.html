@@ -21,20 +21,20 @@
                 <tbody>
                     <tr><th>Client</th><td>{{ detail.client }}</td></tr>
                     <tr><th>Type</th><td>
-                        {% if detail.avec_livraison %}Livraison à domicile
+                        {% if detail.type_retrait == "livraison" %}Livraison à domicile
                         {% else %}À emporter
                         {% endif %}
                     </td></tr>
                     <tr><th>Paiement</th><td>{{ detail.mode_paiement }}</td></tr>
                     <tr><th>Total</th><td><strong>{{ detail.prix_total }} €</strong></td></tr>
-                    {% if detail.avec_livraison %}
+                    {% if detail.type_retrait == "livraison" %}
                     <tr><th>Livraison</th><td>
                         {% if detail.adresse_livraison %}{{ detail.adresse_livraison }}{% endif %}
                         {% if detail.cp_livraison %}, {{ detail.cp_livraison }}{% endif %}
                         {% if detail.ville_livraison %} {{ detail.ville_livraison }}{% endif %}
                     </td></tr>
-                    {% if detail.heure_livraison %}
-                    <tr><th>Heure livraison</th><td>{{ detail.heure_livraison }}</td></tr>
+                    {% if detail.heure_retrait %}
+                    <tr><th>Heure livraison</th><td>{{ detail.heure_retrait }}</td></tr>
                     {% endif %}
                     {% elif detail.heure_retrait %}
                     <tr><th>Heure retrait</th><td>{{ detail.heure_retrait }}</td></tr>

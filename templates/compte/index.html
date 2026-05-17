@@ -20,24 +20,37 @@
     <main class="compte-main">
 
         <nav class="compte-tabs" id="compteTabs">
-            <button class="compte-tab{% if active_tab != "profil" %} active{% endif %}" data-tab="commandes">Mes commandes</button>
+            <button class="compte-tab{% if active_tab != "profil" and active_tab != "plats" %} active{% endif %}" data-tab="commandes">Mes commandes</button>
+            <button class="compte-tab{% if active_tab == "plats" %} active{% endif %}" data-tab="plats">Mes plats</button>
             <button class="compte-tab{% if active_tab == "profil" %} active{% endif %}" data-tab="profil">Informations</button>
         </nav>
 
-        <section class="compte-section" id="tab-commandes" {% if active_tab == "profil" %}hidden{% endif %}>
+        <section class="compte-section" id="tab-commandes" {% if active_tab == "profil" or active_tab == "plats" %}hidden{% endif %}>
             <h2>Mes commandes</h2>
+
+            <div class="commandes-filtres">
+                <button type="button" class="btn btn-sm js-filtre-statut{% if statut_filtre == "" %} btn-primary{% else %} btn-secondary{% endif %}" data-filtre="" data-href="/compte?tab=commandes&statut=">Toutes</button>
+                <button type="button" class="btn btn-sm js-filtre-statut{% if statut_filtre == "en_cours" %} btn-primary{% else %} btn-secondary{% endif %}" data-filtre="en-cours" data-href="/compte?tab=commandes&statut=en_cours">En cours</button>
+                <button type="button" class="btn btn-sm js-filtre-statut{% if statut_filtre == "termine" %} btn-primary{% else %} btn-secondary{% endif %}" data-filtre="termine" data-href="/compte?tab=commandes&statut=termine">Terminées</button>
+                <button type="button" class="btn btn-sm js-filtre-statut{% if statut_filtre == "annule" %} btn-primary{% else %} btn-secondary{% endif %}" data-filtre="annule" data-href="/compte?tab=commandes&statut=annule">Annulées</button>
+            </div>
+            <div class="commandes-filtres commandes-filtres--service">
+                <button type="button" class="btn btn-sm js-filtre-service{% if service_filtre == "" %} btn-primary{% else %} btn-secondary{% endif %}" data-service="">Tous services</button>
+                <button type="button" class="btn btn-sm js-filtre-service{% if service_filtre == "midi" %} btn-primary{% else %} btn-secondary{% endif %}" data-service="midi">Midi</button>
+                <button type="button" class="btn btn-sm js-filtre-service{% if service_filtre == "soir" %} btn-primary{% else %} btn-secondary{% endif %}" data-service="soir">Soir</button>
+            </div>
 
             {% if commandes %}
             <div class="commandes-list">
                 {% for c in commandes %}
-                <div class="commande-card">
+                <div class="commande-card" data-statut="{{ c.statut_css }}">
                     <div class="commande-card-header">
                         <span class="commande-numero">N° {{ c.numero }}</span>
                         <span class="commande-badge statut-{{ c.statut_css }}">{{ c.statut_label }}</span>
                     </div>
 
                     <div class="commande-meta">
-                        <span>{{ c.type_commande }}</span>
+                        <span>{% if c.type_retrait == "livraison" %}Livraison{% else %}Sur place{% endif %}</span>
                         <span>{{ c.mode_paiement }}</span>
                         <time class="commande-date local-time" data-utc="{{ c.date_iso }}">{{ c.date }}</time>
                         {% if c.date_annulation %}
@@ -58,13 +71,13 @@
                     </ul>
                     {% endif %}
 
-                    {% if c.avec_livraison %}
+                    {% if c.type_retrait == "livraison" %}
                     <div class="commande-livraison">
                         <span>Livraison</span>
                         {% if c.adresse_livraison %}
                         <span>{{ c.adresse_livraison }}{% if c.cp_livraison %}, {{ c.cp_livraison }}{% endif %}{% if c.ville_livraison %} {{ c.ville_livraison }}{% endif %}</span>
                         {% endif %}
-                        {% if c.heure_livraison %}<span>à {{ c.heure_livraison }}</span>{% endif %}
+                        {% if c.heure_retrait %}<span>à {{ c.heure_retrait }}</span>{% endif %}
                     </div>
                     {% elif c.heure_retrait %}
                     <div class="commande-retrait">
@@ -80,6 +93,20 @@
                         </button>
                         {% endif %}
                     </div>
+
+                    {% if c.statuts %}
+                    <details class="statuts-historique">
+                        <summary>Historique</summary>
+                        <ol class="statuts-timeline">
+                            {% for s in c.statuts %}
+                            <li class="statuts-timeline-item">
+                                <span class="statuts-timeline-label">{{ s.statut }}</span>
+                                <span class="statuts-timeline-heure">{{ s.heure }}</span>
+                            </li>
+                            {% endfor %}
+                        </ol>
+                    </details>
+                    {% endif %}
 
                     {% if c.can_review %}
                     <details class="avis-form-wrap">
@@ -127,7 +154,7 @@
             {% if total_pages > 1 %}
             <nav class="pagination" aria-label="Pages commandes">
                 {% if page_precedente %}
-                <a href="/compte?tab=commandes&page={{ page_precedente }}" class="btn btn-sm">&larr; Précédent</a>
+                <a href="/compte?tab=commandes&statut={{ statut_filtre }}&service={{ service_filtre }}&page={{ page_precedente }}" class="btn btn-sm">&larr; Précédent</a>
                 {% else %}
                 <span class="btn btn-sm disabled">&larr; Précédent</span>
                 {% endif %}
@@ -135,7 +162,7 @@
                 <span class="pagination-info">Page {{ page_courante }} / {{ total_pages }}</span>
 
                 {% if page_suivante %}
-                <a href="/compte?tab=commandes&page={{ page_suivante }}" class="btn btn-sm">Suivant &rarr;</a>
+                <a href="/compte?tab=commandes&statut={{ statut_filtre }}&service={{ service_filtre }}&page={{ page_suivante }}" class="btn btn-sm">Suivant &rarr;</a>
                 {% else %}
                 <span class="btn btn-sm disabled">Suivant &rarr;</span>
                 {% endif %}
@@ -149,6 +176,61 @@
             </div>
             {% endif %}
         </section>
+        <section class="compte-section" id="tab-plats" {% if active_tab != "plats" %}hidden{% endif %}>
+            <h2>Mes plats commandés</h2>
+            {% if plats_commandes %}
+            <div class="plats-avis-liste">
+                {% for p in plats_commandes %}
+                <div class="plat-avis-card">
+                    {% if p.image %}
+                    <img class="plat-avis-img" src="{% media p.image %}" alt="{{ p.titre }}">
+                    {% else %}
+                    <div class="plat-avis-img-placeholder"></div>
+                    {% endif %}
+                    <div class="plat-avis-body">
+                        <strong class="plat-avis-titre">{{ p.titre }}</strong>
+                        {% if p.avis_note %}
+                            {% if p.avis_statut == "Validé" %}
+                            <span class="avis-badge avis-valide">Avis publié — {{ p.avis_note }}★</span>
+                            {% elif p.avis_statut == "En attente" %}
+                            <span class="avis-badge avis-attente">En attente de modération — {{ p.avis_note }}★</span>
+                            {% else %}
+                            <span class="avis-badge avis-refuse">Avis non publié</span>
+                            {% endif %}
+                        {% else %}
+                        <details class="avis-form-wrap">
+                            <summary>Laisser un avis</summary>
+                            <form method="post" action="/compte/avis-plat/{{ p.id }}" class="avis-form">
+                                {% csrf %}
+                                <div class="avis-etoiles">
+                                    <input type="radio" name="note" value="5" id="ps5-{{ p.id }}" required>
+                                    <label for="ps5-{{ p.id }}" title="5 étoiles">★</label>
+                                    <input type="radio" name="note" value="4" id="ps4-{{ p.id }}">
+                                    <label for="ps4-{{ p.id }}" title="4 étoiles">★</label>
+                                    <input type="radio" name="note" value="3" id="ps3-{{ p.id }}">
+                                    <label for="ps3-{{ p.id }}" title="3 étoiles">★</label>
+                                    <input type="radio" name="note" value="2" id="ps2-{{ p.id }}">
+                                    <label for="ps2-{{ p.id }}" title="2 étoiles">★</label>
+                                    <input type="radio" name="note" value="1" id="ps1-{{ p.id }}">
+                                    <label for="ps1-{{ p.id }}" title="1 étoile">★</label>
+                                </div>
+                                <textarea name="commentaire" rows="2" placeholder="Votre avis sur ce plat..." required class="avis-textarea"></textarea>
+                                <button type="submit" class="btn btn-sm btn-primary">Envoyer</button>
+                            </form>
+                        </details>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="compte-empty">
+                <p>Vous n'avez pas encore commandé de plats.</p>
+                <a href="/carte" class="btn btn-primary">Découvrir la carte</a>
+            </div>
+            {% endif %}
+        </section>
+
         <section class="compte-section" id="tab-profil" {% if active_tab != "profil" %}hidden{% endif %}>
             <h2>Informations personnelles</h2>
             <form method="post" action="/compte/profil" class="profil-form">
@@ -214,6 +296,7 @@
 {% endblock %}
 
 {% block extra_js %}
+    <script src="{% static "js/compte-filtre.js" %}" {% csp %}></script>
     <script src="{% static "js/compte-commandes.js" %}" {% csp %}></script>
     <script src="{% static "js/compte-tabs.js" %}" {% csp %}></script>
     <script src="{% static "js/modal-avis.js" %}" {% csp %}></script>

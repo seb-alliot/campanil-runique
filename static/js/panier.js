@@ -1,9 +1,9 @@
 (function () {
     const toggle       = document.getElementById('toggle-livraison');
     const livrFields   = document.getElementById('livraison-fields');
-    const retraitField = document.getElementById('retrait-fields');
     const heureRetrait = document.getElementById('heure_retrait');
-    const heureLivr    = document.getElementById('heure_livraison');
+    const typeRetrait  = document.getElementById('type_retrait');
+    const heureLabel   = document.getElementById('heure-label');
 
     const toLocal = function (d) {
         const pad = n => String(n).padStart(2, '0');
@@ -24,10 +24,9 @@
         const update = () => {
             const livr = toggle.checked;
             livrFields.style.display = livr ? '' : 'none';
-            if (retraitField) retraitField.style.display = livr ? 'none' : '';
-            if (heureRetrait) heureRetrait.required = !livr;
-            if (heureLivr)    heureLivr.required    = livr;
-            setMinDatetime(livr ? heureLivr : heureRetrait);
+            if (typeRetrait) typeRetrait.value = livr ? 'livraison' : 'sur_place';
+            if (heureLabel)  heureLabel.textContent = livr ? 'Date et heure de livraison souhaitées' : 'Date et heure de retrait souhaitées';
+            setMinDatetime(heureRetrait);
         };
         toggle.addEventListener('change', update);
         update();
@@ -38,22 +37,18 @@
     const form = document.querySelector('.panier-checkout form');
     if (form) {
         form.addEventListener('submit', function (e) {
-            const livr = toggle && toggle.checked;
-            const input = livr ? heureLivr : heureRetrait;
-            if (!input || !input.value) return;
-            const chosen = new Date(input.value);
+            if (!heureRetrait || !heureRetrait.value) return;
+            const chosen = new Date(heureRetrait.value);
             const now = new Date();
             if (isNaN(chosen.getTime()) || (chosen - now) < 30 * 60 * 1000) {
                 e.preventDefault();
-                input.setCustomValidity("La date doit être dans au moins 30 minutes.");
-                input.reportValidity();
+                heureRetrait.setCustomValidity("La date doit être dans au moins 30 minutes.");
+                heureRetrait.reportValidity();
             } else {
-                input.setCustomValidity('');
+                heureRetrait.setCustomValidity('');
             }
         });
-        [heureRetrait, heureLivr].forEach(function (inp) {
-            if (inp) inp.addEventListener('input', function () { inp.setCustomValidity(''); });
-        });
+        if (heureRetrait) heureRetrait.addEventListener('input', function () { heureRetrait.setCustomValidity(''); });
     }
 })();
 
@@ -61,11 +56,14 @@ document.addEventListener('click', function (e) {
     const btn = e.target.closest('.js-retirer');
     if (!btn || btn.disabled) return;
 
-    const { platId, boissonId, menuId } = btn.dataset;
+    const { platId, boissonId, menuId, supplementId } = btn.dataset;
 
     let url;
     let ligneEl = null;
-    if (boissonId) {
+    if (supplementId) {
+        url = '/panier/retirer?supplement_id=' + supplementId + '&format=json';
+        ligneEl = document.querySelector('.panier-ligne[data-supplement-id="' + supplementId + '"]');
+    } else if (boissonId) {
         url = '/panier/retirer?boisson_id=' + boissonId + '&format=json';
         ligneEl = document.querySelector('.panier-ligne[data-boisson-id="' + boissonId + '"]');
     } else if (menuId) {

@@ -1,17 +1,17 @@
-pub mod generation_num;
-pub use generation_num::generer_numero;
+pub mod num_commande;
+pub use num_commande::generer_numero;
 
-pub mod parser_status_commande;
-pub use parser_status_commande::parse_statut;
+pub mod parse_statut;
+pub use parse_statut::parse_statut;
 
-pub mod info_status;
-pub use info_status::statut_info;
+pub mod statut_info;
+pub use statut_info::statut_info;
 
-pub mod recup_all_status;
-pub use recup_all_status::all_statuts;
+pub mod db_statuts;
+pub use db_statuts::all_statuts;
 
-pub mod admin_commande;
-pub use admin_commande::handle_admin_commande_detail;
+pub mod vue_admin_detail;
+pub use vue_admin_detail::handle_admin_commande_detail;
 
 pub mod struct_;
 pub use struct_::{CommandeDetail, LigneDetail};

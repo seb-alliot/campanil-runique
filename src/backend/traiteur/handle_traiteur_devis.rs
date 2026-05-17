@@ -14,7 +14,7 @@ pub async fn handle_devis_traiteur(
 
     let menu_id = request
         .get_query("menu_id")
-        .and_then(|s| s.parse::<i32>().ok());
+        .and_then(|s| s.parse::<Pk>().ok());
 
     let menu_model = if let Some(id) = menu_id {
         use sea_orm::ColumnTrait;

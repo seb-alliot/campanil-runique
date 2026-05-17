@@ -7,10 +7,13 @@ document.addEventListener('click', async function (e) {
     if (!ok) return;
     const numero = btn.dataset.numero;
     btn.disabled = true;
+    const body = new URLSearchParams();
+    body.append('csrf_token', csrfToken);
     fetch('/commande/' + numero + '/annuler', {
         method: 'POST',
         credentials: 'same-origin',
-        headers: { 'X-CSRF-Token': csrfToken },
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: body.toString(),
     })
     .then(function (r) {
         if (r.redirected || r.ok) {

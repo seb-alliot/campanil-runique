@@ -14,7 +14,7 @@
   const sections          = Array.from(document.querySelectorAll('.spr-section'));
   const btnBoissonsParent = document.getElementById('livreBoissonsParent');
   const boissonsRow       = document.getElementById('livreBoissonsRow');
-  const BOISSONS_START    = 5;
+  const BOISSONS_START    = 6;
 
   const DECORATIF = `<div class="livre-page-int">
     <div class="livre-page-int-ornement">✦</div>
@@ -143,6 +143,136 @@
       renderPages(current);
     }
   });
+
+  /* ── Photo modal ──────────────────────────────────────── */
+  const photoModal          = document.getElementById('photoModal');
+  const photoModalImg       = document.getElementById('photoModalImg');
+  const photoModalTitre     = document.getElementById('photoModalTitre');
+  const photoModalPrix      = document.getElementById('photoModalPrix');
+  const photoModalLabel     = document.getElementById('photoModalLabel');
+  const photoModalDesc      = document.getElementById('photoModalDesc');
+  const photoModalAllergenes = document.getElementById('photoModalAllergenes');
+  const photoModalClose     = document.getElementById('photoModalClose');
+  const photoModalAvis      = document.getElementById('photoModalAvis');
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function showAvisSkeletons(n) {
+    photoModalAvis.hidden = false;
+    photoModalAvis.innerHTML = '';
+    for (let i = 0; i < n; i++) {
+      const s = document.createElement('div');
+      s.className = 'avis-skeleton';
+      s.style.animationDelay = i * 80 + 'ms';
+      photoModalAvis.appendChild(s);
+    }
+  }
+
+  function avisCardHTML(a) {
+    return '<div class="avis-card-header">' +
+      '<span class="avis-etoiles">' + escHtml(a.etoiles) + '</span>' +
+      '<span class="avis-auteur">' + escHtml(a.auteur) + '</span>' +
+      '</div>' +
+      '<p class="avis-commentaire">' + escHtml(a.commentaire) + '</p>';
+  }
+
+  function renderAvis(avis) {
+    const skeletons = Array.from(photoModalAvis.children);
+    if (!skeletons.length) {
+      photoModalAvis.innerHTML = '';
+      if (!avis.length) { photoModalAvis.hidden = true; return; }
+      photoModalAvis.hidden = false;
+      avis.forEach((a, i) => {
+        const card = document.createElement('div');
+        card.className = 'avis-card';
+        card.style.animationDelay = i * 80 + 'ms';
+        card.innerHTML = avisCardHTML(a);
+        photoModalAvis.appendChild(card);
+      });
+      return;
+    }
+    skeletons.forEach((el, i) => {
+      el.style.transition = 'opacity 180ms ' + (i * 60) + 'ms';
+      el.style.opacity = '0';
+    });
+    setTimeout(() => {
+      photoModalAvis.innerHTML = '';
+      if (!avis.length) { photoModalAvis.hidden = true; return; }
+      avis.forEach((a, i) => {
+        const card = document.createElement('div');
+        card.className = 'avis-card';
+        card.style.animationDelay = i * 80 + 'ms';
+        card.innerHTML = avisCardHTML(a);
+        photoModalAvis.appendChild(card);
+      });
+    }, 180 + skeletons.length * 60);
+  }
+
+  const openPhotoModal = (img) => {
+    photoModalImg.src       = img.src;
+    photoModalImg.alt       = img.alt;
+    photoModalTitre.textContent = img.dataset.titre || '';
+    photoModalPrix.textContent  = img.dataset.prix ? img.dataset.prix + ' €' : '';
+    const label     = img.dataset.label || '';
+    const desc      = img.dataset.desc || '';
+    const allergenes = img.dataset.allergenes || '';
+    photoModalLabel.textContent = label;
+    photoModalLabel.hidden = !label;
+    photoModalDesc.textContent = desc;
+    photoModalDesc.hidden = !desc;
+    photoModalAllergenes.textContent = allergenes ? 'Allergènes : ' + allergenes : '';
+    photoModalAllergenes.hidden = !allergenes;
+    photoModal.hidden = false;
+    document.body.style.overflow = 'hidden';
+
+    const platId = img.dataset.platId;
+    if (platId && photoModalAvis) {
+      const n = window.innerWidth < 640 ? 3 : window.innerWidth < 1024 ? 5 : 7;
+      const skeletonTimer = setTimeout(() => showAvisSkeletons(n), 120);
+      fetch('/plat/' + platId + '/avis.json?n=' + n)
+        .then(r => r.json())
+        .then(data => { clearTimeout(skeletonTimer); renderAvis(data); })
+        .catch(() => { clearTimeout(skeletonTimer); photoModalAvis.hidden = true; });
+    } else if (photoModalAvis) {
+      photoModalAvis.hidden = true;
+    }
+  };
+
+  const closePhotoModal = () => {
+    photoModal.hidden = true;
+    document.body.style.overflow = '';
+    if (photoModalAvis) { photoModalAvis.hidden = true; photoModalAvis.innerHTML = ''; }
+  };
+
+  document.addEventListener('click', e => {
+    const img = e.target.closest('.js-photo-zoom');
+    if (img) { openPhotoModal(img); return; }
+    if (e.target === photoModal) closePhotoModal();
+  });
+  photoModalClose.addEventListener('click', closePhotoModal);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && !photoModal.hidden) closePhotoModal();
+  });
+
+  /* ── Swipe tactile (mobile / tablette) ─────────────────── */
+  let touchStartX = 0;
+  let touchStartY = 0;
+
+  livreOuvert.addEventListener('touchstart', e => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+
+  livreOuvert.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 48) {
+      if (dx < 0) flipTo(current + 1);
+      else         flipTo(current - 1);
+    }
+  }, { passive: true });
 
   couverture.addEventListener('click', openBook);
   couverture.addEventListener('keydown', e => {

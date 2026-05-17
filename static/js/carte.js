@@ -69,7 +69,10 @@ document.addEventListener('click', function (e) {
     const modBtn = e.target.closest('.js-modifier');
     if (modBtn) {
         const panel = document.querySelector('.plat-picker[data-plat-id="' + modBtn.dataset.platId + '"]');
-        if (panel) panel.hidden = !panel.hidden;
+        if (panel) {
+            panel.hidden = !panel.hidden;
+            if (!panel.hidden) closePhotoModalIfOpen();
+        }
         return;
     }
 
@@ -79,7 +82,10 @@ document.addEventListener('click', function (e) {
         const coursGroupe = modMenuBtn.closest('.menu-cours-groupe');
         if (coursGroupe) {
             const panel = coursGroupe.querySelector('.menu-plat-picker[data-plat-id="' + platId + '"][data-cours="' + cours + '"]');
-            if (panel) panel.hidden = !panel.hidden;
+            if (panel) {
+                panel.hidden = !panel.hidden;
+                if (!panel.hidden) closePhotoModalIfOpen();
+            }
         }
         return;
     }
@@ -141,6 +147,14 @@ document.addEventListener('click', function (e) {
             btn.disabled = false;
         });
 });
+
+function closePhotoModalIfOpen() {
+    const modal = document.getElementById('photoModal');
+    if (modal && !modal.hidden) {
+        modal.hidden = true;
+        document.body.style.overflow = '';
+    }
+}
 
 function updateBadge(n) {
     const badge = document.getElementById('panier-badge');

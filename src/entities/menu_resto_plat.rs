@@ -1,7 +1,7 @@
 use runique::prelude::*;
 
 model! {
-    MenuRestPlat,
+    MenuRestoPlat,
     table: "menu_resto_plat",
     pk: id => Pk,
     {

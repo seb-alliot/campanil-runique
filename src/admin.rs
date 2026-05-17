@@ -1,5 +1,6 @@
-use crate::entities::*;
 use crate::entities::menu_resto_plat;
+use crate::entities::*;
+
 use runique::admin;
 
 admin! {
@@ -18,14 +19,6 @@ admin! {
 
     allergenes: allergene::Model => allergene::AdminForm {
         title: "Allergènes",
-        list_display: [["libelle", "Libellé"]],
-    }
-    themes: theme::Model => theme::AdminForm {
-        title: "Thèmes",
-        list_display: [["libelle", "Libellé"]],
-    }
-    regimes: regime::Model => regime::AdminForm {
-        title: "Régimes alimentaires",
         list_display: [["libelle", "Libellé"]],
     }
     horaires: horaire::Model => horaire::AdminForm {
@@ -50,7 +43,6 @@ admin! {
         list_display: [
             ["nom", "Nom"],
             ["email", "Email"],
-            ["menu_id", "Menu", "menus.titre"],
             ["date_evenement", "Date événement"],
             ["nb_personnes", "Personnes"],
             ["statut", "Statut"],
@@ -80,6 +72,19 @@ admin! {
         ],
         group_action: [["disponible", "Rendre disponible"]],
     }
+    supplements: supplement::Model => supplement::AdminForm {
+        title: "Suppléments",
+        list_display: [
+            ["titre", "Nom"],
+            ["garniture_id", "Garniture", "garnitures.libelle"],
+            ["prix", "Prix"],
+            ["disponible", "Disponible"],
+        ],
+        list_filter: [
+            ["disponible", "Disponible", 10],
+        ],
+        group_action: [["disponible", "Rendre disponible"]],
+    }
     plats: plat::Model => plat::AdminForm {
         title: "Plats",
         list_display: [
@@ -106,16 +111,16 @@ admin! {
         title: "Menus traiteur",
         list_display: [
             ["titre", "Titre"],
-            ["theme_id", "Thème", "themes.libelle"],
-            ["regime_id", "Régime", "regimes.libelle"],
+            ["theme", "Thème"],
+            ["regime", "Régime"],
             ["prix_par_personne", "Prix/pers."],
             ["nb_personnes_min", "Min. pers."],
             ["actif", "Actif"],
         ],
         list_filter: [
             ["actif", "Actif", 10],
-            ["theme_id", "Thème", 10],
-            ["regime_id", "Régime", 10],
+            ["theme", "Thème", 10],
+            ["regime", "Régime", 10],
         ],
         group_action: [["actif", "Activer"]],
         m2m: [
@@ -125,16 +130,17 @@ admin! {
     menus_resto: menu_resto::Model => menu_resto::AdminForm {
         title: "Menus restaurant",
         list_display: [
-            ["titre", "Titre"],
+            ["nom", "Nom"],
             ["prix", "Prix"],
             ["disponible", "Disponible"],
         ],
         group_action: [["disponible", "Rendre disponible"]],
+        template_detail: "admin/menu_resto_detail.html",
     }
     menus_resto_composition: menu_resto_plat::Model => menu_resto_plat::AdminForm {
         title: "Composition des menus restaurant",
         list_display: [
-            ["menu_id", "Menu", "menus_resto.titre"],
+            ["menu_id", "Menu", "menus_resto.nom"],
             ["plat_id", "Plat", "plats.titre"],
             ["cours", "Cours"],
         ],
@@ -156,35 +162,60 @@ admin! {
         ],
         group_action: [["disponible", "Rendre disponible"]],
     }
+    menu_enfants: menu_enfant::Model => menu_enfant::AdminForm {
+        title: "Menus enfant",
+        list_display: [
+            ["titre", "Titre"],
+            ["prix", "Prix"],
+            ["actif", "Actif"],
+        ],
+        group_action: [["actif", "Activer"]],
+    }
     commandes: commande::Model => commande::AdminForm {
         title: "Commandes",
         template_detail: "admin/commande_detail.html",
         list_display: [
             ["numero", "N°"],
             ["user_id", "Client", "eihwaz_users.username"],
-            ["type_commande", "Type"],
+            ["type_retrait", "Type"],
             ["statut", "Statut"],
             ["mode_paiement", "Paiement"],
             ["prix_total", "Total"],
             ["created_at", "Date"],
         ],
         list_filter: [
-            ["type_commande", "Type", 10],
+            ["type_retrait", "Type", 10],
             ["statut", "Statut", 10],
             ["mode_paiement", "Paiement", 10],
-            ["avec_livraison", "Livraison", 10],
         ],
     }
     avis: avis::Model => avis::AdminForm {
         title: "Avis clients",
         list_display: [
-            ["commande_id", "Commande"],
+            ["commande_id", "Commande", "commandes.numero"],
             ["note", "Note"],
             ["statut", "Statut"],
             ["created_at", "Date"],
         ],
         list_filter: [["statut", "Statut", 10]],
-        group_action: [["statut", "Valider"]],
+        group_action: [
+            ["statut", "Valider", "valide"],
+            ["statut", "Refuser", "refuse"],
+        ],
+    }
+    avis_plats: avis_plat::Model => avis_plat::AdminForm {
+        title: "Avis sur les plats",
+        list_display: [
+            ["plat_id", "Plat", "plats.titre"],
+            ["note", "Note"],
+            ["statut", "Statut"],
+            ["created_at", "Date"],
+        ],
+        list_filter: [["statut", "Statut", 10]],
+        group_action: [
+            ["statut", "Valider", "valide"],
+            ["statut", "Refuser", "refuse"],
+        ],
     }
     info_resto: info_resto::Model => info_resto::AdminForm {
         title: "Informations du restaurant",
@@ -193,6 +224,8 @@ admin! {
             ["adresse", "Adresse"],
             ["telephone", "Téléphone"],
             ["email", "Email"],
+            ["latitude", "Latitude"],
+            ["longitude", "Longitude"],
         ],
     }
 }

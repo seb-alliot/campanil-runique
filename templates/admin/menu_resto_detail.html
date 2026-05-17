@@ -1,0 +1,60 @@
+{% extends "admin_base" %}
+{% block title %}{{ resource.title | default(value=resource_key) }} #{{ entry.id }} — {{ site_title }}{% endblock %}
+{% block breadcrumb %}
+  <span class="breadcrumb-sep">/</span>
+  <a href="{{ admin_prefix }}/{{ resource.key }}/list">{{ resource.title | default(value=resource_key) }}</a>
+  <span class="breadcrumb-sep">/</span>
+  <span>#{{ entry.id }}</span>
+{% endblock %}
+{% block content %}
+<div class="page-header" data-admin-auto-init>
+  <div>
+    <h1 class="page-title">{{ resource.title | default(value=resource_key) }}</h1>
+    <p class="page-subtitle">{{ entry.nom }} #{{ entry.id }}</p>
+  </div>
+  <div class="page-actions">
+    <a href="{{ admin_prefix }}/{{ resource.key }}/list" class="btn btn-secondary btn-sm">← Liste</a>
+    <a href="{{ admin_prefix }}/{{ resource.key }}/create" class="btn btn-secondary btn-sm">+ Nouveau menu</a>
+    <a href="{{ admin_prefix }}/menus-resto/{{ entry.id }}/composition" class="btn btn-primary btn-sm">Gérer la composition</a>
+    <a href="{{ admin_prefix }}/{{ resource.key }}/{{ entry.id }}/edit" class="btn btn-secondary btn-sm btn-hide-mobile">Modifier</a>
+    <form method="post" action="{{ admin_prefix }}/{{ resource.key }}/{{ entry.id }}/delete" class="form-inline btn-hide-mobile">
+      {% csrf %}
+      <button type="submit" class="btn btn-sm btn-danger"
+        data-confirm-delete="Supprimer ce menu ?">Supprimer</button>
+    </form>
+  </div>
+</div>
+{% messages %}
+<div class="card">
+  <div class="admin-table-wrapper">
+    <table class="admin-table">
+      <tbody>
+        <tr>
+          <td class="admin-table-key">id</td>
+          <td><span class="id-badge">#{{ entry.id }}</span></td>
+        </tr>
+        {% for key, value in entry %}
+          {% if key != "id" %}
+          <tr>
+            <td class="admin-table-key">{{ key }}</td>
+            <td>
+              {% if value == true %}
+                <span class="badge badge-green">Oui</span>
+              {% elif value == false %}
+                <span class="badge badge-neutral">Non</span>
+              {% elif value %}
+                {% if value is string %}{{ value | escape }}{% else %}{{ value }}{% endif %}
+              {% else %}
+                <span class="text-muted">—</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<script {% csp %} src="{{ "js/admin/admin-actions.js" | runique_static }}"></script>
+<script {% csp %} src="{{ "js/admin/admin-kebab.js" | runique_static }}"></script>
+{% endblock %}

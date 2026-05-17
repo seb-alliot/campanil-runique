@@ -27,7 +27,7 @@ pub async fn get_avis_valides(db: &DatabaseConnection) -> Vec<AvisPublic> {
 
     let user_ids: Vec<i32> = avis_list.iter().map(|a| a.user_id).collect();
 
-    let user_name_map: HashMap<i32, String> = runique_users::Entity::find()
+    let user_name_map: HashMap<Pk, String> = runique_users::Entity::find()
         .filter(runique_users::Column::Id.is_in(user_ids))
         .all(db)
         .await
@@ -39,7 +39,10 @@ pub async fn get_avis_valides(db: &DatabaseConnection) -> Vec<AvisPublic> {
     avis_list
         .into_iter()
         .map(|a| {
-            let username = user_name_map.get(&a.user_id).cloned().unwrap_or_default();
+            let username = user_name_map
+                .get(&(a.user_id as Pk))
+                .cloned()
+                .unwrap_or_default();
             let auteur = if username.is_empty() {
                 "Un client".to_string()
             } else {

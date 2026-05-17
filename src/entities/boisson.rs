@@ -24,10 +24,11 @@ model! {
         description:  textarea,
         image:        image   [upload_to: "boissons/"],
         disponible:   bool    [required, default: true],
+        ordre:        int     [default: 0],
         created_at:   datetime [auto_now],
     },
     meta: {
-        ordering: [type_boisson, titre],
+        ordering: [type_boisson, ordre, titre],
         verbose_name: "Boisson",
         verbose_name_plural: "Boissons",
     }

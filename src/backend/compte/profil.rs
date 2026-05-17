@@ -4,7 +4,7 @@ use crate::formulaire::ProfilForm;
 use runique::prelude::*;
 use sea_orm::{ConnectionTrait, DbBackend, FromQueryResult, Statement};
 
-pub async fn load_profil(db: &DatabaseConnection, user_id: i32) -> Option<UserComplet> {
+pub async fn load_profil(db: &DatabaseConnection, user_id: Pk) -> Option<UserComplet> {
     UserComplet::find_by_statement(Statement::from_sql_and_values(
         DbBackend::Postgres,
         r#"SELECT id, username, email, is_active, is_staff, is_superuser,
@@ -29,9 +29,9 @@ pub async fn handle_profil_post(request: &mut Request) -> AppResult<Response> {
     if !form.is_valid().await {
         return Ok(Redirect::to("/compte?tab=profil").into_response());
     }
-    let telephone   = form.cleaned_string("telephone").unwrap_or_default();
-    let adresse     = form.cleaned_string("adresse").unwrap_or_default();
-    let ville       = form.cleaned_string("ville").unwrap_or_default();
+    let telephone = form.cleaned_string("telephone").unwrap_or_default();
+    let adresse = form.cleaned_string("adresse").unwrap_or_default();
+    let ville = form.cleaned_string("ville").unwrap_or_default();
     let code_postal = form.cleaned_string("code_postal").unwrap_or_default();
 
     request

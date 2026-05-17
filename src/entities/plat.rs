@@ -23,14 +23,15 @@ model! {
         image:       image  [upload_to: "plats/"],
         disponible:              bool    [required, default: true],
         est_viande:              bool    [required, default: false],
-        avec_legumes:            bool    [required, default: true],
-        prix_supplement_legumes: decimal [default: 0],
+        avec_legumes: bool [required, default: true],
+        ordre:                   int     [default: 0],
     },
     relations: {
         many_to_many: Allergene through PlatAllergene via plat_id,
+        many_to_many: Garniture through PlatGarniture via plat_id,
     },
     meta: {
-        ordering: [type_plat, titre],
+        ordering: [type_plat, ordre, titre],
         verbose_name: "Plat",
         verbose_name_plural: "Plats",
     }

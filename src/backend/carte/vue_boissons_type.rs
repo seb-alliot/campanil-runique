@@ -1,4 +1,4 @@
-use crate::backend::carte::boisson::{get_boissons_par_type, slug_to_type};
+use crate::backend::carte::db_boissons::{get_boissons_par_type, slug_to_type};
 use crate::backend::utils::inject_auth;
 use runique::prelude::*;
 
@@ -23,5 +23,5 @@ pub async fn vue_boissons_type(request: &mut Request) -> AppResult<Response> {
         "type_label" => type_label,
         "boissons"   => boissons,
     });
-    request.render("boissons_type.html")
+    request.render("menus/boisson_type.html")
 }

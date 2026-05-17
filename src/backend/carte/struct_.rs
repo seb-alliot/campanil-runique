@@ -2,7 +2,7 @@ use runique::prelude::*;
 
 #[derive(Serialize, Clone)]
 pub struct CarteGarniture {
-    pub id: i32,
+    pub id: Pk,
     pub libelle: String,
     pub type_garniture: String,
     pub est_defaut: bool,
@@ -10,7 +10,7 @@ pub struct CarteGarniture {
 
 #[derive(Serialize, Clone)]
 pub struct CartePlat {
-    pub id: i32,
+    pub id: Pk,
     pub titre: String,
     pub label: Option<String>,
     pub description: Option<String>,
@@ -19,14 +19,13 @@ pub struct CartePlat {
     pub est_viande: bool,
     pub disponible: bool,
     pub avec_legumes: bool,
-    pub prix_supplement_legumes: String,
     pub allergenes: Vec<String>,
     pub garnitures: Vec<CarteGarniture>,
 }
 
 #[derive(Serialize)]
 pub struct CarteBoisson {
-    pub id: i32,
+    pub id: Pk,
     pub titre: String,
     pub description: Option<String>,
     pub prix: String,
@@ -43,7 +42,7 @@ pub struct CarteBoissonGroupe {
 
 #[derive(Serialize)]
 pub struct CarteSupplementItem {
-    pub id: i32,
+    pub id: Pk,
     pub libelle: String,
     pub prix: String,
 }
@@ -57,10 +56,11 @@ pub struct CoursMenu {
 
 #[derive(Serialize)]
 pub struct CarteMenuResto {
-    pub id: i32,
+    pub id: Pk,
     pub titre: String,
     pub prix: String,
     pub description: Option<String>,
+    pub dessert: Option<String>,
     pub cours: Vec<CoursMenu>,
 }
 

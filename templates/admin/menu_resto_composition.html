@@ -1,0 +1,118 @@
+{% extends "admin_base" %}
+{% block title %}Composition — {{ menu_nom }} — {{ site_title }}{% endblock %}
+{% block extra_css %}{{ super() }}<link rel="stylesheet" href="{% static "css/admin-surcharge.css" %}">{% endblock %}
+{% block breadcrumb %}
+  <span class="breadcrumb-sep">/</span>
+  <a href="{{ admin_prefix }}/menus_resto/list">Menus restaurant</a>
+  <span class="breadcrumb-sep">/</span>
+  <span>Composition — {{ menu_nom }}</span>
+{% endblock %}
+{% block content %}
+<div class="page-header" data-admin-auto-init>
+  <div>
+    <h1 class="page-title">Composition — {{ menu_nom }}</h1>
+    <p class="page-subtitle">Sélectionner les plats par cours</p>
+  </div>
+  <div class="page-actions">
+    <a href="{{ admin_prefix }}/menus_resto/{{ menu_id }}/detail" class="btn btn-secondary btn-sm">← Détail</a>
+    <a href="{{ admin_prefix }}/menus_resto/list" class="btn btn-secondary btn-sm">← Menus</a>
+  </div>
+</div>
+{% messages %}
+
+<form method="post" action="{{ admin_prefix }}/menus-resto/{{ menu_id }}/composition">
+  {% csrf %}
+  <div class="cp-grid-3">
+
+    <div class="card">
+      <div class="card-header cp-card-header">
+        <h2 class="card-title">Entrées</h2>
+        <span class="badge" id="badge-entree">0</span>
+      </div>
+      <div class="cp-checklist">
+        {% if composition.entrees_disponibles | length == 0 %}
+        <p class="text-muted">Aucune entrée disponible</p>
+        {% endif %}
+        {% for p in composition.entrees_disponibles %}
+        <label class="cp-check-label">
+          <input type="checkbox" name="entree_ids" value="{{ p.id }}"
+            {% if p.id in composition.entree_ids %}checked{% endif %}>
+          <span>{{ p.titre }}</span>
+        </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header cp-card-header">
+        <h2 class="card-title">Plats</h2>
+        <span class="badge" id="badge-plat">0</span>
+      </div>
+      <div class="cp-checklist">
+        {% if composition.plats_disponibles | length == 0 %}
+        <p class="text-muted">Aucun plat disponible</p>
+        {% endif %}
+        {% for p in composition.plats_disponibles %}
+        <label class="cp-check-label">
+          <input type="checkbox" name="plat_ids" value="{{ p.id }}"
+            {% if p.id in composition.plat_ids %}checked{% endif %}>
+          <span>{{ p.titre }}</span>
+        </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header cp-card-header">
+        <h2 class="card-title">Desserts</h2>
+        <span class="badge" id="badge-dessert">0</span>
+      </div>
+      <div class="cp-checklist">
+        {% if composition.desserts_disponibles | length == 0 %}
+        <p class="text-muted">Aucun dessert disponible</p>
+        {% endif %}
+        {% for p in composition.desserts_disponibles %}
+        <label class="cp-check-label">
+          <input type="checkbox" name="dessert_ids" value="{{ p.id }}"
+            {% if p.id in composition.dessert_ids %}checked{% endif %}>
+          <span>{{ p.titre }}</span>
+        </label>
+        {% endfor %}
+      </div>
+      <div class="cp-checklist cp-checklist--border-top">
+        <label class="cp-check-label">
+          <span class="cp-dessert-label">Texte libre</span>
+          <input type="text" name="dessert" class="form-control cp-dessert-inline"
+            value="{{ composition.dessert }}" maxlength="255"
+            placeholder="Ex : Fondant au chocolat…">
+        </label>
+      </div>
+    </div>
+
+  </div>
+  <div class="cp-save-row">
+    <button type="submit" class="btn btn-primary">Enregistrer la composition</button>
+  </div>
+</form>
+
+<script {% csp %}>
+function updateBadge(badgeId, name) {
+  document.getElementById(badgeId).textContent =
+    document.querySelectorAll('input[name="' + name + '"]:checked').length;
+}
+document.addEventListener('DOMContentLoaded', function () {
+  updateBadge('badge-entree', 'entree_ids');
+  updateBadge('badge-plat',   'plat_ids');
+  updateBadge('badge-dessert','dessert_ids');
+  document.querySelectorAll('input[name="entree_ids"]').forEach(function(el) {
+    el.addEventListener('change', function() { updateBadge('badge-entree', 'entree_ids'); });
+  });
+  document.querySelectorAll('input[name="plat_ids"]').forEach(function(el) {
+    el.addEventListener('change', function() { updateBadge('badge-plat', 'plat_ids'); });
+  });
+  document.querySelectorAll('input[name="dessert_ids"]').forEach(function(el) {
+    el.addEventListener('change', function() { updateBadge('badge-dessert', 'dessert_ids'); });
+  });
+});
+</script>
+{% endblock %}

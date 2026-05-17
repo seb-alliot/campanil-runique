@@ -19,7 +19,6 @@ COMMIT;
 -- 1b. Colonnes ajoutées depuis la v1
 ALTER TABLE plats ADD COLUMN IF NOT EXISTS label                  VARCHAR(80);
 ALTER TABLE plats ADD COLUMN IF NOT EXISTS avec_legumes           BOOLEAN NOT NULL DEFAULT TRUE;
-ALTER TABLE plats ADD COLUMN IF NOT EXISTS prix_supplement_legumes NUMERIC(10,2)   DEFAULT 0;
 
 CREATE TYPE IF NOT EXISTS typegarniture AS ENUM ('feculent', 'legumes');
 
@@ -90,44 +89,44 @@ DELETE FROM commande_plats;
 DELETE FROM plats;
 DELETE FROM boissons;
 
--- 3. Plats réels (titre, label, type, prix, description, image, disponible, est_viande, avec_legumes, prix_supplement_legumes)
-INSERT INTO plats (id, titre, label, type_plat, prix, description, image, disponible, est_viande, avec_legumes, prix_supplement_legumes) VALUES
+-- 3. Plats réels (titre, label, type, prix, description, image, disponible, est_viande, avec_legumes)
+INSERT INTO plats (id, titre, label, type_plat, prix, description, image, disponible, est_viande, avec_legumes) VALUES
     -- Entrées
-    (1,  'Soupe traditionnelle mijotée à l''os de jambon',                              'Soupe jambon',      'entree',     12.00, NULL, NULL, true, false, true,  0),
-    (2,  'Notre terrine de sanglier aux baies de myrte',                                'Terrine sanglier',  'entree',     14.00, NULL, NULL, true, false, true,  0),
-    (3,  'Planche Charcuterie Corse',                                                   'Charcuterie',       'entree',     17.00, NULL, NULL, true, false, true,  0),
-    (4,  'Houmous, légumes crus, huile de sésame',                                      'Houmous',           'entree',     16.00, NULL, NULL, true, false, true,  0),
-    (5,  'Mi-cuit foie gras de canard Origine France et ses toasts',                    'Foie gras',         'entree',     22.00, '100 g environ', NULL, true, false, true, 0),
-    (6,  'Le pain du bandit',                                                           'Pain bandit',       'entree',     15.00, 'Tartine fromage et jambon corse, figues, pesto, roquette', NULL, true, false, true, 0),
-    (7,  'Salade de poulpe tiède en persillade, pommes de terre vapeur',                'Poulpe',            'entree',     14.00, NULL, NULL, true, false, true,  0),
-    (8,  'Bowl Végé solo',                                                              'Bowl Végé S',       'entree',      8.50, 'Riz, tomate, carotte, concombre, avocat, ananas, houmous', NULL, true, false, true, 0),
-    (9,  'Bowl Végé à partager',                                                        'Bowl Végé L',       'entree',     17.00, 'Riz, tomate, carotte, concombre, avocat, ananas, houmous', NULL, true, false, true, 0),
-    (10, 'Bowl Saumon fumé solo',                                                       'Bowl Saumon S',     'entree',      9.50, 'Riz, avocat, tomate, concombre, carotte, houmous', NULL, true, false, true, 0),
-    (11, 'Bowl Saumon fumé à partager',                                                 'Bowl Saumon L',     'entree',     19.50, 'Riz, avocat, tomate, concombre, carotte, houmous', NULL, true, false, true, 0),
-    (12, 'U Spuntinu',                                                                  'U Spuntinu',        'entree',     24.00, 'Planche de charcuterie avec fromages, confiture et terrine de sanglier', NULL, true, false, true, 0),
+    (1,  'Soupe traditionnelle mijotée à l''os de jambon',                              'Soupe jambon',      'entree',     12.00, NULL, NULL, true, false, true),
+    (2,  'Notre terrine de sanglier aux baies de myrte',                                'Terrine sanglier',  'entree',     14.00, NULL, NULL, true, false, true),
+    (3,  'Planche Charcuterie Corse',                                                   'Charcuterie',       'entree',     17.00, NULL, NULL, true, false, true),
+    (4,  'Houmous, légumes crus, huile de sésame',                                      'Houmous',           'entree',     16.00, NULL, NULL, true, false, true),
+    (5,  'Mi-cuit foie gras de canard Origine France et ses toasts',                    'Foie gras',         'entree',     22.00, '100 g environ', NULL, true, false, true),
+    (6,  'Le pain du bandit',                                                           'Pain bandit',       'entree',     15.00, 'Tartine fromage et jambon corse, figues, pesto, roquette', NULL, true, false, true),
+    (7,  'Salade de poulpe tiède en persillade, pommes de terre vapeur',                'Poulpe',            'entree',     14.00, NULL, NULL, true, false, true),
+    (8,  'Bowl Végé solo',                                                              'Bowl Végé S',       'entree',      8.50, 'Riz, tomate, carotte, concombre, avocat, ananas, houmous', NULL, true, false, true),
+    (9,  'Bowl Végé à partager',                                                        'Bowl Végé L',       'entree',     17.00, 'Riz, tomate, carotte, concombre, avocat, ananas, houmous', NULL, true, false, true),
+    (10, 'Bowl Saumon fumé solo',                                                       'Bowl Saumon S',     'entree',      9.50, 'Riz, avocat, tomate, concombre, carotte, houmous', NULL, true, false, true),
+    (11, 'Bowl Saumon fumé à partager',                                                 'Bowl Saumon L',     'entree',     19.50, 'Riz, avocat, tomate, concombre, carotte, houmous', NULL, true, false, true),
+    (12, 'U Spuntinu',                                                                  'U Spuntinu',        'entree',     24.00, 'Planche de charcuterie avec fromages, confiture et terrine de sanglier', NULL, true, false, true),
 
     -- Spécialités de chez nous
-    (13, 'Cannelloni fraîches broccio-blettes, sauce tomate',                           'Cannelloni brocciu', 'specialite', 17.00, NULL, NULL, true, false, true, 0),
-    (14, 'Nos saucisses de sanglier maison à l''usu Figatellu, purée au lait',          'Saucisses sanglier', 'specialite', 21.00, NULL, NULL, true, false, true, 0),
-    (15, 'Truite fraîche poêlée à la Népita, pommes de terre, légumes croquants',       'Truite Népita',      'specialite', 16.50, NULL, NULL, true, false, true, 0),
+    (13, 'Cannelloni fraîches broccio-blettes, sauce tomate',                           'Cannelloni brocciu', 'specialite', 17.00, NULL, NULL, true, false, true),
+    (14, 'Nos saucisses de sanglier maison à l''usu Figatellu, purée au lait',          'Saucisses sanglier', 'specialite', 21.00, NULL, NULL, true, false, true),
+    (15, 'Truite fraîche poêlée à la Népita, pommes de terre, légumes croquants',       'Truite Népita',      'specialite', 16.50, NULL, NULL, true, false, true),
 
     -- Viandes
-    (16, 'Gnocchi sauce morilles, foie gras frais poêlé, noisettes torréfiées',         'Gnocchi morilles',   'viande', 32.00, NULL, NULL, true, false, true,  0),
-    (17, 'Émincé de volaille panée à la noisette, légumes croquants, pommes de terre',  'Volaille noisette',  'viande', 18.50, NULL, NULL, true, false, true,  0),
-    (18, '« Corsican pulled porc thaï style », purée au lait, épinards',               'Pulled porc',        'viande', 22.00, NULL, NULL, true, false, true,  0),
-    (19, 'Filet de bœuf charolais, sauce morilles, pommes de terre',                    'Filet bœuf',         'viande', 32.00, 'Option Rossini +7€', NULL, true, true, true, 0),
-    (20, 'Gnocchi et veau Corse façon bolognaise, tomme de brebis, châtaignes',         'Gnocchi veau',       'viande', 24.00, NULL, NULL, true, false, true,  0),
+    (16, 'Gnocchi sauce morilles, foie gras frais poêlé, noisettes torréfiées',         'Gnocchi morilles',   'viande', 32.00, NULL, NULL, true, false, true),
+    (17, 'Émincé de volaille panée à la noisette, légumes croquants, pommes de terre',  'Volaille noisette',  'viande', 18.50, NULL, NULL, true, false, true),
+    (18, '« Corsican pulled porc thaï style », purée au lait, épinards',               'Pulled porc',        'viande', 22.00, NULL, NULL, true, false, true),
+    (19, 'Filet de bœuf charolais, sauce morilles, pommes de terre',                    'Filet bœuf',         'viande', 32.00, 'Option Rossini +7€', NULL, true, true, true),
+    (20, 'Gnocchi et veau Corse façon bolognaise, tomme de brebis, châtaignes',         'Gnocchi veau',       'viande', 24.00, NULL, NULL, true, false, true),
 
     -- Poissons
-    (21, 'Filet de daurade cuit sur peau, émulsion citronnée, petits légumes',          'Daurade',            'poisson', 27.00, NULL, NULL, true, false, true, 0),
-    (22, 'Penne aux gambas du chef, sauce crustacés',                                   'Penne gambas',       'poisson', 34.00, NULL, NULL, true, false, true, 0),
-    (23, 'Seiche poêlée aux noix de cajou, sauce vierge, pomme de terre, salade',       'Seiche cajou',       'poisson', 26.00, NULL, NULL, true, false, true, 0),
-    (24, 'Healthy Burger Saumon fumé, avocat, crème cheese, pommes de terre, salade',   'Burger saumon',      'poisson', 21.00, NULL, NULL, true, false, true, 0),
+    (21, 'Filet de daurade cuit sur peau, émulsion citronnée, petits légumes',          'Daurade',            'poisson', 27.00, NULL, NULL, true, false, true),
+    (22, 'Penne aux gambas du chef, sauce crustacés',                                   'Penne gambas',       'poisson', 34.00, NULL, NULL, true, false, true),
+    (23, 'Seiche poêlée aux noix de cajou, sauce vierge, pomme de terre, salade',       'Seiche cajou',       'poisson', 26.00, NULL, NULL, true, false, true),
+    (24, 'Healthy Burger Saumon fumé, avocat, crème cheese, pommes de terre, salade',   'Burger saumon',      'poisson', 21.00, NULL, NULL, true, false, true),
 
     -- Desserts
-    (25, 'Fromages Cortenais, confiture de figue',                                      'Fromages',           'dessert',  8.50, NULL, NULL, true, false, true, 0),
-    (26, 'Fiadone — Douceur Brocciu-citron',                                            'Fiadone',            'dessert',  7.00, NULL, NULL, true, false, true, 0),
-    (27, 'Myrte glacée',                                                                'Myrte glacée',       'dessert',  6.50, 'Sans lactose', NULL, true, false, true, 0);
+    (25, 'Fromages Cortenais, confiture de figue',                                      'Fromages',           'dessert',  8.50, NULL, NULL, true, false, true),
+    (26, 'Fiadone — Douceur Brocciu-citron',                                            'Fiadone',            'dessert',  7.00, NULL, NULL, true, false, true),
+    (27, 'Myrte glacée',                                                                'Myrte glacée',       'dessert',  6.50, 'Sans lactose', NULL, true, false, true);
 
 -- 4. Allergènes des plats
 INSERT INTO plat_allergene (id, plat_id, allergene_id) VALUES

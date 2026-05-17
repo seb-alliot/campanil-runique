@@ -12,7 +12,7 @@
             <h1>Restaurant<span class="hero-name">{{ info_resto.nom | default(value="U Campanile") }}</span></h1>
             <div class="hero-actions">
                 <a href="/carte" class="btn-primary">Découvrir la carte</a>
-                <a href="/panier/commander" class="btn-outline">Commander</a>
+                <a href="/carte" class="btn-outline">Commander</a>
             </div>
         </div>
     </div>
@@ -46,7 +46,7 @@
     <div class="container text-center">
         <h2>Commander en ligne</h2>
         <p>Récupérez votre commande sur place. La livraison est disponible hors saison.</p>
-        <a href="/panier/commander" class="btn-primary">Passer une commande</a>
+        <a href="/carte" class="btn-primary">Passer une commande</a>
     </div>
 </section>
 
@@ -108,6 +108,19 @@
         <h2>Nous trouver</h2>
         <p>{{ info_resto.adresse | default(value="Place Gaffory, 20250 Corte") }} — <a href="tel:{{ info_resto.telephone | default(value="+33685659626") }}">{{ info_resto.telephone | default(value="06 85 65 96 26") }}</a></p>
         <a href="/contact" class="btn-secondary">Nous contacter</a>
+        {% if info_resto.facebook or info_resto.instagram or info_resto.tripadvisor %}
+        <div class="social-links">
+            {% if info_resto.facebook %}
+            <a href="{{ info_resto.facebook }}" target="_blank" rel="noopener" class="social-link social-link--fb">Facebook</a>
+            {% endif %}
+            {% if info_resto.instagram %}
+            <a href="{{ info_resto.instagram }}" target="_blank" rel="noopener" class="social-link social-link--ig">Instagram</a>
+            {% endif %}
+            {% if info_resto.tripadvisor %}
+            <a href="{{ info_resto.tripadvisor }}" target="_blank" rel="noopener" class="social-link social-link--ta">TripAdvisor</a>
+            {% endif %}
+        </div>
+        {% endif %}
     </div>
 </section>
 {% endblock %}

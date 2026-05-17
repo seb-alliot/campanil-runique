@@ -5,12 +5,18 @@ model! {
     table: "supplements",
     pk: id => Pk,
     {
-        libelle:    text    [required, max_length: 255],
-        prix:       decimal [required],
-        disponible: bool    [required, default: true],
+        garniture_id: int     [fk(garnitures.id, set_null)],
+        titre:        text    [max_length: 255],
+        libelle:      text    [max_length: 500],
+        prix:         decimal [required],
+        disponible:   bool    [required, default: true],
+        ordre:      int    [default: 0],
+    },
+    relations: {
+        belongs_to: Garniture via garniture_id,
     },
     meta: {
-        ordering: [libelle],
+        ordering: [ordre, titre],
         verbose_name: "Supplément",
         verbose_name_plural: "Suppléments",
     }

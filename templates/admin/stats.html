@@ -1,0 +1,170 @@
+{% extends "admin_base" %}
+{% block extra_css %}
+{{ super() }}
+<link rel="stylesheet" href="{% static "css/admin-surcharge.css" %}">
+<style>
+.stats-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 28px; }
+.stat-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px 24px; }
+.stat-card-label { font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: .05em; margin: 0 0 6px; }
+.stat-card-value { font-size: 28px; font-weight: 700; color: #111827; margin: 0; }
+.stat-card-sub { font-size: 12px; color: #9ca3af; margin: 4px 0 0; }
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+.stats-grid-full { margin-bottom: 20px; }
+@media (max-width: 768px) { .stats-grid { grid-template-columns: 1fr; } }
+.chart-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; }
+.chart-card h3 { margin: 0 0 16px; font-size: 14px; font-weight: 600; color: #374151; }
+.stats-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.stats-table th { text-align: left; padding: 8px 12px; background: #f9fafb; border-bottom: 1px solid #e5e7eb; font-weight: 600; color: #6b7280; font-size: 11px; text-transform: uppercase; }
+.stats-table td { padding: 8px 12px; border-bottom: 1px solid #f3f4f6; color: #374151; }
+.stats-table tr:last-child td { border-bottom: none; }
+.bar-wrap { display: flex; align-items: center; gap: 8px; }
+.bar { height: 8px; background: #3b82f6; border-radius: 4px; min-width: 2px; }
+.bar-count { font-size: 12px; color: #6b7280; white-space: nowrap; }
+</style>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div class="page-header-left">
+        <h1 class="page-title">Statistiques</h1>
+    </div>
+</div>
+{% messages %}
+
+<div class="stats-cards">
+    <div class="stat-card">
+        <p class="stat-card-label">Commandes total</p>
+        <p class="stat-card-value">{{ stats.nb_commandes }}</p>
+    </div>
+    <div class="stat-card">
+        <p class="stat-card-label">Commandes carte</p>
+        <p class="stat-card-value">{{ stats.nb_carte }}</p>
+    </div>
+    <div class="stat-card">
+        <p class="stat-card-label">Commandes traiteur</p>
+        <p class="stat-card-value">{{ stats.nb_traiteur }}</p>
+    </div>
+    <div class="stat-card">
+        <p class="stat-card-label">CA total</p>
+        <p class="stat-card-value">{{ stats.ca_total | round(precision=2) }} €</p>
+    </div>
+</div>
+
+<div class="stats-grid-full">
+    <div class="chart-card">
+        <h3>CA & commandes — 7 derniers jours</h3>
+        {% if stats.jours %}
+        <canvas id="chartJours" height="90"></canvas>
+        {% else %}
+        <p style="color:#9ca3af;font-size:13px;">Aucune donnée sur les 7 derniers jours.</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="stats-grid">
+    <div class="chart-card">
+        <h3>Répartition carte / traiteur</h3>
+        <canvas id="chartTypes" height="180"></canvas>
+    </div>
+
+    <div class="chart-card">
+        <h3>Top plats consultés</h3>
+        {% if stats.top_plats %}
+        {% set max_vues = stats.top_plats | first %}
+        <table class="stats-table">
+            <thead><tr><th>Plat</th><th>Vues</th></tr></thead>
+            <tbody>
+            {% for p in stats.top_plats %}
+            <tr>
+                <td>{{ p.titre }}</td>
+                <td>
+                    <div class="bar-wrap">
+                        <div class="bar" style="width: {{ p.vues * 120 / (max_vues.vues + 1) }}px"></div>
+                        <span class="bar-count">{{ p.vues }}</span>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p style="color:#9ca3af;font-size:13px;">Aucune donnée.</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="chart-card">
+    <h3>Filtres menus les plus utilisés</h3>
+    {% if stats.top_filtres %}
+    <table class="stats-table">
+        <thead><tr><th>Filtre</th><th>Valeur</th><th>Utilisations</th></tr></thead>
+        <tbody>
+        {% for f in stats.top_filtres %}
+        <tr>
+            <td>{{ f.filtre }}</td>
+            <td>{{ f.valeur }}</td>
+            <td>{{ f.count }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color:#9ca3af;font-size:13px;">Aucune donnée.</p>
+    {% endif %}
+</div>
+
+<script src="{% static "js/chart.umd.min.js" %}"></script>
+<script>
+(function() {
+    {% if stats.jours %}
+    const joursLabels = [{% for j in stats.jours %}"{{ j.date }}"{% if not loop.last %},{% endif %}{% endfor %}];
+    const joursCA    = [{% for j in stats.jours %}{{ j.ca | round(precision=2) }}{% if not loop.last %},{% endif %}{% endfor %}];
+    const joursNb    = [{% for j in stats.jours %}{{ j.nb }}{% if not loop.last %},{% endif %}{% endfor %}];
+    new Chart(document.getElementById('chartJours'), {
+        type: 'bar',
+        data: {
+            labels: joursLabels,
+            datasets: [
+                {
+                    label: 'CA (€)',
+                    data: joursCA,
+                    backgroundColor: 'rgba(59,130,246,.7)',
+                    yAxisID: 'yCA',
+                    order: 2,
+                },
+                {
+                    label: 'Nb commandes',
+                    data: joursNb,
+                    type: 'line',
+                    borderColor: '#f59e0b',
+                    backgroundColor: 'transparent',
+                    pointBackgroundColor: '#f59e0b',
+                    tension: .3,
+                    yAxisID: 'yNb',
+                    order: 1,
+                },
+            ],
+        },
+        options: {
+            responsive: true,
+            scales: {
+                yCA: { position: 'left',  title: { display: true, text: 'CA €' } },
+                yNb: { position: 'right', title: { display: true, text: 'Commandes' }, grid: { drawOnChartArea: false } },
+            },
+        },
+    });
+    {% endif %}
+
+    new Chart(document.getElementById('chartTypes'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Carte', 'Traiteur'],
+            datasets: [{
+                data: [{{ stats.nb_carte }}, {{ stats.nb_traiteur }}],
+                backgroundColor: ['#3b82f6', '#f59e0b'],
+            }],
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom' } } },
+    });
+})();
+</script>
+{% endblock %}
