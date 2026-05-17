@@ -39,8 +39,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 .with_session_cleanup_interval(5)
                 .with_allowed_hosts(|h| {
                     h.enabled(true)
-                        .host("localhost:3000")
-                        .host("127.0.0.1:3000")
+                        .host("localhost:8000")
+                        .host("127.0.0.1:8000")
                         .host("U-Campanile-corte.fr")
                 })
                 .with_csp(|c| {
