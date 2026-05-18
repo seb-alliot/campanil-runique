@@ -1608,6 +1608,7 @@ textarea.form-control { min-height: 120px; resize: vertical; }
     .nav-logo { font-size: 1.1rem; }
     .nav-actions { gap: .5rem; }
     .btn-panier { padding: .5rem .75rem; font-size: .78rem; }
+    .site-nav-link-action { display: none; }
 
     /* Global */
     .container { padding: 0 1rem; }

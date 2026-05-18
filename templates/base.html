@@ -59,6 +59,11 @@
             <li><a href="/contact">Contact</a></li>
             {% if user and user.is_staff %}<li><a href="{% link "service" %}">Service</a></li>{% endif %}
             {% if user and is_admin %}<li><a href="/admin-campanile">Admin</a></li>{% endif %}
+            {% if user %}
+                <li><a href="{% link "compte" %}">{{ user.username }}</a></li>
+            {% else %}
+                <li><a href="{% link "connexion" %}">Se connecter</a></li>
+            {% endif %}
         </ul>
     </div>
 
