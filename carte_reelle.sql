@@ -20,7 +20,7 @@ COMMIT;
 ALTER TABLE plats ADD COLUMN IF NOT EXISTS label                  VARCHAR(80);
 ALTER TABLE plats ADD COLUMN IF NOT EXISTS avec_legumes           BOOLEAN NOT NULL DEFAULT TRUE;
 
-CREATE TYPE IF NOT EXISTS typegarniture AS ENUM ('feculent', 'legumes');
+DO $$ BEGIN CREATE TYPE typegarniture AS ENUM ('feculent', 'legumes'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 CREATE TABLE IF NOT EXISTS garnitures (
     id              SERIAL PRIMARY KEY,
@@ -34,6 +34,12 @@ CREATE TABLE IF NOT EXISTS plat_garnitures (
     plat_id      INT NOT NULL REFERENCES plats(id) ON DELETE CASCADE,
     garniture_id INT NOT NULL REFERENCES garnitures(id) ON DELETE CASCADE,
     est_defaut   BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+CREATE TABLE IF NOT EXISTS commande_plats (
+    id           SERIAL PRIMARY KEY,
+    avec_legumes BOOLEAN DEFAULT FALSE,
+    sans_sel     BOOLEAN DEFAULT FALSE
 );
 
 ALTER TABLE commande_plats DROP   COLUMN IF EXISTS garniture_id;
@@ -285,6 +291,10 @@ INSERT INTO boissons (id, titre, type_boisson, prix, description, image, disponi
     (55, 'Expresso / Décaféiné',                                    'digestif',  1.90, NULL, NULL, true);
 
 -- 7. Menus restaurant
+ALTER TABLE menu_resto ADD COLUMN IF NOT EXISTS titre VARCHAR(255);
+ALTER TABLE menu_resto ADD COLUMN IF NOT EXISTS description TEXT;
+ALTER TABLE menu_resto ADD COLUMN IF NOT EXISTS disponible BOOLEAN NOT NULL DEFAULT TRUE;
+
 DELETE FROM menu_resto_plat;
 DELETE FROM menu_resto;
 INSERT INTO menu_resto (id, titre, prix, description, disponible) VALUES

@@ -37,8 +37,8 @@ pub async fn get_menu_cards(db: &DatabaseConnection, filters: &MenuFilters) -> V
             description: m.description,
             prix_par_personne: format!("{:.2}", m.prix_par_personne),
             nb_personnes_min: m.nb_personnes_min,
-            theme: m.theme.to_string(),
-            regime: m.regime.to_string(),
+            theme: m.theme.to_value(),
+            regime: m.regime.to_value(),
             image: None,
             stock: m.stock,
         })
