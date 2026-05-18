@@ -1,3 +1,30 @@
+const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+
+function ajouterAuPanier(url, btn, labelEl) {
+    const label = labelEl ? labelEl.textContent : '';
+    if (btn) { btn.disabled = true; if (labelEl) labelEl.textContent = 'Ajouté !'; }
+
+    fetch(url, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'X-CSRFToken': csrfToken },
+    })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            updateBadge(data.nb);
+            setTimeout(function () {
+                if (labelEl) labelEl.textContent = label;
+                if (btn) btn.disabled = false;
+                const panel = btn && btn.closest('.plat-picker');
+                if (panel) panel.hidden = true;
+            }, 1200);
+        })
+        .catch(function () {
+            if (labelEl) labelEl.textContent = label;
+            if (btn) btn.disabled = false;
+        });
+}
+
 document.addEventListener('change', function (e) {
     const radio = e.target.closest('.js-cours-radio');
     if (!radio) return;
@@ -46,23 +73,7 @@ document.addEventListener('click', function (e) {
 
         if (!valid) return;
 
-        const url = '/panier/ajouter?' + params;
-        confirmer.disabled = true;
-        const label = confirmer.textContent;
-        confirmer.textContent = 'Ajouté !';
-        fetch(url, { credentials: 'same-origin' })
-            .then(function (r) { return r.json(); })
-            .then(function (data) {
-                updateBadge(data.nb);
-                setTimeout(function () {
-                    confirmer.textContent = label;
-                    confirmer.disabled = false;
-                }, 1200);
-            })
-            .catch(function () {
-                confirmer.textContent = label;
-                confirmer.disabled = false;
-            });
+        ajouterAuPanier('/panier/ajouter?' + params, confirmer, confirmer);
         return;
     }
 
@@ -127,25 +138,7 @@ document.addEventListener('click', function (e) {
         return;
     }
 
-    const label = btn.textContent;
-    btn.textContent = 'Ajouté !';
-    btn.disabled = true;
-
-    fetch(url, { credentials: 'same-origin' })
-        .then(function (r) { return r.json(); })
-        .then(function (data) {
-            updateBadge(data.nb);
-            setTimeout(function () {
-                btn.textContent = label;
-                btn.disabled = false;
-                const panel = btn.closest('.plat-picker');
-                if (panel) panel.hidden = true;
-            }, 1200);
-        })
-        .catch(function () {
-            btn.textContent = label;
-            btn.disabled = false;
-        });
+    ajouterAuPanier(url, btn, btn);
 });
 
 function closePhotoModalIfOpen() {

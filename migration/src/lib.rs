@@ -3,6 +3,7 @@ use sea_orm_migration::prelude::*;
 mod m20260516_010432_alter_plat_allergene_table;
 mod m20260516_020000_alter_info_resto_add_coords;
 mod m20260516_040000_alter_menu_resto_add_dessert;
+mod m20260518_050000_alter_supplements_add_ordre;
 mod m20260516_010432_alter_menu_plat_table;
 mod m20260516_010422_alter_menu_resto_table;
 mod m20260516_010422_alter_menu_plat_table;
@@ -80,6 +81,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20260516_010432_alter_plat_allergene_table::Migration),
             Box::new(m20260516_020000_alter_info_resto_add_coords::Migration),
             Box::new(m20260516_040000_alter_menu_resto_add_dessert::Migration),
+            Box::new(m20260518_050000_alter_supplements_add_ordre::Migration),
         ]
     }
 }

@@ -78,7 +78,12 @@ document.addEventListener('click', function (e) {
 
     btn.disabled = true;
 
-    fetch(url, { credentials: 'same-origin' })
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+    fetch(url, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'X-CSRFToken': csrfToken },
+    })
         .then(function (r) { return r.json(); })
         .then(function (data) {
             if (ligneEl) ligneEl.remove();
