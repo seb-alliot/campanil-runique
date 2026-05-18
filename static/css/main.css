@@ -861,9 +861,10 @@ textarea.form-control { min-height: 120px; resize: vertical; }
 .empty-state p { margin-bottom: 1.5rem; }
 
 /* --- RESPONSIVE --- */
-@media (max-width: 950px) {
+@media (max-width: 900px) {
     .nav-links  { display: none; }
     .nav-burger { display: flex; }
+    .site-nav-link-action { display: none; }
     .page-hero {
         position: relative;
         background-image: url('/static/image/Campanile.avif');
@@ -1608,7 +1609,6 @@ textarea.form-control { min-height: 120px; resize: vertical; }
     .nav-logo { font-size: 1.1rem; }
     .nav-actions { gap: .5rem; }
     .btn-panier { padding: .5rem .75rem; font-size: .78rem; }
-    .site-nav-link-action { display: none; }
 
     /* Global */
     .container { padding: 0 1rem; }
