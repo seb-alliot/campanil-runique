@@ -420,6 +420,11 @@ p {
     color: var(--color-dark);
 }
 
+.horaire-plage {
+    display: block;
+    white-space: nowrap;
+}
+
 .horaire-dot {
     margin: 0 .5rem;
     color: var(--color-primary);

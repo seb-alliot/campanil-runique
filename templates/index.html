@@ -65,13 +65,10 @@
                             <span class="horaire-closed">Fermé</span>
                         {% else %}
                             {% if h.ouverture_midi and h.fermeture_midi %}
-                            {{ h.ouverture_midi | truncate(length=5, end="") }} – {{ h.fermeture_midi | truncate(length=5, end="") }}
-                            {% endif %}
-                            {% if h.ouverture_midi and h.fermeture_midi and h.ouverture_soir and h.fermeture_soir %}
-                            <span class="horaire-dot">·</span>
+                            <span class="horaire-plage">{{ h.ouverture_midi | truncate(length=5, end="") }} – {{ h.fermeture_midi | truncate(length=5, end="") }}</span>
                             {% endif %}
                             {% if h.ouverture_soir and h.fermeture_soir %}
-                            {{ h.ouverture_soir | truncate(length=5, end="") }} – {{ h.fermeture_soir | truncate(length=5, end="") }}
+                            <span class="horaire-plage">{{ h.ouverture_soir | truncate(length=5, end="") }} – {{ h.fermeture_soir | truncate(length=5, end="") }}</span>
                             {% endif %}
                             {% if h.note %}
                             <span class="horaire-note">{{ h.note }}</span>
