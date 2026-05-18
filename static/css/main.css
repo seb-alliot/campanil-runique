@@ -2079,6 +2079,8 @@ textarea.form-control { min-height: 120px; resize: vertical; }
     word-break: break-word;
 }
 
+.btn-supprimer-avis-mt { margin-top: .5rem; }
+
 /* Formulaire avis dans onglet plats — même style que .avis-form-wrap mais sans bordure top */
 .plat-avis-card .avis-form-wrap {
     margin-top: .4rem;
