@@ -47,7 +47,7 @@ pub async fn handle_login(request: &mut Request, form: &mut LoginForm) -> AppRes
             "title"         => "Login",
             "login_form"    => form,
             "auth_error"    => &true,
-            "messages"      => flash_now!(error => "Invalid credentials"),
+            "messages"      => flash_now!(error => "Identifiant ou mot de passe incorrect."),
         });
         return request.render(template);
     }
