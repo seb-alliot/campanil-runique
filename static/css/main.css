@@ -2075,9 +2075,8 @@ textarea.form-control { min-height: 120px; resize: vertical; }
     font-size: 1rem;
     color: #1f2937;
     margin-bottom: .4rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 /* Formulaire avis dans onglet plats — même style que .avis-form-wrap mais sans bordure top */

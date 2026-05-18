@@ -4882,27 +4882,8 @@ pub fn admin_register() -> AdminRegistry {
             };
             let mut row = serde_json::to_value(model).unwrap_or(serde_json::Value::Null);
             {
-                use sea_orm::ConnectionTrait;
-                if let Some(fk_key) = row.get("plat_id").and_then(|v| {
-                    v.as_i64()
-                        .map(|n| n.to_string())
-                        .or_else(|| v.as_str().map(str::to_string))
-                }) {
-                    let ids_csv = format!("'{}'", fk_key.replace('\'', "''"));
-                    let _fk_stmt_plat_id = sea_orm::sea_query::Query::select()
-                        .expr(sea_orm::sea_query::Expr::cust("CAST(id AS TEXT)"))
-                        .expr(sea_orm::sea_query::Expr::cust("titre"))
-                        .from(sea_orm::sea_query::Alias::new("plats"))
-                        .and_where(sea_orm::sea_query::Expr::cust(format!(
-                            "CAST(id AS TEXT) IN ({})",
-                            ids_csv
-                        )))
-                        .to_owned();
-                    if let Some(fk_row) = db.query_one(&_fk_stmt_plat_id).await.ok().flatten()
-                        && let Ok(label) = fk_row.try_get_by_index::<String>(1)
-                    {
-                        row["plat_id"] = serde_json::Value::String(label);
-                    }
+                if let Some(id_val) = row.get("plat_id").and_then(|v| v.as_i64()) {
+                    row["plat_id"] = serde_json::Value::String(id_val.to_string());
                 }
             }
             Ok(Some(row))
