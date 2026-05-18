@@ -1,4 +1,5 @@
 use crate::views::*;
+use runique::axum::routing::post as post_route;
 use runique::prelude::*;
 
 pub fn routes() -> Router {
@@ -16,8 +17,8 @@ pub fn routes() -> Router {
         "/compte/commandes.json"                => view!{ compte_commandes_json },  name = "compte_commandes_json",
         "/compte/supprimer"                     => view!{ supprimer_compte },       name = "supprimer_compte",
         "/panier"                               => view!{ panier_page },            name = "panier",
-        "/panier/ajouter"                       => view!{ panier_ajouter_view },    name = "panier_ajouter",
-        "/panier/retirer"                       => view!{ panier_retirer_view },    name = "panier_retirer",
+        "/panier/ajouter"                       => post_route(panier_ajouter_view),  name = "panier_ajouter",
+        "/panier/retirer"                       => post_route(panier_retirer_view), name = "panier_retirer",
         "/panier/livraison-prix"                => view!{ panier_livraison_prix },  name = "panier_livraison_prix",
         "/commande/{numero}/confirmation"       => view!{ commande_confirmation },  name = "commande_confirmation",
         "/service"                              => view!{ service },                 name = "service",

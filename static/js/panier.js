@@ -21,9 +21,13 @@
     };
 
     if (toggle && livrFields) {
+        const adresseEl = document.getElementById('adresse_livraison');
+        const villeEl   = document.getElementById('ville_livraison');
         const update = () => {
             const livr = toggle.checked;
             livrFields.style.display = livr ? '' : 'none';
+            if (adresseEl) adresseEl.required = livr;
+            if (villeEl)   villeEl.required   = livr;
             if (typeRetrait) typeRetrait.value = livr ? 'livraison' : 'sur_place';
             if (heureLabel)  heureLabel.textContent = livr ? 'Date et heure de livraison souhaitées' : 'Date et heure de retrait souhaitées';
             setMinDatetime(heureRetrait);
@@ -82,7 +86,7 @@ document.addEventListener('click', function (e) {
     fetch(url, {
         method: 'POST',
         credentials: 'same-origin',
-        headers: { 'X-CSRFToken': csrfToken },
+        headers: { 'X-CSRF-Token': csrfToken },
     })
         .then(function (r) { return r.json(); })
         .then(function (data) {

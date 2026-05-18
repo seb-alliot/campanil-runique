@@ -7,7 +7,7 @@ function ajouterAuPanier(url, btn, labelEl) {
     fetch(url, {
         method: 'POST',
         credentials: 'same-origin',
-        headers: { 'X-CSRFToken': csrfToken },
+        headers: { 'X-CSRF-Token': csrfToken },
     })
         .then(function (r) { return r.json(); })
         .then(function (data) {
