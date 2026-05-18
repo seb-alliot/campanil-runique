@@ -2080,6 +2080,8 @@ textarea.form-control { min-height: 120px; resize: vertical; }
 }
 
 .btn-supprimer-avis-mt { margin-top: .5rem; }
+.avis-plat-suppr-form { margin-top: .5rem; }
+.compte-section--supprimer { margin-top: 2.5rem; border-top: 1px solid var(--color-border); padding-top: 1.5rem; }
 
 /* Formulaire avis dans onglet plats — même style que .avis-form-wrap mais sans bordure top */
 .plat-avis-card .avis-form-wrap {

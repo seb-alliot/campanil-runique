@@ -197,6 +197,7 @@
                             {% else %}
                             <span class="avis-badge avis-refuse">Avis non publié</span>
                             {% endif %}
+                            <button type="button" class="btn btn-sm btn-danger js-supprimer-avis-plat avis-plat-suppr-form" data-plat-id="{{ p.id }}">Supprimer mon avis</button>
                         {% else %}
                         <details class="avis-form-wrap">
                             <summary>Laisser un avis</summary>
@@ -261,7 +262,7 @@
             </form>
         </section>
 
-        <section class="compte-section">
+        <section class="compte-section compte-section--supprimer">
             <button type="button" class="btn btn-danger btn-sm" id="btn-supprimer-compte">
                 Supprimer mon compte
             </button>
@@ -276,6 +277,17 @@
                     <button type="submit" class="btn btn-danger">Oui, supprimer</button>
                     <button type="button" class="btn btn-secondary" id="btn-annuler-avis">Annuler</button>
                 </form>
+            </div>
+        </dialog>
+
+        <dialog id="modal-supprimer-avis-plat" class="modal-supprimer">
+            <div class="modal-supprimer-body">
+                <h3>Supprimer votre avis ?</h3>
+                <p>Cette action est irréversible. Votre avis sur ce plat sera définitivement supprimé.</p>
+                <div class="modal-supprimer-actions">
+                    <button type="button" class="btn btn-danger" id="btn-confirmer-avis-plat">Oui, supprimer</button>
+                    <button type="button" class="btn btn-secondary" id="btn-annuler-avis-plat">Annuler</button>
+                </div>
             </div>
         </dialog>
 

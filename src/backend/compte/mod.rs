@@ -24,3 +24,6 @@ pub use db_plats_commandes::get_plats_commandes_user;
 
 pub mod avis_plat_poster;
 pub use avis_plat_poster::handle_avis_plat;
+
+pub mod avis_plat_supprimer;
+pub use avis_plat_supprimer::handle_avis_plat_supprimer;

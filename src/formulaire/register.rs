@@ -6,7 +6,7 @@ pub struct RegisterForm;
 #[async_trait]
 impl RuniqueForm for RegisterForm {
     impl_form_access!(model);
-    
+
     async fn clean(&mut self) -> Result<(), StrMap> {
         let username = self.cleaned_string("username").unwrap_or_default();
         let password = self.cleaned_string("password").unwrap_or_default();
