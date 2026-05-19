@@ -14,7 +14,7 @@
   const sections          = Array.from(document.querySelectorAll('.spr-section'));
   const btnBoissonsParent = document.getElementById('livreBoissonsParent');
   const boissonsRow       = document.getElementById('livreBoissonsRow');
-  const BOISSONS_START    = 6;
+  const BOISSONS_START    = 5;
 
   const DECORATIF = `<div class="livre-page-int">
     <div class="livre-page-int-ornement">✦</div>
@@ -67,7 +67,10 @@
   function updateNav(idx) {
     current = idx;
     const isBoisson = current >= BOISSONS_START;
-    tabs.forEach((t, i) => t.classList.toggle('active', i === current));
+    tabs.forEach(t => {
+      const sec = t.dataset.section !== undefined ? Number(t.dataset.section) : -1;
+      t.classList.toggle('active', sec === current);
+    });
     if (btnBoissonsParent) btnBoissonsParent.classList.toggle('active', isBoisson);
     if (boissonsRow) boissonsRow.classList.toggle('visible', isBoisson);
     btnPrev.disabled = current === 0;

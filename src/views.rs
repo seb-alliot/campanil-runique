@@ -175,7 +175,7 @@ pub async fn mentions_legales(mut request: Request) -> AppResult<Response> {
     request.render("mentions-legales.html")
 }
 
-const DOMAIN: &str = "https://ucampanile.fr";
+const DOMAIN: &str = "https://u-campanile.fr";
 
 pub async fn sitemap_xml() -> impl IntoResponse {
     let body = format!(
@@ -186,6 +186,7 @@ pub async fn sitemap_xml() -> impl IntoResponse {
   <url><loc>{d}/menus</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>{d}/traiteur/devis</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>{d}/contact</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>{d}/mentions-legales</loc><changefreq>never</changefreq><priority>0.3</priority></url>
   <url><loc>{d}/connexion</loc><changefreq>never</changefreq><priority>0.2</priority></url>
   <url><loc>{d}/inscription</loc><changefreq>never</changefreq><priority>0.2</priority></url>
 </urlset>"#,
@@ -211,6 +212,7 @@ pub async fn llms_txt() -> impl IntoResponse {
          - [Menus traiteur]({d}/menus) — menus pour événements et réceptions\n\
          - [Devis traiteur]({d}/traiteur/devis) — demande de devis en ligne\n\
          - [Contact]({d}/contact) — formulaire de contact\n\
+         - [Mentions légales]({d}/mentions-legales) — informations légales\n\
          \n\
          ## Informations\n\
          \n\
