@@ -4,8 +4,8 @@ use std::str::FromStr;
 const PRIX_PAR_KM: f64 = 0.54;
 
 pub async fn get_prix_livraison(db: &sea_orm::DatabaseConnection) -> Decimal {
-    info_resto::Entity::find()
-        .one(db)
+    search!(info_resto::Entity)
+        .first(db)
         .await
         .ok()
         .flatten()
@@ -28,7 +28,7 @@ pub async fn prix_livraison_distance(
     cp: &str,
     ville: &str,
 ) -> Option<Decimal> {
-    let row = info_resto::Entity::find().one(db).await.ok().flatten()?;
+    let row = search!(info_resto::Entity).first(db).await.ok().flatten()?;
     let resto_lat = row.latitude?.to_string().parse::<f64>().ok()?;
     let resto_lon = row.longitude?.to_string().parse::<f64>().ok()?;
 

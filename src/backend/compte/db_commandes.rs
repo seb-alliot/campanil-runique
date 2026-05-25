@@ -2,7 +2,8 @@ use crate::backend::compte::{CommandeResume, LigneResume, StatutHistorique};
 use crate::entities::commande;
 use crate::entities::commande::{StatutCommande, TypeRetrait};
 use crate::entities::{
-    avis, boisson, commande_ligne, commande_statut, garniture, menu_resto, plat, supplement,
+    avis, boisson, commande_ligne, commande_statut, dessert, entree, garniture, menu, plat,
+    supplement,
 };
 use runique::prelude::*;
 use sea_orm::{ColumnTrait, Condition};
@@ -93,7 +94,9 @@ pub async fn get_commandes_user(
         .unwrap_or_default();
 
     let plat_ids: Vec<i32> = lignes_raw.iter().filter_map(|l| l.plat_id).collect();
-    let menu_ids: Vec<i32> = lignes_raw.iter().filter_map(|l| l.menu_resto_id).collect();
+    let entree_ids: Vec<i32> = lignes_raw.iter().filter_map(|l| l.entree_id).collect();
+    let dessert_ids_cl: Vec<i32> = lignes_raw.iter().filter_map(|l| l.dessert_id).collect();
+    let menu_ids: Vec<i32> = lignes_raw.iter().filter_map(|l| l.menu_id).collect();
     let boisson_ids: Vec<i32> = lignes_raw.iter().filter_map(|l| l.boisson_id).collect();
     let supplement_ids: Vec<i32> = lignes_raw.iter().filter_map(|l| l.supplement_id).collect();
 
@@ -109,8 +112,32 @@ pub async fn get_commandes_user(
         HashMap::new()
     };
 
+    let entrees_map: HashMap<Pk, String> = if !entree_ids.is_empty() {
+        search!(entree::Entity => Id in (entree_ids),)
+            .all(db)
+            .await
+            .unwrap_or_default()
+            .into_iter()
+            .map(|e| (e.id, e.titre))
+            .collect()
+    } else {
+        HashMap::new()
+    };
+
+    let desserts_map_cl: HashMap<Pk, String> = if !dessert_ids_cl.is_empty() {
+        search!(dessert::Entity => Id in (dessert_ids_cl),)
+            .all(db)
+            .await
+            .unwrap_or_default()
+            .into_iter()
+            .map(|d| (d.id, d.titre))
+            .collect()
+    } else {
+        HashMap::new()
+    };
+
     let menus_map: HashMap<Pk, String> = if !menu_ids.is_empty() {
-        search!(menu_resto::Entity => Id in (menu_ids),)
+        search!(menu::Entity => Id in (menu_ids),)
             .all(db)
             .await
             .unwrap_or_default()
@@ -207,11 +234,21 @@ pub async fn get_commandes_user(
                 .get(&(bid as Pk))
                 .cloned()
                 .unwrap_or_else(|| format!("Boisson #{}", bid))
-        } else if let Some(mid) = cl.menu_resto_id {
+        } else if let Some(mid) = cl.menu_id {
             menus_map
                 .get(&(mid as Pk))
                 .cloned()
                 .unwrap_or_else(|| format!("Menu #{}", mid))
+        } else if let Some(eid) = cl.entree_id {
+            entrees_map
+                .get(&(eid as Pk))
+                .cloned()
+                .unwrap_or_else(|| format!("Entrée #{}", eid))
+        } else if let Some(did) = cl.dessert_id {
+            desserts_map_cl
+                .get(&(did as Pk))
+                .cloned()
+                .unwrap_or_else(|| format!("Dessert #{}", did))
         } else if let Some(pid) = cl.plat_id {
             plats_map
                 .get(&(pid as Pk))
@@ -225,10 +262,14 @@ pub async fn get_commandes_user(
             .entry(cl.commande_id as Pk)
             .or_default()
             .push(LigneResume {
+                id: cl.id,
                 titre,
                 quantite: cl.quantite,
                 prix_unitaire: format!("{:.2}", cl.prix_unitaire),
                 cuisson,
+                sans_sel: cl.sans_sel,
+                note: cl.note,
+                type_article: cl.type_article.to_string(),
             });
     }
 
@@ -260,6 +301,7 @@ pub async fn get_commandes_user(
             .date_annulation
             .map(|dt| dt.format("%d/%m/%Y %H:%M").to_string());
 
+        let modifiable = c.modifiable;
         let can_cancel = matches!(
             c.statut,
             StatutCommande::EnAttente | StatutCommande::Accepte
@@ -282,6 +324,7 @@ pub async fn get_commandes_user(
 
         result.push(CommandeResume {
             numero: c.numero,
+            modifiable,
             statut_label,
             statut_css: statut_css.to_string(),
             mode_paiement,

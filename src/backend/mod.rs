@@ -18,7 +18,8 @@ pub use carte::{ajax_avis_plat, vue_boissons_type, vue_carte};
 pub use commande::handle_admin_commande_detail;
 pub use compte::{
     compte_commandes_ajax, handle_avis_plat, handle_avis_plat_supprimer, handle_commande_annuler,
-    handle_compte, handle_profil_post, handle_supprimer_compte,
+    handle_compte, handle_modifier_ligne, handle_profil_post, handle_supprimer_compte,
+    handle_supprimer_ligne,
 };
 pub use contact::handle_contact;
 pub use menus::{vue_menu_details, vue_menus, vue_track_menu_filters};

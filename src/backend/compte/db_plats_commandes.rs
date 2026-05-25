@@ -2,25 +2,22 @@ use crate::backend::compte::PlatCommande;
 use crate::entities::commande::StatutCommande;
 use crate::entities::{avis_plat, commande, commande_ligne, plat};
 use runique::prelude::*;
-use sea_orm::{Condition, QueryFilter};
 use std::collections::HashMap;
 
 pub async fn get_plats_commandes_user(
     db: &sea_orm::DatabaseConnection,
     user_id: Pk,
 ) -> Vec<PlatCommande> {
-    let commande_ids: Vec<Pk> = search!(commande::Entity => UserId eq user_id,)
-        .filter(
-            Condition::any()
-                .add(commande::Column::Statut.eq(StatutCommande::Termine))
-                .add(commande::Column::Statut.eq(StatutCommande::Livre)),
-        )
-        .all(db)
-        .await
-        .unwrap_or_default()
-        .into_iter()
-        .map(|c| c.id)
-        .collect();
+    let commande_ids: Vec<Pk> = search!(commande::Entity =>
+        UserId eq user_id,
+        or(Statut eq StatutCommande::Termine, Statut eq StatutCommande::Livre),
+    )
+    .all(db)
+    .await
+    .unwrap_or_default()
+    .into_iter()
+    .map(|c| c.id)
+    .collect();
 
     if commande_ids.is_empty() {
         return vec![];
@@ -44,15 +41,14 @@ pub async fn get_plats_commandes_user(
         .await
         .unwrap_or_default();
 
-    let avis_map: HashMap<i32, avis_plat::Model> = avis_plat::Entity::find()
-        .filter(avis_plat::Column::UserId.eq(user_id))
-        .filter(avis_plat::Column::PlatId.is_in(plat_ids))
-        .all(db)
-        .await
-        .unwrap_or_default()
-        .into_iter()
-        .map(|a| (a.plat_id, a))
-        .collect();
+    let avis_map: HashMap<i32, avis_plat::Model> =
+        search!(avis_plat::Entity => UserId eq user_id, PlatId in (plat_ids),)
+            .all(db)
+            .await
+            .unwrap_or_default()
+            .into_iter()
+            .map(|a| (a.plat_id, a))
+            .collect();
 
     plats
         .into_iter()

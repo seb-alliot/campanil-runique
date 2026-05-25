@@ -168,56 +168,109 @@ pub async fn panier_valider(
             _ => None,
         });
 
-        let (type_article, plat_id, menu_resto_id, boisson_id, supplement_id, note) =
-            if let Some(sid) = ligne.supplement_id {
-                (TypeArticle::Supplement, None, None, None, Some(sid), None)
-            } else if let Some(bid) = ligne.boisson_id {
-                (TypeArticle::Boisson, None, None, Some(bid), None, None)
-            } else if let Some(mid) = ligne.menu_resto_id {
-                let note_str = if ligne.menu_choix.is_empty() {
-                    None
-                } else {
-                    let parts: Vec<String> = ligne
-                        .menu_choix
-                        .iter()
-                        .map(|c| {
-                            let mut s = format!("{} : {}", cours_label(&c.cours), c.plat_titre);
-                            if let Some(ref cu) = c.cuisson {
-                                s.push_str(&format!(" ({})", cu));
-                            }
-                            s
-                        })
-                        .collect();
-                    Some(parts.join(", "))
-                };
-                (
-                    TypeArticle::MenuResto,
-                    None,
-                    Some(mid),
-                    None,
-                    None,
-                    note_str,
-                )
+        let (
+            type_article_enum,
+            plat_id,
+            entree_id,
+            dessert_id,
+            menu_id,
+            boisson_id,
+            supplement_id,
+            note,
+        ) = if let Some(sid) = ligne.supplement_id {
+            (
+                TypeArticle::Supplement,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Some(sid),
+                None,
+            )
+        } else if let Some(bid) = ligne.boisson_id {
+            (
+                TypeArticle::Boisson,
+                None,
+                None,
+                None,
+                None,
+                Some(bid),
+                None,
+                None,
+            )
+        } else if let Some(mid) = ligne.menu_id {
+            let note_str = if ligne.menu_choix.is_empty() {
+                None
             } else {
-                (
-                    TypeArticle::Plat,
+                let parts: Vec<String> = ligne
+                    .menu_choix
+                    .iter()
+                    .map(|c| {
+                        let mut s = format!("{} : {}", cours_label(&c.cours), c.plat_titre);
+                        if let Some(ref cu) = c.cuisson {
+                            s.push_str(&format!(" ({})", cu));
+                        }
+                        s
+                    })
+                    .collect();
+                Some(parts.join(", "))
+            };
+            (
+                TypeArticle::Menu,
+                None,
+                None,
+                None,
+                Some(mid),
+                None,
+                None,
+                note_str,
+            )
+        } else {
+            match ligne.type_article.as_str() {
+                "entree" => (
+                    TypeArticle::Entree,
+                    None,
+                    Some(ligne.plat_id),
+                    None,
+                    None,
+                    None,
+                    None,
+                    ligne.note.clone(),
+                ),
+                "dessert" => (
+                    TypeArticle::Dessert,
+                    None,
+                    None,
                     Some(ligne.plat_id),
                     None,
                     None,
                     None,
                     ligne.note.clone(),
-                )
-            };
+                ),
+                _ => (
+                    TypeArticle::Plat,
+                    Some(ligne.plat_id),
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    ligne.note.clone(),
+                ),
+            }
+        };
 
         let ligne_active = commande_ligne::ActiveModel {
             commande_id: Set(commande_model.id),
-            type_article: Set(type_article),
+            type_article: Set(type_article_enum),
             plat_id: Set(plat_id),
-            menu_resto_id: Set(menu_resto_id),
+            entree_id: Set(entree_id),
+            dessert_id: Set(dessert_id),
+            menu_id: Set(menu_id),
             boisson_id: Set(boisson_id),
             supplement_id: Set(supplement_id),
             cuisson: Set(cuisson),
-            avec_legumes: Set(ligne.avec_legumes),
             sans_sel: Set(ligne.sans_sel),
             note: Set(note),
             quantite: Set(ligne.quantite),
@@ -238,10 +291,17 @@ pub async fn panier_valider(
         }
 
         for choix in &ligne.menu_choix {
+            let (choix_plat_id, choix_entree_id, choix_dessert_id) = match choix.cours.as_str() {
+                "entree" => (None, Some(choix.plat_id), None),
+                "dessert" => (None, None, Some(choix.plat_id)),
+                _ => (Some(choix.plat_id), None, None),
+            };
             commande_menu_choix::ActiveModel {
                 commande_ligne_id: Set(cl.id),
                 cours: Set(choix.cours.clone()),
-                plat_id: Set(choix.plat_id),
+                plat_id: Set(choix_plat_id),
+                entree_id: Set(choix_entree_id),
+                dessert_id: Set(choix_dessert_id),
                 ..Default::default()
             }
             .insert(db)

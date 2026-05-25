@@ -1,5 +1,4 @@
-use crate::entities::plat::TypePlat;
-use crate::entities::{menu_resto, menu_resto_plat, plat};
+use crate::entities::{dessert, entree, menu, menu_dessert, menu_entree, menu_plat, plat};
 use runique::prelude::*;
 use sea_orm::{ActiveModelTrait, ColumnTrait, EntityTrait, Set};
 use serde::Serialize;
@@ -19,7 +18,9 @@ pub struct CompositionMenu {
     pub entree_ids: Vec<Pk>,
     pub plat_ids: Vec<Pk>,
     pub dessert_ids: Vec<Pk>,
-    pub dessert: String,
+    pub entree_libre: String,
+    pub plat_libre: String,
+    pub dessert_libre: String,
 }
 
 pub async fn handle_menu_resto_composition(
@@ -33,11 +34,7 @@ pub async fn handle_menu_resto_composition(
     };
     let db = request.db();
 
-    let Some(menu) = menu_resto::Entity::find_by_id(id)
-        .one(db)
-        .await
-        .unwrap_or(None)
-    else {
+    let Some(menu_model) = menu::Entity::find_by_id(id).one(db).await.unwrap_or(None) else {
         return Ok(StatusCode::NOT_FOUND.into_response());
     };
 
@@ -45,24 +42,45 @@ pub async fn handle_menu_resto_composition(
         let entree_ids = parse_ids(request.prisme.data.get("entree_ids").map(String::as_str));
         let plat_ids = parse_ids(request.prisme.data.get("plat_ids").map(String::as_str));
         let dessert_ids = parse_ids(request.prisme.data.get("dessert_ids").map(String::as_str));
-        let dessert_txt = request
+        let entree_libre_txt = request
             .prisme
             .data
-            .get("dessert")
+            .get("entree_libre")
+            .cloned()
+            .unwrap_or_default();
+        let plat_libre_txt = request
+            .prisme
+            .data
+            .get("plat_libre")
+            .cloned()
+            .unwrap_or_default();
+        let dessert_libre_txt = request
+            .prisme
+            .data
+            .get("dessert_libre")
             .cloned()
             .unwrap_or_default();
 
-        menu_resto_plat::Entity::delete_many()
-            .filter(menu_resto_plat::Column::MenuId.eq(id as i32))
+        menu_entree::Entity::delete_many()
+            .filter(menu_entree::Column::MenuId.eq(id as i32))
+            .exec(db)
+            .await
+            .ok();
+        menu_plat::Entity::delete_many()
+            .filter(menu_plat::Column::MenuId.eq(id as i32))
+            .exec(db)
+            .await
+            .ok();
+        menu_dessert::Entity::delete_many()
+            .filter(menu_dessert::Column::MenuId.eq(id as i32))
             .exec(db)
             .await
             .ok();
 
         for pid in entree_ids {
-            menu_resto_plat::ActiveModel {
+            menu_entree::ActiveModel {
                 menu_id: Set(id as i32),
-                plat_id: Set(pid),
-                cours: Set("entree".into()),
+                entree_id: Set(pid),
                 ..Default::default()
             }
             .insert(db)
@@ -70,10 +88,9 @@ pub async fn handle_menu_resto_composition(
             .ok();
         }
         for pid in plat_ids {
-            menu_resto_plat::ActiveModel {
+            menu_plat::ActiveModel {
                 menu_id: Set(id as i32),
                 plat_id: Set(pid),
-                cours: Set("plat".into()),
                 ..Default::default()
             }
             .insert(db)
@@ -81,10 +98,9 @@ pub async fn handle_menu_resto_composition(
             .ok();
         }
         for pid in dessert_ids {
-            menu_resto_plat::ActiveModel {
+            menu_dessert::ActiveModel {
                 menu_id: Set(id as i32),
-                plat_id: Set(pid),
-                cours: Set("dessert".into()),
+                dessert_id: Set(pid),
                 ..Default::default()
             }
             .insert(db)
@@ -92,77 +108,74 @@ pub async fn handle_menu_resto_composition(
             .ok();
         }
 
-        let mut active: menu_resto::ActiveModel = menu.into();
-        active.dessert = Set(if dessert_txt.is_empty() {
+        let mut active: menu::ActiveModel = menu_model.into();
+        active.entree_libre = Set(if entree_libre_txt.is_empty() {
             None
         } else {
-            Some(dessert_txt)
+            Some(entree_libre_txt)
+        });
+        active.plat_libre = Set(if plat_libre_txt.is_empty() {
+            None
+        } else {
+            Some(plat_libre_txt)
+        });
+        active.dessert_libre = Set(if dessert_libre_txt.is_empty() {
+            None
+        } else {
+            Some(dessert_libre_txt)
         });
         active.update(db).await.ok();
 
-        return Ok(Redirect::to(&format!(
-            "{}/menus_resto/{}/detail",
-            admin.config.prefix, id
-        ))
-        .into_response());
+        return Ok(
+            Redirect::to(&format!("{}/menus/{}/detail", admin.config.prefix, id)).into_response(),
+        );
     }
 
-    let liens = search!(menu_resto_plat::Entity => MenuId eq id as i32,)
+    let entree_ids: Vec<Pk> = search!(menu_entree::Entity => MenuId eq id as i32,)
         .all(db)
         .await
-        .unwrap_or_default();
-
-    let mut entree_ids: Vec<Pk> = Vec::new();
-    let mut plat_ids: Vec<Pk> = Vec::new();
-    let mut dessert_ids: Vec<Pk> = Vec::new();
-    for l in &liens {
-        match l.cours.as_str() {
-            "entree" => entree_ids.push(l.plat_id as Pk),
-            "plat" => plat_ids.push(l.plat_id as Pk),
-            "dessert" => dessert_ids.push(l.plat_id as Pk),
-            _ => {}
-        }
-    }
-
-    let tous_plats: Vec<plat::Model> = search!(plat::Entity => asc Titre,)
-        .filter(plat::Column::Disponible.eq(true))
+        .unwrap_or_default()
+        .into_iter()
+        .map(|l| l.entree_id as Pk)
+        .collect();
+    let plat_ids: Vec<Pk> = search!(menu_plat::Entity => MenuId eq id as i32,)
         .all(db)
         .await
-        .unwrap_or_default();
-
-    let entrees_disponibles: Vec<PlatDisponible> = tous_plats
-        .iter()
-        .filter(|p| p.type_plat == TypePlat::Entree)
-        .map(|p| PlatDisponible {
-            id: p.id,
-            titre: p.titre.clone(),
-        })
+        .unwrap_or_default()
+        .into_iter()
+        .map(|l| l.plat_id as Pk)
+        .collect();
+    let dessert_ids: Vec<Pk> = search!(menu_dessert::Entity => MenuId eq id as i32,)
+        .all(db)
+        .await
+        .unwrap_or_default()
+        .into_iter()
+        .map(|l| l.dessert_id as Pk)
         .collect();
 
-    let plats_disponibles: Vec<PlatDisponible> = tous_plats
-        .iter()
-        .filter(|p| {
-            matches!(
-                p.type_plat,
-                TypePlat::Specialite | TypePlat::Viande | TypePlat::Poisson | TypePlat::Plat
-            )
-        })
-        .map(|p| PlatDisponible {
-            id: p.id,
-            titre: p.titre.clone(),
-        })
+    let entrees_disponibles = search!(entree::Entity => Disponible eq true, Usage ne entree::UsageEntree::Carte, asc Titre,)
+        .all(db).await.unwrap_or_default()
+        .into_iter()
+        .map(|e| PlatDisponible { id: e.id, titre: e.titre })
         .collect();
 
-    let desserts_disponibles: Vec<PlatDisponible> = tous_plats
-        .iter()
-        .filter(|p| p.type_plat == TypePlat::Dessert)
-        .map(|p| PlatDisponible {
-            id: p.id,
-            titre: p.titre.clone(),
-        })
-        .collect();
+    let plats_disponibles =
+        search!(plat::Entity => Disponible eq true, Usage ne plat::UsagePlat::Carte, asc Titre,)
+            .all(db)
+            .await
+            .unwrap_or_default()
+            .into_iter()
+            .map(|p| PlatDisponible {
+                id: p.id,
+                titre: p.titre,
+            })
+            .collect();
 
-    let dessert = menu.dessert.clone().unwrap_or_default();
+    let desserts_disponibles = search!(dessert::Entity => Disponible eq true, Usage ne dessert::UsageDessert::Carte, asc Titre,)
+        .all(db).await.unwrap_or_default()
+        .into_iter()
+        .map(|d| PlatDisponible { id: d.id, titre: d.titre })
+        .collect();
 
     let composition = CompositionMenu {
         entrees_disponibles,
@@ -171,7 +184,9 @@ pub async fn handle_menu_resto_composition(
         entree_ids,
         plat_ids,
         dessert_ids,
-        dessert,
+        entree_libre: menu_model.entree_libre.clone().unwrap_or_default(),
+        plat_libre: menu_model.plat_libre.clone().unwrap_or_default(),
+        dessert_libre: menu_model.dessert_libre.clone().unwrap_or_default(),
     };
 
     inject_admin_prefix(&mut request.context, &admin.config.prefix);
@@ -185,11 +200,11 @@ pub async fn handle_menu_resto_composition(
     context_update!(request => {
         "composition"      => composition,
         "menu_id"          => id,
-        "menu_nom"         => &menu.nom,
-        "title"            => format!("Composition — {}", menu.nom),
+        "menu_nom"         => &menu_model.nom,
+        "title"            => format!("Composition — {}", menu_model.nom),
         "site_title"       => &admin.config.site_title,
-        "current_page"     => "menus_resto",
-        "current_resource" => "menus_resto",
+        "current_page"     => "menus",
+        "current_resource" => "menus",
         "resources"        => resources,
     });
 

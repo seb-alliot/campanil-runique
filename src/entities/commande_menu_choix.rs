@@ -7,7 +7,9 @@ model! {
     {
         commande_ligne_id: int [required, fk(commande_lignes.id, cascade)],
         cours:             text [required, max_length: 20],
-        plat_id:           int  [required, fk(plats.id, restrict)],
+        plat_id:           int  [fk(plats.id, restrict)],
+        entree_id:         int  [fk(entrees.id, restrict)],
+        dessert_id:        int  [fk(desserts.id, restrict)],
     },
     meta: {
         verbose_name: "Choix de menu",

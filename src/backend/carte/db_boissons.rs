@@ -70,12 +70,7 @@ pub async fn get_boissons_par_type(
     db: &sea_orm::DatabaseConnection,
     type_val: TypeBoisson,
 ) -> Vec<CarteBoisson> {
-    use sea_orm::QueryFilter;
-    boisson::Entity::find()
-        .filter(boisson::Column::TypeBoisson.eq(type_val))
-        .filter(boisson::Column::Disponible.eq(true))
-        .order_by_asc(boisson::Column::Ordre)
-        .order_by_asc(boisson::Column::Titre)
+    search!(boisson::Entity => TypeBoisson eq type_val, Disponible eq true, asc Ordre, asc Titre,)
         .all(db)
         .await
         .unwrap_or_default()

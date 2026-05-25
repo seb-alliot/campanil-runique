@@ -15,7 +15,7 @@
   <div class="page-actions">
     <a href="{{ admin_prefix }}/{{ resource.key }}/list" class="btn btn-secondary btn-sm">← Liste</a>
     <a href="{{ admin_prefix }}/{{ resource.key }}/create" class="btn btn-secondary btn-sm">+ Nouveau menu</a>
-    <a href="{{ admin_prefix }}/menus-resto/{{ entry.id }}/composition" class="btn btn-primary btn-sm">Gérer la composition</a>
+    <a href="{{ admin_prefix }}/menus/{{ entry.id }}/composition" class="btn btn-primary btn-sm">Gérer la composition</a>
     <a href="{{ admin_prefix }}/{{ resource.key }}/{{ entry.id }}/edit" class="btn btn-secondary btn-sm btn-hide-mobile">Modifier</a>
     <form method="post" action="{{ admin_prefix }}/{{ resource.key }}/{{ entry.id }}/delete" class="form-inline btn-hide-mobile">
       {% csrf %}

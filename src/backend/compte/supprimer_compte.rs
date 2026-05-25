@@ -3,7 +3,6 @@ use crate::entities::{
     avis, commande, commande_ligne, commande_ligne_garniture, commande_menu_choix, commande_statut,
 };
 use runique::prelude::*;
-use sea_orm::{ColumnTrait, EntityTrait, QueryFilter};
 
 pub async fn handle_supprimer_compte(request: &mut Request) -> AppResult<Response> {
     if !request.is_post() {
@@ -16,8 +15,7 @@ pub async fn handle_supprimer_compte(request: &mut Request) -> AppResult<Respons
 
     let db = request.db();
 
-    let cmd_ids: Vec<Pk> = commande::Entity::find()
-        .filter(commande::Column::UserId.eq(user.id))
+    let cmd_ids: Vec<Pk> = search!(commande::Entity => UserId eq user.id,)
         .all(db)
         .await
         .unwrap_or_default()
@@ -26,8 +24,7 @@ pub async fn handle_supprimer_compte(request: &mut Request) -> AppResult<Respons
         .collect();
 
     if !cmd_ids.is_empty() {
-        let ligne_ids: Vec<Pk> = commande_ligne::Entity::find()
-            .filter(commande_ligne::Column::CommandeId.is_in(cmd_ids.clone()))
+        let ligne_ids: Vec<Pk> = search!(commande_ligne::Entity => CommandeId in (cmd_ids),)
             .all(db)
             .await
             .unwrap_or_default()

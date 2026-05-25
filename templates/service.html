@@ -15,15 +15,12 @@
                     <span class="svc-qte">×{{ l.quantite }}</span>
                     <span class="svc-titre">{{ l.titre }}</span>
                     {% if l.cuisson %}<span class="svc-detail">{{ l.cuisson }}</span>{% endif %}
-                    {% if l.sans_sel %}<span class="svc-detail svc-detail--alert">sans sel</span>{% endif %}
+                    {% if l.sans_sel %}<span class="svc-detail svc-detail--alert">sans sel ajouté</span>{% endif %}
                 </div>
                 {% if l.garnitures %}
                 <ul class="svc-composition">
                     {% for g in l.garnitures %}<li>{{ g }}</li>{% endfor %}
-                    {% if l.avec_legumes %}<li>+ légumes</li>{% endif %}
                 </ul>
-                {% elif l.avec_legumes %}
-                <ul class="svc-composition"><li>+ légumes</li></ul>
                 {% endif %}
                 {% if l.note %}<p class="svc-note">{{ l.note }}</p>{% endif %}
                 {% if l.menu_choix %}
@@ -33,11 +30,10 @@
                         <span class="svc-menu-cours-label">{{ choix.cours_label }}</span>
                         <span class="svc-menu-cours-titre">{{ choix.titre }}</span>
                         {% if choix.cuisson %}<span class="svc-detail">{{ choix.cuisson }}</span>{% endif %}
-                        {% if choix.sans_sel %}<span class="svc-detail svc-detail--alert">sans sel</span>{% endif %}
-                        {% if choix.garnitures or choix.avec_legumes %}
+                        {% if choix.sans_sel %}<span class="svc-detail svc-detail--alert">sans sel ajouté</span>{% endif %}
+                        {% if choix.garnitures %}
                         <ul class="svc-composition">
                             {% for g in choix.garnitures %}<li>{{ g }}</li>{% endfor %}
-                            {% if choix.avec_legumes %}<li>+ légumes</li>{% endif %}
                         </ul>
                         {% endif %}
                         {% if choix.note %}<p class="svc-note">{{ choix.note }}</p>{% endif %}

@@ -1,15 +1,14 @@
 use crate::backend::menus::{MenuDetail, PlatDetail};
-use crate::entities::plat::TypePlat;
-use crate::entities::{allergene, menu, menu_plat, plat, plat_allergene};
+use crate::entities::{allergene, menu_traiteur, menu_traiteur_plat, plat, plat_allergene};
 use runique::prelude::*;
 
 pub async fn get_menu_detail(db: &DatabaseConnection, id: Pk) -> Option<MenuDetail> {
-    let menu_model = search!(menu::Entity => Id eq id, Actif eq true,)
+    let menu_model = search!(menu_traiteur::Entity => Id eq id, Actif eq true,)
         .one(db)
         .await
         .ok()??;
 
-    let plat_ids: Vec<i32> = search!(menu_plat::Entity => MenuId eq id,)
+    let plat_ids: Vec<i32> = search!(menu_traiteur_plat::Entity => MenuTraiteurId eq id,)
         .all(db)
         .await
         .unwrap_or_default()
@@ -20,7 +19,7 @@ pub async fn get_menu_detail(db: &DatabaseConnection, id: Pk) -> Option<MenuDeta
     let (plat_models, allergene_links) = if plat_ids.is_empty() {
         (vec![], vec![])
     } else {
-        let plats = search!(plat::Entity => Id in (plat_ids), asc TypePlat, asc Titre,)
+        let plats = search!(plat::Entity => Id in (plat_ids), asc Titre,)
             .all(db)
             .await
             .unwrap_or_default();
@@ -49,27 +48,17 @@ pub async fn get_menu_detail(db: &DatabaseConnection, id: Pk) -> Option<MenuDeta
         }
     }
 
-    let mut entrees = Vec::new();
-    let mut plats_principaux = Vec::new();
-    let mut desserts = Vec::new();
-
-    for p in plat_models {
-        let detail = PlatDetail {
+    let plats = plat_models
+        .into_iter()
+        .map(|p| PlatDetail {
             id: p.id,
             titre: p.titre,
             description: p.description,
             image: p.image,
             est_viande: p.est_viande,
             allergenes: allergenes_by_plat.remove(&p.id).unwrap_or_default(),
-        };
-        match p.type_plat {
-            TypePlat::Entree => entrees.push(detail),
-            TypePlat::Plat | TypePlat::Specialite | TypePlat::Viande | TypePlat::Poisson => {
-                plats_principaux.push(detail)
-            }
-            TypePlat::Dessert => desserts.push(detail),
-        }
-    }
+        })
+        .collect();
 
     Some(MenuDetail {
         id: menu_model.id,
@@ -78,11 +67,11 @@ pub async fn get_menu_detail(db: &DatabaseConnection, id: Pk) -> Option<MenuDeta
         conditions: menu_model.conditions,
         prix_par_personne: format!("{:.2}", menu_model.prix_par_personne),
         nb_personnes_min: menu_model.nb_personnes_min,
-        theme: menu_model.theme.to_string(),
-        regime: menu_model.regime.to_string(),
+        theme: menu_model.theme.to_value(),
+        regime: menu_model.regime.to_value(),
         stock: menu_model.stock,
-        entrees,
-        plats_principaux,
-        desserts,
+        plats_principaux: plats,
+        desserts: vec![],
+        entrees: vec![],
     })
 }

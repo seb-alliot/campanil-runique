@@ -1,22 +1,4 @@
 use runique::prelude::*;
-use sea_orm::FromQueryResult;
-
-/// Chargé via raw SQL — inclut les colonnes built-in + celles ajoutées par extend!{}.
-#[derive(Debug, Serialize, FromQueryResult)]
-pub struct UserComplet {
-    pub id: Pk,
-    pub username: String,
-    pub email: String,
-    pub is_active: bool,
-    pub is_staff: bool,
-    pub is_superuser: bool,
-    // extend!{} eihwaz_users
-    pub telephone: Option<String>,
-    pub adresse: Option<String>,
-    pub ville: Option<String>,
-    pub code_postal: Option<String>,
-    pub pays: Option<String>,
-}
 
 #[derive(Serialize)]
 pub struct StatutHistorique {
@@ -26,10 +8,14 @@ pub struct StatutHistorique {
 
 #[derive(Serialize)]
 pub struct LigneResume {
+    pub id: Pk,
     pub titre: String,
     pub quantite: i32,
     pub prix_unitaire: String,
     pub cuisson: Option<String>,
+    pub sans_sel: bool,
+    pub note: Option<String>,
+    pub type_article: String,
 }
 
 #[derive(Serialize)]
@@ -56,6 +42,7 @@ pub struct CommandeResume {
     pub date: String,
     pub date_iso: String,
     pub date_annulation: Option<String>,
+    pub modifiable: bool,
     pub can_cancel: bool,
     pub commande_id: Pk,
     pub can_review: bool,

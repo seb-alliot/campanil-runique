@@ -11,8 +11,8 @@
 
     {% if menu %}
     <div class="devis-menu-recap">
-        <h2>{{ menu.titre }}</h2>
-        <p class="devis-menu-prix">{{ menu.prix_par_personne }} € / personne — à partir de {{ menu.nb_personnes_min }} personnes</p>
+        <h2>{{ menu.nom }}</h2>
+        <p class="devis-menu-prix">{{ menu.prix }} €</p>
         {% if menu.description %}
         <p class="devis-menu-desc">{{ menu.description }}</p>
         {% endif %}

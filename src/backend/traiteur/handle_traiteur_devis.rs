@@ -1,9 +1,9 @@
 use crate::backend::utils::inject_auth;
-use crate::entities::{devis_traiteur, info_resto, menu};
+use crate::entities::{devis_traiteur, info_resto, menu_traiteur};
 use crate::formulaire::DevisTraiteurForm;
 use runique::context;
 use runique::prelude::*;
-use sea_orm::{ActiveModelTrait, EntityTrait, Set};
+use sea_orm::{ActiveModelTrait, Set};
 
 pub async fn handle_devis_traiteur(
     request: &mut Request,
@@ -17,12 +17,11 @@ pub async fn handle_devis_traiteur(
         .and_then(|s| s.parse::<Pk>().ok());
 
     let menu_model = if let Some(id) = menu_id {
-        use sea_orm::ColumnTrait;
-        menu::Entity::find_by_id(id)
-            .filter(menu::Column::Actif.eq(true))
-            .one(request.db())
+        search!(menu_traiteur::Entity => Id eq id,)
+            .first(request.db())
             .await
-            .unwrap_or(None)
+            .ok()
+            .flatten()
     } else {
         None
     };
@@ -63,10 +62,11 @@ pub async fn handle_devis_traiteur(
 
         match model.insert(request.db()).await {
             Ok(_) => {
-                if let Some(resto) = info_resto::Entity::find()
-                    .one(request.db())
+                if let Some(resto) = search!(info_resto::Entity)
+                    .first(request.db())
                     .await
-                    .unwrap_or(None)
+                    .ok()
+                    .flatten()
                     && let Some(dest) = resto.email.filter(|e| !e.is_empty())
                 {
                     let menu_titre = menu_model

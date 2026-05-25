@@ -27,3 +27,9 @@ pub use avis_plat_poster::handle_avis_plat;
 
 pub mod avis_plat_supprimer;
 pub use avis_plat_supprimer::handle_avis_plat_supprimer;
+
+pub mod modifier_ligne;
+pub use modifier_ligne::handle_modifier_ligne;
+
+pub mod supprimer_ligne;
+pub use supprimer_ligne::handle_supprimer_ligne;

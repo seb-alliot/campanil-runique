@@ -1,6 +1,6 @@
 use crate::entities::{commande, horaire, horaire::Jour};
 use chrono::{Datelike, NaiveDateTime, Weekday};
-use sea_orm::{ColumnTrait, Condition, EntityTrait, PaginatorTrait, QueryFilter};
+use runique::prelude::*;
 
 fn weekday_to_jour(wd: Weekday) -> Jour {
     match wd {
@@ -27,9 +27,8 @@ pub async fn generer_numero(
     let time_cible = dt_cible.time();
     let jour = weekday_to_jour(date_cible.weekday());
 
-    let horaire_opt = horaire::Entity::find()
-        .filter(horaire::Column::Jour.eq(jour))
-        .one(db)
+    let horaire_opt = search!(horaire::Entity => Jour eq jour,)
+        .first(db)
         .await
         .ok()
         .flatten();
@@ -77,13 +76,8 @@ pub async fn generer_numero(
         )
     };
 
-    // Compte les commandes dont le retrait OU la livraison tombe dans la même fenêtre de service
-    let count = commande::Entity::find()
-        .filter(
-            Condition::all()
-                .add(commande::Column::HeureRetrait.gte(service_start))
-                .add(commande::Column::HeureRetrait.lte(service_end)),
-        )
+    // Compte les commandes dont le retrait tombe dans la même fenêtre de service
+    let count = search!(commande::Entity => HeureRetrait range (service_start, service_end),)
         .count(db)
         .await
         .unwrap_or(0);

@@ -18,7 +18,6 @@ pub struct CartePlat {
     pub image: Option<String>,
     pub est_viande: bool,
     pub disponible: bool,
-    pub avec_legumes: bool,
     pub allergenes: Vec<String>,
     pub garnitures: Vec<CarteGarniture>,
 }
@@ -47,21 +46,31 @@ pub struct CarteSupplementItem {
     pub prix: String,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Clone)]
 pub struct CoursMenu {
     pub label: String,
     pub key: String,
     pub plats: Vec<CartePlat>,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Clone)]
 pub struct CarteMenuResto {
     pub id: Pk,
-    pub titre: String,
+    pub nom: String,
+    pub type_menu: String,
     pub prix: String,
     pub description: Option<String>,
-    pub dessert: Option<String>,
+    pub entree_libre: Option<String>,
+    pub plat_libre: Option<String>,
+    pub dessert_libre: Option<String>,
     pub cours: Vec<CoursMenu>,
+}
+
+#[derive(Serialize)]
+pub struct CarteMenuSection {
+    pub label: String,
+    pub key: String,
+    pub menus: Vec<CarteMenuResto>,
 }
 
 #[derive(Serialize)]
@@ -71,7 +80,7 @@ pub struct CartePage {
     pub viandes: Vec<CartePlat>,
     pub poissons: Vec<CartePlat>,
     pub desserts: Vec<CartePlat>,
-    pub menus: Vec<CarteMenuResto>,
+    pub menus: Vec<CarteMenuSection>,
     pub supplements: Vec<CarteSupplementItem>,
     pub boissons: Vec<CarteBoissonGroupe>,
 }

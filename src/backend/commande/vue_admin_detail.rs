@@ -1,14 +1,14 @@
 use runique::context;
 use runique::prelude::*;
-use sea_orm::{ActiveModelTrait, ColumnTrait, EntityTrait, QueryFilter, Set};
+use sea_orm::{ActiveModelTrait, Set};
 use std::{collections::HashMap, sync::Arc};
 
 use crate::backend::commande::{
     CommandeDetail, LigneDetail, all_statuts, parse_statut, statut_info,
 };
 use crate::entities::{
-    boisson, commande, commande::TypeRetrait, commande_ligne, garniture, menu_resto, plat,
-    supplement,
+    boisson, commande, commande::TypeRetrait, commande_ligne, dessert, entree, garniture, menu,
+    plat, supplement,
 };
 
 pub async fn handle_admin_commande_detail(
@@ -19,12 +19,20 @@ pub async fn handle_admin_commande_detail(
     let path_param = request.get_path("numero").unwrap_or("").to_string();
     let db = request.db();
 
-    let find = if let Ok(id) = path_param.parse::<Pk>() {
-        commande::Entity::find_by_id(id)
+    let cmd_opt = if let Ok(id) = path_param.parse::<Pk>() {
+        search!(commande::Entity => Id eq id,)
+            .first(db)
+            .await
+            .ok()
+            .flatten()
     } else {
-        commande::Entity::find().filter(commande::Column::Numero.eq(&path_param))
+        search!(commande::Entity => Numero eq &path_param,)
+            .first(db)
+            .await
+            .ok()
+            .flatten()
     };
-    let Some(cmd) = find.one(db).await.ok().flatten() else {
+    let Some(cmd) = cmd_opt else {
         request
             .notices
             .error("Commande introuvable.".to_string())
@@ -114,8 +122,10 @@ pub async fn handle_admin_commande_detail(
         .unwrap_or_default();
 
     let plat_ids: Vec<i32> = lignes_db.iter().filter_map(|l| l.plat_id).collect();
+    let entree_ids: Vec<i32> = lignes_db.iter().filter_map(|l| l.entree_id).collect();
+    let dessert_ids: Vec<i32> = lignes_db.iter().filter_map(|l| l.dessert_id).collect();
     let boisson_ids: Vec<i32> = lignes_db.iter().filter_map(|l| l.boisson_id).collect();
-    let menu_ids: Vec<i32> = lignes_db.iter().filter_map(|l| l.menu_resto_id).collect();
+    let menu_ids: Vec<i32> = lignes_db.iter().filter_map(|l| l.menu_id).collect();
     let supplement_ids: Vec<i32> = lignes_db.iter().filter_map(|l| l.supplement_id).collect();
 
     let plats_map: HashMap<Pk, String> = if !plat_ids.is_empty() {
@@ -125,6 +135,30 @@ pub async fn handle_admin_commande_detail(
             .unwrap_or_default()
             .into_iter()
             .map(|p| (p.id, p.titre))
+            .collect()
+    } else {
+        HashMap::new()
+    };
+
+    let entrees_map_adm: HashMap<Pk, String> = if !entree_ids.is_empty() {
+        search!(entree::Entity => Id in (entree_ids))
+            .all(db)
+            .await
+            .unwrap_or_default()
+            .into_iter()
+            .map(|e| (e.id, e.titre))
+            .collect()
+    } else {
+        HashMap::new()
+    };
+
+    let desserts_map_adm: HashMap<Pk, String> = if !dessert_ids.is_empty() {
+        search!(dessert::Entity => Id in (dessert_ids))
+            .all(db)
+            .await
+            .unwrap_or_default()
+            .into_iter()
+            .map(|d| (d.id, d.titre))
             .collect()
     } else {
         HashMap::new()
@@ -143,7 +177,7 @@ pub async fn handle_admin_commande_detail(
     };
 
     let menus_map: HashMap<Pk, String> = if !menu_ids.is_empty() {
-        search!(menu_resto::Entity => Id in (menu_ids))
+        search!(menu::Entity => Id in (menu_ids))
             .all(db)
             .await
             .unwrap_or_default()
@@ -211,7 +245,7 @@ pub async fn handle_admin_commande_detail(
                     true,
                     false,
                 )
-            } else if let Some(mid) = l.menu_resto_id {
+            } else if let Some(mid) = l.menu_id {
                 (
                     menus_map
                         .get(&(mid as Pk))
@@ -219,6 +253,24 @@ pub async fn handle_admin_commande_detail(
                         .unwrap_or_else(|| format!("Menu #{}", mid)),
                     false,
                     true,
+                )
+            } else if let Some(eid) = l.entree_id {
+                (
+                    entrees_map_adm
+                        .get(&(eid as Pk))
+                        .cloned()
+                        .unwrap_or_else(|| format!("Entrée #{}", eid)),
+                    false,
+                    false,
+                )
+            } else if let Some(did) = l.dessert_id {
+                (
+                    desserts_map_adm
+                        .get(&(did as Pk))
+                        .cloned()
+                        .unwrap_or_else(|| format!("Dessert #{}", did)),
+                    false,
+                    false,
                 )
             } else if let Some(pid) = l.plat_id {
                 (

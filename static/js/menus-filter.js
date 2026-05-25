@@ -1,7 +1,8 @@
 (function () {
     const cards = Array.from(document.querySelectorAll('.menu-card'));
     const count = document.getElementById('menus-count');
-    const empty = document.querySelector('.menus-empty');
+    const empty     = document.querySelector('.menus-empty');
+    const noResults = document.getElementById('menus-no-results');
 
     const fPersonnes = document.getElementById('f-personnes');
     const fPrixMin   = document.getElementById('f-prix-min');
@@ -10,67 +11,49 @@
     const fRegime    = document.getElementById('f-regime');
     const fReset     = document.getElementById('f-reset');
 
-    const trackFilters = (personnes, prixMin, prixMax, themeId, regimeId) => {
-        const p = new URLSearchParams();
-        if (personnes) p.set('nb_personnes', personnes);
-        if (prixMin)   p.set('prix_min', prixMin);
-        if (prixMax)   p.set('prix_max', prixMax);
-        if (themeId)   p.set('theme', themeId);
-        if (regimeId)  p.set('regime', regimeId);
-        if (p.toString()) fetch('/menus/track?' + p.toString(), { credentials: 'same-origin' }).catch(() => {});
-    };
-
     const applyFilters = () => {
-        const personnes = fPersonnes ? parseInt(fPersonnes.value) || null : null;
-        const prixMin   = fPrixMin   ? parseFloat(fPrixMin.value) || null : null;
-        const prixMax   = fPrixMax   ? parseFloat(fPrixMax.value) || null : null;
-        const themeId   = fTheme  ? fTheme.value  : '';
-        const regimeId  = fRegime ? fRegime.value : '';
-        trackFilters(personnes, prixMin, prixMax, themeId, regimeId);
+        const nbPersonnes = fPersonnes ? parseInt(fPersonnes.value, 10) : NaN;
+        const prixMin     = fPrixMin ? parseFloat(fPrixMin.value) : NaN;
+        const prixMax     = fPrixMax ? parseFloat(fPrixMax.value) : NaN;
+        const themeVal    = fTheme ? fTheme.value : '';
+        const regimeVal   = fRegime ? fRegime.value : '';
 
         let visible = 0;
         cards.forEach((card) => {
-            const { prix, theme, regime, personnes: pers } = card.dataset;
+            const cardPrix      = parseFloat(card.dataset.prix);
+            const cardPersonnes = parseInt(card.dataset.personnes, 10);
 
-            const ok =
-                (personnes === null || parseInt(pers)    <= personnes) &&
-                (prixMin   === null || parseFloat(prix)  >= prixMin)   &&
-                (prixMax   === null || parseFloat(prix)  <= prixMax)   &&
-                (themeId   === ''   || theme  === themeId)             &&
-                (regimeId  === ''   || regime === regimeId);
+            const okPersonnes = isNaN(nbPersonnes) || cardPersonnes <= nbPersonnes;
+            const okPrixMin   = isNaN(prixMin) || cardPrix >= prixMin;
+            const okPrixMax   = isNaN(prixMax) || cardPrix <= prixMax;
+            const okTheme     = themeVal === '' || card.dataset.theme === themeVal;
+            const okRegime    = regimeVal === '' || card.dataset.regime === regimeVal;
 
+            const ok = okPersonnes && okPrixMin && okPrixMax && okTheme && okRegime;
             card.style.display = ok ? '' : 'none';
             if (ok) visible++;
         });
 
         if (count) {
+            count.style.display = visible === 0 ? 'none' : '';
             count.textContent = visible + ' menu' + (visible > 1 ? 's' : '') + ' disponible' + (visible > 1 ? 's' : '');
         }
-        if (empty) {
-            empty.style.display = visible === 0 ? '' : 'none';
+        if (noResults) {
+            noResults.style.display = visible === 0 ? '' : 'none';
         }
     };
 
-    let debounceTimer;
-    const debounced = () => {
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(applyFilters, 300);
-    };
-
-    [fPersonnes, fPrixMin, fPrixMax].forEach((el) => {
-        if (el) el.addEventListener('input', debounced);
-    });
-    [fTheme, fRegime].forEach((el) => {
-        if (el) el.addEventListener('change', applyFilters);
+    [fPersonnes, fPrixMin, fPrixMax, fTheme, fRegime].forEach((el) => {
+        if (el) el.addEventListener('input', applyFilters);
     });
 
     if (fReset) {
         fReset.addEventListener('click', () => {
             if (fPersonnes) fPersonnes.value = '';
-            if (fPrixMin)   fPrixMin.value   = '';
-            if (fPrixMax)   fPrixMax.value   = '';
-            if (fTheme)     fTheme.value     = '';
-            if (fRegime)    fRegime.value    = '';
+            if (fPrixMin)   fPrixMin.value = '';
+            if (fPrixMax)   fPrixMax.value = '';
+            if (fTheme)     fTheme.value = '';
+            if (fRegime)    fRegime.value = '';
             applyFilters();
         });
     }

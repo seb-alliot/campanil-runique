@@ -5,15 +5,6 @@
 {% block content %}
 <div class="menu-detail">
 
-    {# Galerie #}
-    {% if menu.images %}
-    <div class="menu-gallery">
-        {% for img in menu.images %}
-        <img src="{{ img | media }}" alt="{{ menu.titre }}" class="{% if loop.first %}gallery-main{% else %}gallery-thumb{% endif %}">
-        {% endfor %}
-    </div>
-    {% endif %}
-
     {# En-tête #}
     <div class="menu-detail-header">
         <div class="menu-detail-tags">

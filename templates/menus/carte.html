@@ -1,32 +1,47 @@
 {% extends "base.html" %}
 {% block title %}{{ title }}{% endblock %}
 
-{% macro plat_actions(plat) %}
+{% macro plat_actions(plat, type_article) %}
 {% if plat.disponible %}
-  {% set needs_picker = plat.est_viande or plat.garnitures or not plat.avec_legumes %}
   <input type="text" class="plat-note-input" data-plat-id="{{ plat.id }}" placeholder="Note (optionnelle)" maxlength="200" autocomplete="off">
   <div class="plat-actions-row">
     {% if not plat.est_viande %}
-    <button class="btn btn-sm btn-primary js-ajouter" data-plat-id="{{ plat.id }}">Ajouter au panier</button>
+    <button class="btn btn-sm btn-primary js-ajouter" data-plat-id="{{ plat.id }}" data-type-article="{{ type_article }}">Ajouter au panier</button>
     {% endif %}
-    {% if needs_picker %}
-    <button class="btn btn-sm btn-secondary js-modifier" data-plat-id="{{ plat.id }}">{% if plat.est_viande %}Choisir la cuisson{% else %}Modifier{% endif %}</button>
+    {% if plat.est_viande %}
+    <button class="btn btn-sm btn-secondary js-modifier" data-plat-id="{{ plat.id }}" data-picker-type="cuisson">Choisir la cuisson</button>
+    {% endif %}
+    {% if plat.garnitures %}
+    <button class="btn btn-sm btn-secondary js-modifier" data-plat-id="{{ plat.id }}" data-picker-type="garnitures">Modifier</button>
     {% endif %}
   </div>
-  {% if needs_picker %}
-  <div class="plat-picker" data-plat-id="{{ plat.id }}" hidden>
+  {% if plat.est_viande %}
+  <div class="plat-picker" data-plat-id="{{ plat.id }}" data-picker-type="cuisson" hidden>
+    <div class="picker-groupe">
+      <p class="picker-label">Cuisson</p>
+      <div class="picker-choices">
+        <label class="picker-option"><input type="radio" name="cuiss_c_{{ plat.id }}" value="bleu"><span>Bleu</span></label>
+        <label class="picker-option"><input type="radio" name="cuiss_c_{{ plat.id }}" value="saignant"><span>Saignant</span></label>
+        <label class="picker-option"><input type="radio" name="cuiss_c_{{ plat.id }}" value="a_point" checked><span>À point</span></label>
+        <label class="picker-option"><input type="radio" name="cuiss_c_{{ plat.id }}" value="bien_cuit"><span>Bien cuit</span></label>
+      </div>
+    </div>
+    <button class="btn btn-sm btn-primary js-ajouter" data-plat-id="{{ plat.id }}" data-type-article="{{ type_article }}">Valider</button>
+  </div>
+  {% endif %}
+  {% if plat.garnitures %}
+  <div class="plat-picker" data-plat-id="{{ plat.id }}" data-picker-type="garnitures" hidden>
     {% if plat.est_viande %}
     <div class="picker-groupe">
       <p class="picker-label">Cuisson</p>
       <div class="picker-choices">
-        <label class="picker-option"><input type="radio" name="cuiss_{{ plat.id }}" value="bleu"><span>Bleu</span></label>
-        <label class="picker-option"><input type="radio" name="cuiss_{{ plat.id }}" value="saignant"><span>Saignant</span></label>
-        <label class="picker-option"><input type="radio" name="cuiss_{{ plat.id }}" value="a_point" checked><span>À point</span></label>
-        <label class="picker-option"><input type="radio" name="cuiss_{{ plat.id }}" value="bien_cuit"><span>Bien cuit</span></label>
+        <label class="picker-option"><input type="radio" name="cuiss_g_{{ plat.id }}" value="bleu"><span>Bleu</span></label>
+        <label class="picker-option"><input type="radio" name="cuiss_g_{{ plat.id }}" value="saignant"><span>Saignant</span></label>
+        <label class="picker-option"><input type="radio" name="cuiss_g_{{ plat.id }}" value="a_point" checked><span>À point</span></label>
+        <label class="picker-option"><input type="radio" name="cuiss_g_{{ plat.id }}" value="bien_cuit"><span>Bien cuit</span></label>
       </div>
     </div>
     {% endif %}
-    {% if plat.garnitures %}
     <div class="picker-groupe">
       <p class="picker-label">Accompagnement</p>
       <div class="picker-choices">
@@ -38,12 +53,11 @@
         {% endfor %}
       </div>
     </div>
-    {% endif %}
     <label class="picker-check">
       <input type="checkbox" class="js-sans-sel">
-      <span>Sans sel</span>
+      <span>Sans sel ajouté</span>
     </label>
-    <button class="btn btn-sm btn-primary js-ajouter" data-plat-id="{{ plat.id }}">Valider</button>
+    <button class="btn btn-sm btn-primary js-ajouter" data-plat-id="{{ plat.id }}" data-type-article="{{ type_article }}">Valider</button>
   </div>
   {% endif %}
 {% endif %}
@@ -112,14 +126,11 @@
                 <div class="livre-plat-footer">
                   {% if plat.est_viande %}<span class="badge-viande">Viande</span>{% endif %}
                   {% if not plat.disponible %}<span class="badge-indispo">Indisponible</span>{% endif %}
-                  {% if plat.allergenes %}
-                    <span class="livre-plat-allergenes">
-                      Allergène{% if plat.allergenes | length > 1 %}s{% endif %} : {{ plat.allergenes | join(sep=", ") }}
-                    </span>
-                  {% endif %}
-
                 </div>
-                {{ self::plat_actions(plat=plat) }}
+                {% if plat.allergenes %}
+                <p class="livre-plat-allergenes">Allergène{% if plat.allergenes | length > 1 %}s{% endif %} : {{ plat.allergenes | join(sep=", ") }}</p>
+                {% endif %}
+                {{ self::plat_actions(plat=plat, type_article="entree") }}
               </div>
             </li>
             {% endfor %}
@@ -152,12 +163,11 @@
                 {% if plat.description %}<p class="livre-plat-desc">{{ plat.description }}</p>{% endif %}
                 <div class="livre-plat-footer">
                   {% if not plat.disponible %}<span class="badge-indispo">Indisponible</span>{% endif %}
-                  {% if plat.allergenes %}
-                    <span class="livre-plat-allergenes">
-                      Allergène{% if plat.allergenes | length > 1 %}s{% endif %} : {{ plat.allergenes | join(sep=", ") }}
-                    </span>
-                  {% endif %}                </div>
-                {{ self::plat_actions(plat=plat) }}
+                </div>
+                {% if plat.allergenes %}
+                <p class="livre-plat-allergenes">Allergène{% if plat.allergenes | length > 1 %}s{% endif %} : {{ plat.allergenes | join(sep=", ") }}</p>
+                {% endif %}
+                {{ self::plat_actions(plat=plat, type_article="plat") }}
               </div>
             </li>
             {% endfor %}
@@ -181,12 +191,11 @@
                 {% if plat.description %}<p class="livre-plat-desc">{{ plat.description }}</p>{% endif %}
                 <div class="livre-plat-footer">
                   {% if not plat.disponible %}<span class="badge-indispo">Indisponible</span>{% endif %}
-                  {% if plat.allergenes %}
-                    <span class="livre-plat-allergenes">
-                      Allergène{% if plat.allergenes | length > 1 %}s{% endif %} : {{ plat.allergenes | join(sep=", ") }}
-                    </span>
-                  {% endif %}                </div>
-                {{ self::plat_actions(plat=plat) }}
+                </div>
+                {% if plat.allergenes %}
+                <p class="livre-plat-allergenes">Allergène{% if plat.allergenes | length > 1 %}s{% endif %} : {{ plat.allergenes | join(sep=", ") }}</p>
+                {% endif %}
+                {{ self::plat_actions(plat=plat, type_article="plat") }}
               </div>
             </li>
             {% endfor %}
@@ -210,12 +219,11 @@
                 {% if plat.description %}<p class="livre-plat-desc">{{ plat.description }}</p>{% endif %}
                 <div class="livre-plat-footer">
                   {% if not plat.disponible %}<span class="badge-indispo">Indisponible</span>{% endif %}
-                  {% if plat.allergenes %}
-                    <span class="livre-plat-allergenes">
-                      Allergène{% if plat.allergenes | length > 1 %}s{% endif %} : {{ plat.allergenes | join(sep=", ") }}
-                    </span>
-                  {% endif %}                </div>
-                {{ self::plat_actions(plat=plat) }}
+                </div>
+                {% if plat.allergenes %}
+                <p class="livre-plat-allergenes">Allergène{% if plat.allergenes | length > 1 %}s{% endif %} : {{ plat.allergenes | join(sep=", ") }}</p>
+                {% endif %}
+                {{ self::plat_actions(plat=plat, type_article="plat") }}
               </div>
             </li>
             {% endfor %}
@@ -242,12 +250,11 @@
                 {% if plat.description %}<p class="livre-plat-desc">{{ plat.description }}</p>{% endif %}
                 <div class="livre-plat-footer">
                   {% if not plat.disponible %}<span class="badge-indispo">Indisponible</span>{% endif %}
-                  {% if plat.allergenes %}
-                    <span class="livre-plat-allergenes">
-                      Allergène{% if plat.allergenes | length > 1 %}s{% endif %} : {{ plat.allergenes | join(sep=", ") }}
-                    </span>
-                  {% endif %}                </div>
-                {{ self::plat_actions(plat=plat) }}
+                </div>
+                {% if plat.allergenes %}
+                <p class="livre-plat-allergenes">Allergène{% if plat.allergenes | length > 1 %}s{% endif %} : {{ plat.allergenes | join(sep=", ") }}</p>
+                {% endif %}
+                {{ self::plat_actions(plat=plat, type_article="dessert") }}
               </div>
             </li>
             {% endfor %}
@@ -261,68 +268,73 @@
         <div class="spr-section livre-page-inner" hidden>
           <h2 class="livre-section-titre">Menus</h2>
           {% if carte.menus %}
-          <ul class="livre-plats-liste">
-            {% for m in carte.menus %}
-            <li class="livre-plat">
-              <div class="livre-plat-body">
-                <div class="livre-plat-header">
-                  <span class="livre-plat-titre">{{ m.titre }}</span>
-                  <span class="livre-plat-prix">{{ m.prix }} €</span>
-                </div>
-                {% if m.description %}<p class="livre-plat-desc">{{ m.description }}</p>{% endif %}
-                <div class="menu-picker">
-                  {% for cours in m.cours %}
-                  <div class="menu-cours-groupe" data-cours="{{ cours.key }}">
-                    <p class="menu-cours-titre">{{ cours.label }}</p>
-                    {% set seul = cours.plats | length == 1 %}
-                  {% for plat in cours.plats %}
-                    <label class="menu-plat-radio-label">
-                      <input type="radio" name="m{{ m.id }}_{{ cours.key }}" value="{{ plat.id }}" class="js-cours-radio" required{% if seul %} checked{% endif %}>
-                      {% if plat.image %}<img class="menu-plat-img js-photo-zoom" src="{% media plat.image %}" alt="{{ plat.titre }}" loading="lazy" data-titre="{{ plat.titre }}" data-prix="" data-label="{{ plat.label | default(value='') }}" data-desc="{{ plat.description | default(value='') }}" data-allergenes="">{% endif %}
-                      <span class="menu-plat-radio-nom">{{ plat.titre }}</span>
-                      {% if plat.allergenes and cours.key != "dessert" %}<span class="livre-plat-allergenes">Allergène{% if plat.allergenes | length > 1 %}s{% endif %} : {{ plat.allergenes | join(sep=", ") }}</span>{% endif %}
-                    </label>
-                    <button class="btn btn-sm btn-secondary js-modifier-plat-menu" data-plat-id="{{ plat.id }}" data-cours="{{ cours.key }}"{% if not seul %} hidden{% endif %}>Modifier</button>
-                    <div class="menu-plat-picker" data-plat-id="{{ plat.id }}" data-cours="{{ cours.key }}" hidden>
-                      {% if plat.est_viande %}
-                      <div class="picker-groupe">
-                        <p class="picker-label">Cuisson</p>
-                        <div class="picker-choices">
-                          <label class="picker-option"><input type="radio" name="m{{ m.id }}_{{ cours.key }}_cuiss_{{ plat.id }}" value="bleu"><span>Bleu</span></label>
-                          <label class="picker-option"><input type="radio" name="m{{ m.id }}_{{ cours.key }}_cuiss_{{ plat.id }}" value="saignant"><span>Saignant</span></label>
-                          <label class="picker-option"><input type="radio" name="m{{ m.id }}_{{ cours.key }}_cuiss_{{ plat.id }}" value="a_point" checked><span>À point</span></label>
-                          <label class="picker-option"><input type="radio" name="m{{ m.id }}_{{ cours.key }}_cuiss_{{ plat.id }}" value="bien_cuit"><span>Bien cuit</span></label>
-                        </div>
-                      </div>
-                      {% endif %}
-                      {% if plat.garnitures %}
-                      <div class="picker-groupe">
-                        <p class="picker-label">Accompagnement</p>
-                        <div class="picker-choices">
-                          {% for g in plat.garnitures %}
-                          <label class="picker-option">
-                            <input type="checkbox" class="js-garniture" value="{{ g.id }}">
-                            <span>{{ g.libelle }}</span>
-                          </label>
-                          {% endfor %}
-                        </div>
-                      </div>
-                      {% endif %}
-                      <label class="picker-check">
-                        <input type="checkbox" class="js-sans-sel">
-                        <span>Sans sel</span>
+            {% for section in carte.menus %}
+            <h3 class="livre-sous-titre">{{ section.label }}</h3>
+            <ul class="livre-plats-liste">
+              {% for m in section.menus %}
+              <li class="livre-plat">
+                <div class="livre-plat-body">
+                  <div class="livre-plat-header">
+                    <span class="livre-plat-titre">{{ m.nom }}</span>
+                    <span class="livre-plat-prix">{{ m.prix }} €</span>
+                  </div>
+                  {% if m.description %}<p class="livre-plat-desc">{{ m.description }}</p>{% endif %}
+                  <div class="menu-picker">
+                    {% for cours in m.cours %}
+                    <div class="menu-cours-groupe" data-cours="{{ cours.key }}">
+                      <p class="menu-cours-titre">{{ cours.label }}</p>
+                      {% set seul = cours.plats | length == 1 %}
+                      {% for plat in cours.plats %}
+                      <label class="menu-plat-radio-label">
+                        <input type="radio" name="m{{ m.id }}_{{ cours.key }}" value="{{ plat.id }}" class="js-cours-radio" required{% if seul %} checked{% endif %}>
+                        {% if plat.image %}<img class="menu-plat-img js-photo-zoom" src="{% media plat.image %}" alt="{{ plat.titre }}" loading="lazy" data-titre="{{ plat.titre }}" data-prix="" data-label="{{ plat.label | default(value='') }}" data-desc="{{ plat.description | default(value='') }}" data-allergenes="">{% endif %}
+                        <span class="menu-plat-radio-nom">{{ plat.titre }}</span>
                       </label>
+                      {% if plat.allergenes %}<p class="livre-plat-allergenes">Allergène{% if plat.allergenes | length > 1 %}s{% endif %} : {{ plat.allergenes | join(sep=", ") }}</p>{% endif %}
+                      <button class="btn btn-sm btn-secondary js-modifier-plat-menu" data-plat-id="{{ plat.id }}" data-cours="{{ cours.key }}"{% if not seul %} hidden{% endif %}>Modifier</button>
+                      <div class="menu-plat-picker" data-plat-id="{{ plat.id }}" data-cours="{{ cours.key }}" hidden>
+                        {% if plat.est_viande %}
+                        <div class="picker-groupe">
+                          <p class="picker-label">Cuisson</p>
+                          <div class="picker-choices">
+                            <label class="picker-option"><input type="radio" name="m{{ m.id }}_{{ cours.key }}_cuiss_{{ plat.id }}" value="bleu"><span>Bleu</span></label>
+                            <label class="picker-option"><input type="radio" name="m{{ m.id }}_{{ cours.key }}_cuiss_{{ plat.id }}" value="saignant"><span>Saignant</span></label>
+                            <label class="picker-option"><input type="radio" name="m{{ m.id }}_{{ cours.key }}_cuiss_{{ plat.id }}" value="a_point" checked><span>À point</span></label>
+                            <label class="picker-option"><input type="radio" name="m{{ m.id }}_{{ cours.key }}_cuiss_{{ plat.id }}" value="bien_cuit"><span>Bien cuit</span></label>
+                          </div>
+                        </div>
+                        {% endif %}
+                        {% if plat.garnitures %}
+                        <div class="picker-groupe">
+                          <p class="picker-label">Accompagnement</p>
+                          <div class="picker-choices">
+                            {% for g in plat.garnitures %}
+                            <label class="picker-option">
+                              <input type="checkbox" class="js-garniture" value="{{ g.id }}">
+                              <span>{{ g.libelle }}</span>
+                            </label>
+                            {% endfor %}
+                          </div>
+                        </div>
+                        {% endif %}
+                        <label class="picker-check">
+                          <input type="checkbox" class="js-sans-sel">
+                          <span>Sans sel ajouté</span>
+                        </label>
+                      </div>
+                      {% endfor %}
                     </div>
                     {% endfor %}
+                    {% if m.entree_libre %}<p class="menu-dessert-txt">Entrée : {{ m.entree_libre }}</p>{% endif %}
+                    {% if m.plat_libre %}<p class="menu-dessert-txt">Plat : {{ m.plat_libre }}</p>{% endif %}
+                    {% if m.dessert_libre %}<p class="menu-dessert-txt">Dessert : {{ m.dessert_libre }}</p>{% endif %}
+                    <button class="btn btn-sm btn-primary js-menu-confirmer" data-menu-id="{{ m.id }}">Ajouter au panier</button>
                   </div>
-                  {% endfor %}
-                  {% if m.dessert %}<p class="menu-dessert-txt">Dessert : {{ m.dessert }}</p>{% endif %}
-                  <button class="btn btn-sm btn-primary js-menu-confirmer" data-menu-id="{{ m.id }}">Ajouter au panier</button>
                 </div>
-              </div>
-            </li>
+              </li>
+              {% endfor %}
+            </ul>
             {% endfor %}
-          </ul>
           {% else %}
           <p class="livre-vide">Aucun menu disponible.</p>
           {% endif %}

@@ -34,8 +34,7 @@ pub async fn get_avis_plat(
     let user_ids: Vec<i32> = avis_list.iter().filter_map(|a| a.user_id).collect();
 
     let user_name_map: HashMap<Pk, String> = if !user_ids.is_empty() {
-        runique_users::Entity::find()
-            .filter(runique_users::Column::Id.is_in(user_ids))
+        search!(runique_users::Entity => Id in (user_ids),)
             .all(db)
             .await
             .unwrap_or_default()

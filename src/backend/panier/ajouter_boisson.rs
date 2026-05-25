@@ -36,8 +36,9 @@ pub async fn panier_ajouter_boisson(
     } else {
         panier.lignes.push(LignePanier {
             plat_id: 0,
+            type_article: "boisson".to_string(),
             boisson_id: Some(boisson_id),
-            menu_resto_id: None,
+            menu_id: None,
             supplement_id: None,
             titre: boisson_model.titre.clone(),
             prix_unitaire: format!("{:.2}", boisson_model.prix),
@@ -45,7 +46,6 @@ pub async fn panier_ajouter_boisson(
             est_viande: false,
             cuisson: None,
             garniture_ids: vec![],
-            avec_legumes: false,
             sans_sel: false,
             note: None,
             menu_choix: vec![],

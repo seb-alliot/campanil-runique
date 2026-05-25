@@ -13,9 +13,7 @@ pub struct AvisPublic {
 }
 
 pub async fn get_avis_valides(db: &DatabaseConnection) -> Vec<AvisPublic> {
-    let avis_list = avis::Entity::find()
-        .filter(avis::Column::Statut.eq(avis::StatutAvis::Valide))
-        .order_by_desc(avis::Column::CreatedAt)
+    let avis_list = search!(avis::Entity => Statut eq avis::StatutAvis::Valide, desc CreatedAt,)
         .limit(8)
         .all(db)
         .await
@@ -27,8 +25,7 @@ pub async fn get_avis_valides(db: &DatabaseConnection) -> Vec<AvisPublic> {
 
     let user_ids: Vec<i32> = avis_list.iter().map(|a| a.user_id).collect();
 
-    let user_name_map: HashMap<Pk, String> = runique_users::Entity::find()
-        .filter(runique_users::Column::Id.is_in(user_ids))
+    let user_name_map: HashMap<Pk, String> = search!(runique_users::Entity => Id in (user_ids),)
         .all(db)
         .await
         .unwrap_or_default()

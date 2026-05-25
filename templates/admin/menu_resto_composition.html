@@ -3,7 +3,7 @@
 {% block extra_css %}{{ super() }}<link rel="stylesheet" href="{% static "css/admin-surcharge.css" %}">{% endblock %}
 {% block breadcrumb %}
   <span class="breadcrumb-sep">/</span>
-  <a href="{{ admin_prefix }}/menus_resto/list">Menus restaurant</a>
+  <a href="{{ admin_prefix }}/menus/list">Menus</a>
   <span class="breadcrumb-sep">/</span>
   <span>Composition — {{ menu_nom }}</span>
 {% endblock %}
@@ -14,13 +14,13 @@
     <p class="page-subtitle">Sélectionner les plats par cours</p>
   </div>
   <div class="page-actions">
-    <a href="{{ admin_prefix }}/menus_resto/{{ menu_id }}/detail" class="btn btn-secondary btn-sm">← Détail</a>
-    <a href="{{ admin_prefix }}/menus_resto/list" class="btn btn-secondary btn-sm">← Menus</a>
+    <a href="{{ admin_prefix }}/menus/{{ menu_id }}/detail" class="btn btn-secondary btn-sm">← Détail</a>
+    <a href="{{ admin_prefix }}/menus/list" class="btn btn-secondary btn-sm">← Menus</a>
   </div>
 </div>
 {% messages %}
 
-<form method="post" action="{{ admin_prefix }}/menus-resto/{{ menu_id }}/composition">
+<form method="post" action="{{ admin_prefix }}/menus/{{ menu_id }}/composition">
   {% csrf %}
   <div class="cp-grid-3">
 
@@ -41,6 +41,14 @@
         </label>
         {% endfor %}
       </div>
+      <div class="cp-checklist cp-checklist--border-top">
+        <label class="cp-check-label">
+          <span>Texte libre</span>
+          <input type="text" name="entree_libre" class="form-control cp-dessert-inline"
+            value="{{ composition.entree_libre }}" maxlength="500"
+            placeholder="Ex : Salade corse…">
+        </label>
+      </div>
     </div>
 
     <div class="card">
@@ -59,6 +67,14 @@
           <span>{{ p.titre }}</span>
         </label>
         {% endfor %}
+      </div>
+      <div class="cp-checklist cp-checklist--border-top">
+        <label class="cp-check-label">
+          <span>Texte libre</span>
+          <input type="text" name="plat_libre" class="form-control cp-dessert-inline"
+            value="{{ composition.plat_libre }}" maxlength="500"
+            placeholder="Ex : Agneau rôti…">
+        </label>
       </div>
     </div>
 
@@ -81,9 +97,9 @@
       </div>
       <div class="cp-checklist cp-checklist--border-top">
         <label class="cp-check-label">
-          <span class="cp-dessert-label">Texte libre</span>
-          <input type="text" name="dessert" class="form-control cp-dessert-inline"
-            value="{{ composition.dessert }}" maxlength="255"
+          <span>Texte libre</span>
+          <input type="text" name="dessert_libre" class="form-control cp-dessert-inline"
+            value="{{ composition.dessert_libre }}" maxlength="500"
             placeholder="Ex : Fondant au chocolat…">
         </label>
       </div>

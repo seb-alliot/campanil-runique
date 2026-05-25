@@ -20,7 +20,6 @@ fn parse_choix(request: &Request, prefix: &str, cours: &str) -> Option<MenuChoix
         .get_query(&format!("{prefix}_garniture_ids"))
         .map(|v| v.split(',').filter_map(|s| s.parse().ok()).collect())
         .unwrap_or_default();
-    let avec_legumes = request.get_query(&format!("{prefix}_avec_legumes")) == Some("1");
     let sans_sel = request.get_query(&format!("{prefix}_sans_sel")) == Some("1");
     let note = request
         .get_query(&format!("{prefix}_note"))
@@ -30,10 +29,9 @@ fn parse_choix(request: &Request, prefix: &str, cours: &str) -> Option<MenuChoix
     Some(MenuChoixPanier {
         cours: cours.to_string(),
         plat_id,
-        plat_titre: String::new(), // rempli par add_menu via DB
+        plat_titre: String::new(),
         cuisson,
         garniture_ids,
-        avec_legumes,
         sans_sel,
         note,
     })
@@ -73,6 +71,11 @@ pub async fn vue_ajouter_panier(request: Request) -> AppResult<Response> {
         .unwrap_or_else(|| "/carte".to_string());
 
     let user_id = request.user.as_ref().map(|u| u.id);
+    let type_article = request
+        .get_query("type_article")
+        .filter(|v| matches!(*v, "entree" | "dessert" | "plat"))
+        .map(str::to_string)
+        .unwrap_or_else(|| "plat".to_string());
 
     let note = request
         .get_query("note")
@@ -82,7 +85,6 @@ pub async fn vue_ajouter_panier(request: Request) -> AppResult<Response> {
         .get_query("garniture_ids")
         .map(|v| v.split(',').filter_map(|s| s.parse().ok()).collect())
         .unwrap_or_default();
-    let avec_legumes = request.get_query("avec_legumes") == Some("1");
     let sans_sel = request.get_query("sans_sel") == Some("1");
 
     if supplement_id > 0 {
@@ -130,11 +132,11 @@ pub async fn vue_ajouter_panier(request: Request) -> AppResult<Response> {
             &request,
             PanierAjouterParams {
                 plat_id,
+                type_article,
                 quantite,
                 cuisson,
                 note,
                 garniture_ids,
-                avec_legumes,
                 sans_sel,
                 user_id,
             },

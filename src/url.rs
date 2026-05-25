@@ -27,7 +27,9 @@ pub fn routes() -> Router {
         "/service/commandes/{numero}/statut"    => view!{ service_statut },          name = "service_statut",
         "/service/stock.json"                   => view!{ service_stock_json },      name = "service_stock_json",
         "/service/menus/{id}/stock"             => view!{ service_stock_update },    name = "service_stock_update",
-        "/commande/{numero}/annuler"            => view!{ commande_annuler },       name = "commande_annuler",
+        "/commande/{numero}/annuler"                      => view!{ commande_annuler },        name = "commande_annuler",
+        "/commande/{numero}/ligne/{ligne_id}/modifier"    => view!{ commande_modifier_ligne },  name = "commande_modifier_ligne",
+        "/commande/{numero}/ligne/{ligne_id}/supprimer"   => view!{ commande_supprimer_ligne }, name = "commande_supprimer_ligne",
         "/compte/avis/{commande_id}"            => view!{ avis_poster },            name = "avis_poster",
         "/compte/avis/{commande_id}/supprimer"  => view!{ avis_supprimer },         name = "avis_supprimer",
         "/compte/avis-plat/{plat_id}"           => view!{ avis_plat_poster },            name = "avis_plat_poster",
@@ -59,7 +61,7 @@ pub fn admin_extra_routes() -> Vec<(&'static str, runique::axum::routing::Method
             view! { admin_commande_detail },
         ),
         (
-            "/menus-resto/{id}/composition",
+            "/menus/{id}/composition",
             view! { admin_menu_resto_composition },
         ),
     ]

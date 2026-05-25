@@ -3,7 +3,7 @@ use crate::backend::service::charger_commandes::garde_acces;
 use crate::entities::{commande, commande_statut};
 use runique::context;
 use runique::prelude::*;
-use sea_orm::{ActiveModelTrait, ColumnTrait, EntityTrait, QueryFilter, Set};
+use sea_orm::{ActiveModelTrait, Set};
 
 pub async fn handle_service_statut(request: &mut Request) -> AppResult<Response> {
     if !garde_acces(request) {
@@ -40,9 +40,8 @@ pub async fn handle_service_statut(request: &mut Request) -> AppResult<Response>
 
     let db = request.db();
 
-    let Some(cmd) = commande::Entity::find()
-        .filter(commande::Column::Numero.eq(&numero))
-        .one(db)
+    let Some(cmd) = search!(commande::Entity => Numero eq &numero,)
+        .first(db)
         .await
         .ok()
         .flatten()
@@ -54,11 +53,14 @@ pub async fn handle_service_statut(request: &mut Request) -> AppResult<Response>
             .into_response());
     };
 
-    let active = commande::ActiveModel {
+    let mut active = commande::ActiveModel {
         id: Set(cmd.id),
         statut: Set(statut.clone()),
         ..Default::default()
     };
+    if nouveau_statut == "en_preparation" {
+        active.modifiable = Set(false);
+    }
     if active.update(db).await.is_err() {
         return Ok((
             StatusCode::INTERNAL_SERVER_ERROR,

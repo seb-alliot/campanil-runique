@@ -1619,9 +1619,9 @@ dependencies = [
 
 [[package]]
 name = "derive_form"
-version = "2.1.2"
+version = "2.1.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e150d1a9aeb225d9815dcfe5d727a129ff317e6f3ad8bf555f52a504a31aab49"
+checksum = "c2bcda7756c6a0f4f131789c8f00a89f7c25eb8a8091cb9075c6aabb22af0374"
 dependencies = [
  "dotenvy",
  "proc-macro2",
@@ -4747,9 +4747,9 @@ dependencies = [
 
 [[package]]
 name = "runique"
-version = "2.1.2"
+version = "2.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "43ba3ad7ab651114c2440e2135a805fabc5b2c28d37214a9cd5f58291c6f09e2"
+checksum = "f599e15ff9fe7939958da716aceab332be313a6c6c829b907dc0e9f5b10f3dc8"
 dependencies = [
  "ammonia",
  "anyhow",

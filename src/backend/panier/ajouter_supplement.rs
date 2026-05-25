@@ -46,8 +46,9 @@ pub async fn panier_ajouter_supplement(
     } else {
         panier.lignes.push(LignePanier {
             plat_id: 0,
+            type_article: "supplement".to_string(),
             boisson_id: None,
-            menu_resto_id: None,
+            menu_id: None,
             supplement_id: Some(supplement_id),
             titre: label,
             prix_unitaire: format!("{:.2}", sup.prix),
@@ -55,7 +56,6 @@ pub async fn panier_ajouter_supplement(
             est_viande: false,
             cuisson: None,
             garniture_ids: vec![],
-            avec_legumes: false,
             sans_sel: false,
             note: None,
             menu_choix: vec![],

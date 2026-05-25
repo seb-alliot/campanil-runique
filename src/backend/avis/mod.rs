@@ -17,10 +17,8 @@ pub async fn handle_avis(request: Request) -> AppResult<Response> {
     let commande_id: Pk = request.get_path_as::<Pk>("commande_id").unwrap_or(0);
 
     // IDOR: load commande and verify ownership simultaneously
-    let cmd_opt = commande::Entity::find()
-        .filter(commande::Column::Id.eq(commande_id))
-        .filter(commande::Column::UserId.eq(user.id))
-        .one(request.db())
+    let cmd_opt = search!(commande::Entity => Id eq commande_id, UserId eq user.id,)
+        .first(request.db())
         .await
         .ok()
         .flatten();
@@ -41,9 +39,8 @@ pub async fn handle_avis(request: Request) -> AppResult<Response> {
         return Ok(Redirect::to("/compte").into_response());
     }
 
-    let existing = avis::Entity::find()
-        .filter(avis::Column::CommandeId.eq(commande_id))
-        .one(request.db())
+    let existing = search!(avis::Entity => CommandeId eq commande_id,)
+        .first(request.db())
         .await
         .ok()
         .flatten();

@@ -83,6 +83,14 @@ pub async fn commande_annuler(mut request: Request) -> AppResult<Response> {
     handle_commande_annuler(&mut request).await
 }
 
+pub async fn commande_modifier_ligne(request: Request) -> AppResult<Response> {
+    handle_modifier_ligne(request).await
+}
+
+pub async fn commande_supprimer_ligne(request: Request) -> AppResult<Response> {
+    handle_supprimer_ligne(request).await
+}
+
 pub async fn compte(mut request: Request) -> AppResult<Response> {
     handle_compte(&mut request).await
 }

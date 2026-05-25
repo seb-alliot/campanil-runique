@@ -1,29 +1,85 @@
 use crate::backend::menus::PlatDetail;
 use crate::backend::panier::{LignePanier, panier_get, panier_save};
 use crate::backend::stats::get_plat_views;
-use crate::entities::plat;
+use crate::entities::{dessert, entree, plat};
 use runique::prelude::*;
 
 pub struct PanierAjouterParams {
     pub plat_id: Pk,
+    pub type_article: String,
     pub quantite: i32,
     pub cuisson: Option<String>,
     pub note: Option<String>,
     pub garniture_ids: Vec<Pk>,
-    pub avec_legumes: bool,
     pub sans_sel: bool,
     pub user_id: Option<Pk>,
 }
 
+struct ArticleInfo {
+    titre: String,
+    description: Option<String>,
+    image: Option<String>,
+    prix: Decimal,
+    est_viande: bool,
+}
+
+async fn find_article(
+    db: &sea_orm::DatabaseConnection,
+    id: Pk,
+    type_article: &str,
+) -> Option<ArticleInfo> {
+    match type_article {
+        "entree" => {
+            let m = entree::Entity::find_by_id(id)
+                .filter(entree::Column::Disponible.eq(true))
+                .one(db)
+                .await
+                .ok()
+                .flatten()?;
+            Some(ArticleInfo {
+                titre: m.titre,
+                description: m.description,
+                image: m.image,
+                prix: m.prix,
+                est_viande: false,
+            })
+        }
+        "dessert" => {
+            let m = dessert::Entity::find_by_id(id)
+                .filter(dessert::Column::Disponible.eq(true))
+                .one(db)
+                .await
+                .ok()
+                .flatten()?;
+            Some(ArticleInfo {
+                titre: m.titre,
+                description: m.description,
+                image: m.image,
+                prix: m.prix,
+                est_viande: false,
+            })
+        }
+        _ => {
+            let m = plat::Entity::find_by_id(id)
+                .filter(plat::Column::Disponible.eq(true))
+                .one(db)
+                .await
+                .ok()
+                .flatten()?;
+            Some(ArticleInfo {
+                titre: m.titre,
+                description: m.description,
+                image: m.image,
+                prix: m.prix,
+                est_viande: m.est_viande,
+            })
+        }
+    }
+}
+
 pub async fn panier_ajouter(request: &Request, p: PanierAjouterParams) -> Result<(), &'static str> {
-    let Some(plat_model) = plat::Entity::find_by_id(p.plat_id)
-        .filter(plat::Column::Disponible.eq(true))
-        .one(request.db())
-        .await
-        .ok()
-        .flatten()
-    else {
-        return Err("Plat introuvable ou indisponible");
+    let Some(article) = find_article(request.db(), p.plat_id, &p.type_article).await else {
+        return Err("Article introuvable ou indisponible");
     };
 
     let mut panier = panier_get(&request.session).await;
@@ -32,31 +88,33 @@ pub async fn panier_ajouter(request: &Request, p: PanierAjouterParams) -> Result
     }
     panier.lignes.push(LignePanier {
         plat_id: p.plat_id,
+        type_article: p.type_article.clone(),
         boisson_id: None,
-        menu_resto_id: None,
+        menu_id: None,
         supplement_id: None,
-        titre: plat_model.titre.clone(),
-        prix_unitaire: format!("{:.2}", plat_model.prix),
+        titre: article.titre.clone(),
+        prix_unitaire: format!("{:.2}", article.prix),
         quantite: p.quantite,
-        est_viande: plat_model.est_viande,
+        est_viande: article.est_viande,
         cuisson: p.cuisson,
         note: p.note,
         garniture_ids: p.garniture_ids,
-        avec_legumes: p.avec_legumes,
         sans_sel: p.sans_sel,
         menu_choix: vec![],
     });
 
     panier_save(&request.session, &panier).await;
 
-    let plat_detail = PlatDetail {
-        id: plat_model.id,
-        titre: plat_model.titre,
-        description: plat_model.description,
-        image: plat_model.image,
-        est_viande: plat_model.est_viande,
-        allergenes: vec![],
-    };
-    let _ = get_plat_views(request, &[plat_detail]).await;
+    if p.type_article == "plat" {
+        let plat_detail = PlatDetail {
+            id: p.plat_id,
+            titre: article.titre,
+            description: article.description,
+            image: article.image,
+            est_viande: article.est_viande,
+            allergenes: vec![],
+        };
+        let _ = get_plat_views(request, &[plat_detail]).await;
+    }
     Ok(())
 }

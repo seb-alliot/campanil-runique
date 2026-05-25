@@ -1,20 +1,14 @@
-use crate::backend::compte::struct_::UserComplet;
 use crate::backend::utils::inject_auth;
+use crate::entities::user_profil;
 use crate::formulaire::ProfilForm;
 use runique::prelude::*;
-use sea_orm::{ConnectionTrait, DbBackend, FromQueryResult, Statement};
+use sea_orm::{ConnectionTrait, DbBackend, Statement};
 
-pub async fn load_profil(db: &DatabaseConnection, user_id: Pk) -> Option<UserComplet> {
-    UserComplet::find_by_statement(Statement::from_sql_and_values(
-        DbBackend::Postgres,
-        r#"SELECT id, username, email, is_active, is_staff, is_superuser,
-                  telephone, adresse, ville, code_postal, pays
-           FROM eihwaz_users WHERE id = $1"#,
-        [user_id.into()],
-    ))
-    .one(db)
-    .await
-    .unwrap_or(None)
+pub async fn load_profil(db: &DatabaseConnection, user_id: Pk) -> Option<user_profil::Model> {
+    search!(user_profil::Entity => Id eq user_id,)
+        .first(db)
+        .await
+        .unwrap_or(None)
 }
 
 pub async fn handle_profil_post(request: &mut Request) -> AppResult<Response> {

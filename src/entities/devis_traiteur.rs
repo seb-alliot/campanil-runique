@@ -13,7 +13,7 @@ model! {
         ],
     },
     {
-        menu_id:        int      [fk(menus.id, set_null)],
+        menu_id:        int      [fk(menus_traiteur.id, set_null)],
         nom:            text     [required, max_length: 150],
         email:          text     [required, max_length: 255],
         telephone:      text     [max_length: 30],
@@ -24,7 +24,7 @@ model! {
         created_at:     datetime [auto_now],
     },
     relations: {
-        belongs_to: Menu via menu_id,
+        belongs_to: MenuTraiteur via menu_id,
     },
     meta: {
         ordering: [-created_at],

@@ -1,7 +1,7 @@
 use crate::backend::service::struct_::{CommandeService, LigneService};
 use crate::entities::{
-    boisson, commande, commande::TypeRetrait, commande_ligne, commande_ligne_garniture, garniture,
-    horaire, menu_resto, plat, supplement,
+    boisson, commande, commande::TypeRetrait, commande_ligne, commande_ligne_garniture, dessert,
+    entree, garniture, horaire, menu, plat, supplement,
 };
 use chrono::{Datelike, NaiveTime, Timelike, Weekday};
 use runique::prelude::*;
@@ -133,8 +133,10 @@ pub(super) async fn charger_commandes_jour(
 
     let cl_ids: Vec<Pk> = lignes_db.iter().map(|l| l.id).collect();
     let plat_ids: Vec<i32> = lignes_db.iter().filter_map(|l| l.plat_id).collect();
+    let entree_ids_svc: Vec<i32> = lignes_db.iter().filter_map(|l| l.entree_id).collect();
+    let dessert_ids_svc: Vec<i32> = lignes_db.iter().filter_map(|l| l.dessert_id).collect();
     let boisson_ids: Vec<i32> = lignes_db.iter().filter_map(|l| l.boisson_id).collect();
-    let menu_ids: Vec<i32> = lignes_db.iter().filter_map(|l| l.menu_resto_id).collect();
+    let menu_ids: Vec<i32> = lignes_db.iter().filter_map(|l| l.menu_id).collect();
     let supplement_ids: Vec<i32> = lignes_db.iter().filter_map(|l| l.supplement_id).collect();
 
     let plats_map: HashMap<Pk, String> = if !plat_ids.is_empty() {
@@ -144,6 +146,30 @@ pub(super) async fn charger_commandes_jour(
             .unwrap_or_default()
             .into_iter()
             .map(|p| (p.id, p.label.unwrap_or(p.titre)))
+            .collect()
+    } else {
+        HashMap::new()
+    };
+
+    let entrees_map_svc: HashMap<Pk, String> = if !entree_ids_svc.is_empty() {
+        search!(entree::Entity => Id in (entree_ids_svc),)
+            .all(db)
+            .await
+            .unwrap_or_default()
+            .into_iter()
+            .map(|e| (e.id, e.label.unwrap_or(e.titre)))
+            .collect()
+    } else {
+        HashMap::new()
+    };
+
+    let desserts_map_svc: HashMap<Pk, String> = if !dessert_ids_svc.is_empty() {
+        search!(dessert::Entity => Id in (dessert_ids_svc),)
+            .all(db)
+            .await
+            .unwrap_or_default()
+            .into_iter()
+            .map(|d| (d.id, d.label.unwrap_or(d.titre)))
             .collect()
     } else {
         HashMap::new()
@@ -162,7 +188,7 @@ pub(super) async fn charger_commandes_jour(
     };
 
     let menus_map: HashMap<Pk, String> = if !menu_ids.is_empty() {
-        search!(menu_resto::Entity => Id in (menu_ids),)
+        search!(menu::Entity => Id in (menu_ids),)
             .all(db)
             .await
             .unwrap_or_default()
@@ -255,11 +281,21 @@ pub(super) async fn charger_commandes_jour(
                 .get(&(bid as Pk))
                 .cloned()
                 .unwrap_or_else(|| format!("Boisson #{}", bid))
-        } else if let Some(mid) = l.menu_resto_id {
+        } else if let Some(mid) = l.menu_id {
             menus_map
                 .get(&(mid as Pk))
                 .cloned()
                 .unwrap_or_else(|| format!("Menu #{}", mid))
+        } else if let Some(eid) = l.entree_id {
+            entrees_map_svc
+                .get(&(eid as Pk))
+                .cloned()
+                .unwrap_or_else(|| format!("Entrée #{}", eid))
+        } else if let Some(did) = l.dessert_id {
+            desserts_map_svc
+                .get(&(did as Pk))
+                .cloned()
+                .unwrap_or_else(|| format!("Dessert #{}", did))
         } else if let Some(pid) = l.plat_id {
             plats_map
                 .get(&(pid as Pk))
@@ -277,7 +313,6 @@ pub(super) async fn charger_commandes_jour(
                 cuisson: l.cuisson.as_ref().map(|c| c.to_string()),
                 note: l.note.clone(),
                 garnitures: garnitures_par_cl.remove(&l.id).unwrap_or_default(),
-                avec_legumes: l.avec_legumes,
                 sans_sel: l.sans_sel,
             });
     }

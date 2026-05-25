@@ -64,8 +64,6 @@ document.addEventListener('click', function (e) {
                 if (cuissonR) params += '&' + cours + '_cuisson=' + cuissonR.value;
                 const garns = [...platPicker.querySelectorAll('input.js-garniture:checked')].map(function (i) { return i.value; });
                 if (garns.length) params += '&' + cours + '_garniture_ids=' + garns.join(',');
-                const legumes = platPicker.querySelector('.js-avec-legumes');
-                if (legumes && legumes.checked) params += '&' + cours + '_avec_legumes=1';
                 const sel = platPicker.querySelector('.js-sans-sel');
                 if (sel && sel.checked) params += '&' + cours + '_sans_sel=1';
             }
@@ -79,7 +77,11 @@ document.addEventListener('click', function (e) {
 
     const modBtn = e.target.closest('.js-modifier');
     if (modBtn) {
-        const panel = document.querySelector('.plat-picker[data-plat-id="' + modBtn.dataset.platId + '"]');
+        const pickerType = modBtn.dataset.pickerType;
+        const selector = pickerType
+            ? '.plat-picker[data-plat-id="' + modBtn.dataset.platId + '"][data-picker-type="' + pickerType + '"]'
+            : '.plat-picker[data-plat-id="' + modBtn.dataset.platId + '"]';
+        const panel = document.querySelector(selector);
         if (panel) {
             panel.hidden = !panel.hidden;
             if (!panel.hidden) closePhotoModalIfOpen();
@@ -114,24 +116,22 @@ document.addEventListener('click', function (e) {
     } else if (boissonId) {
         url = '/panier/ajouter?boisson_id=' + boissonId + '&quantite=1&format=json';
     } else if (platId) {
+        const typeArticle = btn.dataset.typeArticle || 'plat';
         const picker = btn.closest('.plat-picker');
-        let cuisson = '', garnitureId = '', avecLegumes = '0', sansSel = '0';
+        let cuisson = '', garnitureId = '', sansSel = '0';
         if (picker) {
             const cuissonR = picker.querySelector('input[name^="cuiss_"]:checked');
             if (cuissonR) cuisson = cuissonR.value;
             const garnChecked = [...picker.querySelectorAll('input.js-garniture:checked')].map(i => i.value);
             if (garnChecked.length) garnitureId = garnChecked.join(',');
-            const legumesC = picker.querySelector('.js-avec-legumes');
-            if (legumesC && legumesC.checked) avecLegumes = '1';
             const selC = picker.querySelector('.js-sans-sel');
             if (selC && selC.checked) sansSel = '1';
         }
         const noteInput = document.querySelector('.plat-note-input[data-plat-id="' + platId + '"]');
         const note = noteInput ? noteInput.value.trim() : '';
-        url = '/panier/ajouter?plat_id=' + platId + '&quantite=1&format=json'
+        url = '/panier/ajouter?plat_id=' + platId + '&type_article=' + typeArticle + '&quantite=1&format=json'
             + (cuisson ? '&cuisson=' + cuisson : '')
             + (garnitureId ? '&garniture_ids=' + garnitureId : '')
-            + (avecLegumes === '1' ? '&avec_legumes=1' : '')
             + (sansSel === '1' ? '&sans_sel=1' : '')
             + (note ? '&note=' + encodeURIComponent(note) : '');
     } else {

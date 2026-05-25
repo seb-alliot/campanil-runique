@@ -1,4 +1,3 @@
-use crate::entities::menu_resto_plat;
 use crate::entities::*;
 
 use runique::admin;
@@ -85,21 +84,55 @@ admin! {
         ],
         group_action: [["disponible", "Rendre disponible"]],
     }
+    entrees: entree::Model => entree::AdminForm {
+        title: "Entrées",
+        list_display: [
+            ["titre", "Titre"],
+            ["usage", "Usage"],
+            ["prix", "Prix"],
+            ["disponible", "Disponible"],
+        ],
+        list_filter: [
+            ["usage", "Usage", 10],
+            ["disponible", "Disponibilité", 10],
+        ],
+        group_action: [["disponible", "Rendre disponible"]],
+        m2m: [
+            ["allergenes", "Allergènes", "entree_allergene", "entree_id", "allergene_id", "crate::entities::allergene", "libelle"],
+        ],
+    }
+    desserts: dessert::Model => dessert::AdminForm {
+        title: "Desserts",
+        list_display: [
+            ["titre", "Titre"],
+            ["usage", "Usage"],
+            ["prix", "Prix"],
+            ["disponible", "Disponible"],
+        ],
+        list_filter: [
+            ["usage", "Usage", 10],
+            ["disponible", "Disponibilité", 10],
+        ],
+        group_action: [["disponible", "Rendre disponible"]],
+        m2m: [
+            ["allergenes", "Allergènes", "dessert_allergene", "dessert_id", "allergene_id", "crate::entities::allergene", "libelle"],
+        ],
+    }
     plats: plat::Model => plat::AdminForm {
         title: "Plats",
         list_display: [
             ["titre", "Titre"],
             ["type_plat", "Type"],
+            ["usage", "Usage"],
             ["prix", "Prix"],
             ["disponible", "Disponible"],
             ["est_viande", "Viande"],
-            ["avec_legumes", "Légumes inclus"],
         ],
         list_filter: [
             ["type_plat", "Type de plat", 10],
+            ["usage", "Usage", 10],
             ["disponible", "Disponibilité", 10],
             ["est_viande", "Viande", 10],
-            ["avec_legumes", "Légumes", 10],
         ],
         group_action: [["disponible", "Rendre disponible"]],
         m2m: [
@@ -108,44 +141,42 @@ admin! {
         ],
     }
     menus: menu::Model => menu::AdminForm {
+        title: "Menus",
+        list_display: [
+            ["nom", "Nom"],
+            ["type_menu", "Type"],
+            ["prix", "Prix"],
+            ["ordre", "Ordre"],
+        ],
+        list_filter: [
+            ["type_menu", "Type", 10],
+        ],
+        template_detail: "admin/menu_resto_detail.html",
+        m2m: [
+            ["entrees",  "Entrées",  "menu_entrees",  "menu_id", "entree_id", "crate::entities::entree", "titre"],
+            ["plats",    "Plats",    "menu_plats",    "menu_id", "plat_id",   "crate::entities::plat",   "titre"],
+            ["desserts", "Desserts", "menu_desserts", "menu_id", "dessert_id","crate::entities::dessert", "titre"],
+        ],
+    }
+    menus_traiteur: menu_traiteur::Model => menu_traiteur::AdminForm {
         title: "Menus traiteur",
         list_display: [
             ["titre", "Titre"],
             ["theme", "Thème"],
             ["regime", "Régime"],
-            ["prix_par_personne", "Prix/pers."],
-            ["nb_personnes_min", "Min. pers."],
+            ["prix_par_personne", "Prix / pers."],
+            ["nb_personnes_min", "Personnes min"],
+            ["stock", "Stock"],
             ["actif", "Actif"],
         ],
         list_filter: [
-            ["actif", "Actif", 10],
             ["theme", "Thème", 10],
             ["regime", "Régime", 10],
+            ["actif", "Actif", 10],
         ],
         group_action: [["actif", "Activer"]],
         m2m: [
-            ["plats", "Plats", "menu_plat", "menu_id", "plat_id", "crate::entities::plat", "titre"]
-        ],
-    }
-    menus_resto: menu_resto::Model => menu_resto::AdminForm {
-        title: "Menus restaurant",
-        list_display: [
-            ["nom", "Nom"],
-            ["prix", "Prix"],
-            ["disponible", "Disponible"],
-        ],
-        group_action: [["disponible", "Rendre disponible"]],
-        template_detail: "admin/menu_resto_detail.html",
-    }
-    menus_resto_composition: menu_resto_plat::Model => menu_resto_plat::AdminForm {
-        title: "Composition des menus restaurant",
-        list_display: [
-            ["menu_id", "Menu", "menus_resto.nom"],
-            ["plat_id", "Plat", "plats.titre"],
-            ["cours", "Cours"],
-        ],
-        list_filter: [
-            ["cours", "Cours", 10],
+            ["plats", "Plats", "menu_traiteur_plats", "menu_traiteur_id", "plat_id", "crate::entities::plat", "titre"],
         ],
     }
     boissons: boisson::Model => boisson::AdminForm {
@@ -161,15 +192,6 @@ admin! {
             ["disponible", "Disponibilité", 10],
         ],
         group_action: [["disponible", "Rendre disponible"]],
-    }
-    menu_enfants: menu_enfant::Model => menu_enfant::AdminForm {
-        title: "Menus enfant",
-        list_display: [
-            ["titre", "Titre"],
-            ["prix", "Prix"],
-            ["actif", "Actif"],
-        ],
-        group_action: [["actif", "Activer"]],
     }
     commandes: commande::Model => commande::AdminForm {
         title: "Commandes",

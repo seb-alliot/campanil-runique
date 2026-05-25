@@ -4,7 +4,6 @@ use crate::entities::{avis_plat, commande, commande_ligne};
 use crate::formulaire::AvisForm;
 use runique::axum;
 use runique::prelude::*;
-use sea_orm::{Condition, QueryFilter};
 use serde_json::json;
 
 pub async fn handle_avis_plat(request: Request) -> AppResult<Response> {
@@ -21,24 +20,21 @@ pub async fn handle_avis_plat(request: Request) -> AppResult<Response> {
     }
 
     // Sécurité IDOR : vérifier que l'user a commandé ce plat dans une commande terminée
-    let commande_ids: Vec<Pk> = search!(commande::Entity => UserId eq user.id,)
-        .filter(
-            Condition::any()
-                .add(commande::Column::Statut.eq(StatutCommande::Termine))
-                .add(commande::Column::Statut.eq(StatutCommande::Livre)),
-        )
-        .all(request.db())
-        .await
-        .unwrap_or_default()
-        .into_iter()
-        .map(|c| c.id)
-        .collect();
+    let commande_ids: Vec<Pk> = search!(commande::Entity =>
+        UserId eq user.id,
+        or(Statut eq StatutCommande::Termine, Statut eq StatutCommande::Livre),
+    )
+    .all(request.db())
+    .await
+    .unwrap_or_default()
+    .into_iter()
+    .map(|c| c.id)
+    .collect();
 
     let a_commande = if commande_ids.is_empty() {
         false
     } else {
-        search!(commande_ligne::Entity => CommandeId in (commande_ids),)
-            .filter(commande_ligne::Column::PlatId.eq(plat_id))
+        search!(commande_ligne::Entity => CommandeId in (commande_ids), PlatId eq plat_id,)
             .count(request.db())
             .await
             .unwrap_or(0)
@@ -49,10 +45,8 @@ pub async fn handle_avis_plat(request: Request) -> AppResult<Response> {
         return Ok(axum::Json(json!({"ok": false, "error": "non commande"})).into_response());
     }
 
-    let existant = avis_plat::Entity::find()
-        .filter(avis_plat::Column::PlatId.eq(plat_id))
-        .filter(avis_plat::Column::UserId.eq(user.id))
-        .one(request.db())
+    let existant = search!(avis_plat::Entity => PlatId eq plat_id, UserId eq user.id,)
+        .first(request.db())
         .await
         .ok()
         .flatten();

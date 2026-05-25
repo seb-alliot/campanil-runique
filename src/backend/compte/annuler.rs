@@ -18,10 +18,8 @@ pub async fn handle_commande_annuler(request: &mut Request) -> AppResult<Respons
     let numero = request.get_path("numero").unwrap_or("").to_string();
 
     // IDOR : filtre user_id + numero simultanément — message générique si non trouvé
-    let cmd_opt = commande::Entity::find()
-        .filter(commande::Column::Numero.eq(&numero))
-        .filter(commande::Column::UserId.eq(user.id))
-        .one(request.db())
+    let cmd_opt = search!(commande::Entity => Numero eq &numero, UserId eq user.id,)
+        .first(request.db())
         .await
         .ok()
         .flatten();

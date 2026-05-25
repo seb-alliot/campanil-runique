@@ -1,29 +1,29 @@
 use crate::backend::menus::{MenuCard, MenuFilters};
-use crate::entities::menu;
+use crate::entities::menu_traiteur;
 use runique::prelude::*;
 use std::str::FromStr;
 
 pub async fn get_menu_cards(db: &DatabaseConnection, filters: &MenuFilters) -> Vec<MenuCard> {
-    let mut query = search!(menu::Entity => Actif eq true, desc Id,);
+    let mut query = search!(menu_traiteur::Entity => Actif eq true, desc Id,);
 
     if let Some(ref pmin) = filters.prix_min
         && let Ok(d) = Decimal::from_str(pmin)
     {
-        query = query.filter(menu::Column::PrixParPersonne.gte(d));
+        query = query.filter(menu_traiteur::Column::PrixParPersonne.gte(d));
     }
     if let Some(ref pmax) = filters.prix_max
         && let Ok(d) = Decimal::from_str(pmax)
     {
-        query = query.filter(menu::Column::PrixParPersonne.lte(d));
+        query = query.filter(menu_traiteur::Column::PrixParPersonne.lte(d));
     }
     if let Some(ref theme) = filters.theme {
-        query = query.filter(menu::Column::Theme.eq(theme.as_str()));
+        query = query.filter(menu_traiteur::Column::Theme.eq(theme.as_str()));
     }
     if let Some(ref regime) = filters.regime {
-        query = query.filter(menu::Column::Regime.eq(regime.as_str()));
+        query = query.filter(menu_traiteur::Column::Regime.eq(regime.as_str()));
     }
     if let Some(np) = filters.nb_personnes {
-        query = query.filter(menu::Column::NbPersonnesMin.lte(np));
+        query = query.filter(menu_traiteur::Column::NbPersonnesMin.lte(np));
     }
 
     query

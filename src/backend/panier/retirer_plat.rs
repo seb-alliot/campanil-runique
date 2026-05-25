@@ -12,7 +12,7 @@ pub async fn panier_retirer_menu(session: &Session, menu_id: Pk) {
     if let Some(pos) = panier
         .lignes
         .iter()
-        .position(|l| l.menu_resto_id == Some(menu_id))
+        .position(|l| l.menu_id == Some(menu_id))
     {
         panier.lignes.remove(pos);
     }

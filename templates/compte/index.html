@@ -66,6 +66,38 @@
                             {% if l.cuisson %}<span class="commande-ligne-cuisson">— {{ l.cuisson }}</span>{% endif %}
                             <span class="commande-ligne-qte">× {{ l.quantite }}</span>
                             <span class="commande-ligne-prix">{{ l.prix_unitaire }} €</span>
+                            {% if c.modifiable and l.type_article != "menu" %}
+                            <details class="ligne-modifier-wrap">
+                                <summary class="btn btn-sm btn-secondary">Modifier</summary>
+                                <form method="post" action="/commande/{{ c.numero }}/ligne/{{ l.id }}/modifier" class="ligne-modifier-form">
+                                    {% csrf %}
+                                    {% if l.cuisson %}
+                                    <label>Cuisson
+                                        <select name="cuisson">
+                                            <option value="bleu"{% if l.cuisson == "Bleu" %} selected{% endif %}>Bleu</option>
+                                            <option value="saignant"{% if l.cuisson == "Saignant" %} selected{% endif %}>Saignant</option>
+                                            <option value="a_point"{% if l.cuisson == "À point" %} selected{% endif %}>À point</option>
+                                            <option value="bien_cuit"{% if l.cuisson == "Bien cuit" %} selected{% endif %}>Bien cuit</option>
+                                        </select>
+                                    </label>
+                                    {% endif %}
+                                    <label class="ligne-modifier-check">
+                                        <input type="checkbox" name="sans_sel" value="on"{% if l.sans_sel %} checked{% endif %}>
+                                        Sans sel ajouté
+                                    </label>
+                                    <label>Note
+                                        <input type="text" name="note" value="{{ l.note | default(value='') }}" maxlength="200">
+                                    </label>
+                                    <button type="submit" class="btn btn-sm btn-primary">Valider</button>
+                                </form>
+                                <button type="button" class="btn btn-sm btn-danger js-supprimer-ligne"
+                                    data-numero="{{ c.numero }}"
+                                    data-ligne-id="{{ l.id }}"
+                                    data-titre="{{ l.titre | escape }}">
+                                    Supprimer cet article
+                                </button>
+                            </details>
+                            {% endif %}
                         </li>
                         {% endfor %}
                     </ul>

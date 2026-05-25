@@ -4,6 +4,12 @@ mod m20260516_010432_alter_plat_allergene_table;
 mod m20260516_020000_alter_info_resto_add_coords;
 mod m20260516_040000_alter_menu_resto_add_dessert;
 mod m20260518_050000_alter_supplements_add_ordre;
+mod m20260523_060000_unifier_menus;
+mod m20260524_070000_split_entrees_desserts;
+mod m20260525_080000_alter_commandes_add_modifiable;
+mod m20260525_090000_entree_dessert_commande;
+mod m20260525_100000_remove_avec_legumes;
+mod m20260525_110000_create_menus_traiteur;
 mod m20260516_010432_alter_menu_plat_table;
 mod m20260516_010422_alter_menu_resto_table;
 mod m20260516_010422_alter_menu_plat_table;
@@ -82,6 +88,12 @@ impl MigratorTrait for Migrator {
             Box::new(m20260516_020000_alter_info_resto_add_coords::Migration),
             Box::new(m20260516_040000_alter_menu_resto_add_dessert::Migration),
             Box::new(m20260518_050000_alter_supplements_add_ordre::Migration),
+            Box::new(m20260523_060000_unifier_menus::Migration),
+            Box::new(m20260524_070000_split_entrees_desserts::Migration),
+            Box::new(m20260525_080000_alter_commandes_add_modifiable::Migration),
+            Box::new(m20260525_090000_entree_dessert_commande::Migration),
+            Box::new(m20260525_100000_remove_avec_legumes::Migration),
+            Box::new(m20260525_110000_create_menus_traiteur::Migration),
         ]
     }
 }

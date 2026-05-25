@@ -17,10 +17,8 @@ pub async fn handle_avis_plat_supprimer(request: Request) -> AppResult<Response>
         return Ok(axum::Json(json!({"ok": false, "error": "plat invalide"})).into_response());
     }
 
-    let existant = avis_plat::Entity::find()
-        .filter(avis_plat::Column::PlatId.eq(plat_id))
-        .filter(avis_plat::Column::UserId.eq(user.id))
-        .one(request.db())
+    let existant = search!(avis_plat::Entity => PlatId eq plat_id, UserId eq user.id,)
+        .first(request.db())
         .await
         .ok()
         .flatten();

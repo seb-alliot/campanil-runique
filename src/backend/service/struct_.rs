@@ -7,7 +7,6 @@ pub struct LigneService {
     pub cuisson: Option<String>,
     pub note: Option<String>,
     pub garnitures: Vec<String>,
-    pub avec_legumes: bool,
     pub sans_sel: bool,
 }
 
