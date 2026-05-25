@@ -12,6 +12,7 @@ DELETE FROM commande_lignes;
 DELETE FROM commandes;
 DELETE FROM avis_plats;
 DELETE FROM avis;
+DELETE FROM devis_traiteur;
 DELETE FROM menu_traiteur_plats;
 DELETE FROM menus_traiteur;
 DELETE FROM menu_entrees;
