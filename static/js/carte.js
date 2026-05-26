@@ -127,11 +127,17 @@ document.addEventListener('click', function (e) {
             const selC = picker.querySelector('.js-sans-sel');
             if (selC && selC.checked) sansSel = '1';
         }
+        let supplementIds = '';
+        if (picker) {
+            const supChecked = [...picker.querySelectorAll('input.js-supplement-plat:checked')].map(i => i.value);
+            if (supChecked.length) supplementIds = supChecked.join(',');
+        }
         const noteInput = document.querySelector('.plat-note-input[data-plat-id="' + platId + '"]');
         const note = noteInput ? noteInput.value.trim() : '';
         url = '/panier/ajouter?plat_id=' + platId + '&type_article=' + typeArticle + '&quantite=1&format=json'
             + (cuisson ? '&cuisson=' + cuisson : '')
             + (garnitureId ? '&garniture_ids=' + garnitureId : '')
+            + (supplementIds ? '&supplement_ids=' + supplementIds : '')
             + (sansSel === '1' ? '&sans_sel=1' : '')
             + (note ? '&note=' + encodeURIComponent(note) : '');
     } else {

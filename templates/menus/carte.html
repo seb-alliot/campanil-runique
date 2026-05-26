@@ -11,7 +11,7 @@
     {% if plat.est_viande %}
     <button class="btn btn-sm btn-secondary js-modifier" data-plat-id="{{ plat.id }}" data-picker-type="cuisson">Choisir la cuisson</button>
     {% endif %}
-    {% if plat.garnitures %}
+    {% if plat.garnitures or plat.supplements %}
     <button class="btn btn-sm btn-secondary js-modifier" data-plat-id="{{ plat.id }}" data-picker-type="garnitures">Modifier</button>
     {% endif %}
   </div>
@@ -29,7 +29,7 @@
     <button class="btn btn-sm btn-primary js-ajouter" data-plat-id="{{ plat.id }}" data-type-article="{{ type_article }}">Valider</button>
   </div>
   {% endif %}
-  {% if plat.garnitures %}
+  {% if plat.garnitures or plat.supplements %}
   <div class="plat-picker" data-plat-id="{{ plat.id }}" data-picker-type="garnitures" hidden>
     {% if plat.est_viande %}
     <div class="picker-groupe">
@@ -42,10 +42,11 @@
       </div>
     </div>
     {% endif %}
+    {% for groupe in plat.garnitures %}
     <div class="picker-groupe">
-      <p class="picker-label">Accompagnement</p>
+      <p class="picker-label">{{ groupe.label }}</p>
       <div class="picker-choices">
-        {% for g in plat.garnitures %}
+        {% for g in groupe.items %}
         <label class="picker-option">
           <input type="checkbox" class="js-garniture" name="garn_{{ plat.id }}" value="{{ g.id }}">
           <span>{{ g.libelle }}</span>
@@ -53,6 +54,20 @@
         {% endfor %}
       </div>
     </div>
+    {% endfor %}
+    {% if plat.supplements %}
+    <div class="picker-groupe">
+      <p class="picker-label">Suppléments</p>
+      <div class="picker-choices">
+        {% for s in plat.supplements %}
+        <label class="picker-option">
+          <input type="checkbox" class="js-supplement-plat" value="{{ s.id }}">
+          <span>{{ s.libelle }} <em class="supplement-prix">+ {{ s.prix }} €</em></span>
+        </label>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
     <label class="picker-check">
       <input type="checkbox" class="js-sans-sel">
       <span>Sans sel ajouté</span>
@@ -305,10 +320,11 @@
                         </div>
                         {% endif %}
                         {% if plat.garnitures %}
+                        {% for groupe in plat.garnitures %}
                         <div class="picker-groupe">
-                          <p class="picker-label">Accompagnement</p>
+                          <p class="picker-label">{{ groupe.label }}</p>
                           <div class="picker-choices">
-                            {% for g in plat.garnitures %}
+                            {% for g in groupe.items %}
                             <label class="picker-option">
                               <input type="checkbox" class="js-garniture" value="{{ g.id }}">
                               <span>{{ g.libelle }}</span>
@@ -316,6 +332,7 @@
                             {% endfor %}
                           </div>
                         </div>
+                        {% endfor %}
                         {% endif %}
                         <label class="picker-check">
                           <input type="checkbox" class="js-sans-sel">

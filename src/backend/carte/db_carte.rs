@@ -1,10 +1,10 @@
 use crate::backend::carte::{
-    CarteGarniture, CarteMenuResto, CarteMenuSection, CartePage, CartePlat, CoursMenu,
-    build_boissons, build_supplements,
+    CarteGarniture, CarteGarnitureGroupe, CarteMenuResto, CarteMenuSection, CartePage, CartePlat,
+    CarteSupplementItem, CoursMenu, build_boissons, build_supplements,
 };
 use crate::entities::{
     allergene, dessert, dessert_allergene, entree, entree_allergene, garniture, menu, menu_dessert,
-    menu_entree, menu_plat, plat, plat_allergene,
+    menu_entree, menu_plat, plat, plat_allergene, plat_supplement, supplement,
 };
 use runique::prelude::*;
 use std::collections::HashMap;
@@ -73,9 +73,9 @@ async fn build_entrees(db: &sea_orm::DatabaseConnection) -> Vec<CartePlat> {
             image: e.image,
             est_viande: false,
             disponible: e.disponible,
-
             allergenes: allergenes_by_id.remove(&e.id).unwrap_or_default(),
             garnitures: vec![],
+            supplements: vec![],
         })
         .collect()
 }
@@ -119,9 +119,9 @@ async fn build_desserts(db: &sea_orm::DatabaseConnection) -> Vec<CartePlat> {
             image: d.image,
             est_viande: false,
             disponible: d.disponible,
-
             allergenes: allergenes_by_id.remove(&d.id).unwrap_or_default(),
             garnitures: vec![],
+            supplements: vec![],
         })
         .collect()
 }
@@ -158,7 +158,46 @@ async fn build_plats(
         }
     }
 
-    let feculents = build_feculents(db).await;
+    let feculents = grouper_garnitures(build_feculents(db).await);
+
+    let sup_liens = search!(plat_supplement::Entity => PlatId in (ids),)
+        .all(db)
+        .await
+        .unwrap_or_default();
+
+    let sup_ids: Vec<Pk> = sup_liens.iter().map(|l| l.supplement_id as Pk).collect();
+    let sups_map: HashMap<Pk, supplement::Model> = if sup_ids.is_empty() {
+        HashMap::new()
+    } else {
+        search!(supplement::Entity => Id in (sup_ids), Disponible eq true,)
+            .all(db)
+            .await
+            .unwrap_or_default()
+            .into_iter()
+            .map(|s| (s.id, s))
+            .collect()
+    };
+
+    let mut supplements_by_plat: HashMap<Pk, Vec<CarteSupplementItem>> = HashMap::new();
+    for lien in sup_liens {
+        let plat_id = lien.plat_id as Pk;
+        let sup_id = lien.supplement_id as Pk;
+        if let Some(s) = sups_map.get(&sup_id) {
+            let libelle = s
+                .titre
+                .clone()
+                .or_else(|| s.libelle.clone())
+                .unwrap_or_default();
+            supplements_by_plat
+                .entry(plat_id)
+                .or_default()
+                .push(CarteSupplementItem {
+                    id: s.id,
+                    libelle,
+                    prix: format!("{:.2}", s.prix),
+                });
+        }
+    }
 
     let mut specialites = Vec::new();
     let mut viandes = Vec::new();
@@ -185,6 +224,7 @@ async fn build_plats(
             disponible: p.disponible,
             allergenes: allergenes_by_id.remove(&p.id).unwrap_or_default(),
             garnitures,
+            supplements: supplements_by_plat.remove(&p.id).unwrap_or_default(),
         };
         match p.type_plat {
             TypePlat::Viande => viandes.push(carte_plat),
@@ -196,6 +236,27 @@ async fn build_plats(
     (specialites, viandes, poissons)
 }
 
+pub fn grouper_garnitures(garnitures: Vec<CarteGarniture>) -> Vec<CarteGarnitureGroupe> {
+    [("feculent", "Féculents"), ("legumes", "Légumes")]
+        .into_iter()
+        .filter_map(|(key, label)| {
+            let items: Vec<CarteGarniture> = garnitures
+                .iter()
+                .filter(|g| g.type_garniture == key)
+                .cloned()
+                .collect();
+            if items.is_empty() {
+                None
+            } else {
+                Some(CarteGarnitureGroupe {
+                    label: label.to_string(),
+                    items,
+                })
+            }
+        })
+        .collect()
+}
+
 pub async fn build_feculents(db: &sea_orm::DatabaseConnection) -> Vec<CarteGarniture> {
     search!(garniture::Entity => Disponible eq true, asc Libelle,)
         .all(db)
@@ -205,7 +266,7 @@ pub async fn build_feculents(db: &sea_orm::DatabaseConnection) -> Vec<CarteGarni
         .map(|g| CarteGarniture {
             id: g.id,
             libelle: g.libelle,
-            type_garniture: g.type_garniture.to_string(),
+            type_garniture: g.type_garniture.to_value(),
             est_defaut: false,
         })
         .collect()
@@ -241,7 +302,7 @@ async fn build_menus(db: &sea_orm::DatabaseConnection) -> Vec<CarteMenuResto> {
     let dessert_ids: Vec<i32> = dessert_liens.iter().map(|l| l.dessert_id).collect();
 
     let allergene_labels = load_allergene_labels(db).await;
-    let feculents = build_feculents(db).await;
+    let feculents = grouper_garnitures(build_feculents(db).await);
 
     // Charger entrees du menu
     let entrees_map: HashMap<i32, entree::Model> = if entree_ids.is_empty() {
@@ -367,9 +428,9 @@ async fn build_menus(db: &sea_orm::DatabaseConnection) -> Vec<CarteMenuResto> {
                     image: e.image.clone(),
                     est_viande: false,
                     disponible: e.disponible,
-
                     allergenes: allergenes_by_entree.get(&e.id).cloned().unwrap_or_default(),
                     garnitures: vec![],
+                    supplements: vec![],
                 })
                 .collect();
 
@@ -391,6 +452,7 @@ async fn build_menus(db: &sea_orm::DatabaseConnection) -> Vec<CarteMenuResto> {
                     } else {
                         vec![]
                     },
+                    supplements: vec![],
                 })
                 .collect();
 
@@ -406,12 +468,12 @@ async fn build_menus(db: &sea_orm::DatabaseConnection) -> Vec<CarteMenuResto> {
                     image: d.image.clone(),
                     est_viande: false,
                     disponible: d.disponible,
-
                     allergenes: allergenes_by_dessert
                         .get(&d.id)
                         .cloned()
                         .unwrap_or_default(),
                     garnitures: vec![],
+                    supplements: vec![],
                 })
                 .collect();
 

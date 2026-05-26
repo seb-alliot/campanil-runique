@@ -25,5 +25,6 @@ pub mod menu_traiteur_plat;
 pub mod plat;
 pub mod plat_allergene;
 pub mod plat_garniture;
+pub mod plat_supplement;
 pub mod supplement;
 pub mod user_profil;

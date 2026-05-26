@@ -18,11 +18,18 @@ pub async fn handle_contact(request: &mut Request, form: &mut ContactForm) -> Ap
     }
 
     if request.is_post() && form.is_valid().await {
+        let raison_mail = match form.cleaned_string("raison").as_deref() {
+            Some("reservation") => contact::RaisonContact::Reservation,
+            Some("traiteur") => contact::RaisonContact::Traiteur,
+            Some("commande") => contact::RaisonContact::Commande,
+            _ => contact::RaisonContact::Autre,
+        };
         let titre_mail = form.cleaned_string("titre").unwrap_or_default();
         let email_mail = form.cleaned_string("email").unwrap_or_default();
         let description_mail = form.cleaned_string("description").unwrap_or_default();
 
         let model = contact::ActiveModel {
+            raison: Set(raison_mail),
             titre: Set(titre_mail.clone()),
             email: Set(email_mail.clone()),
             description: Set(description_mail.clone()),

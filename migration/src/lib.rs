@@ -1,5 +1,25 @@
 use runique::prelude::migrations_table;
 use sea_orm_migration::prelude::*;
+mod m20260526_221257_alter_devis_traiteur_table;
+mod m20260526_221257_alter_commandes_table;
+mod m20260526_221257_alter_commande_menu_choix_table;
+mod m20260526_221257_alter_supplements_table;
+mod m20260526_221257_alter_plats_table;
+mod m20260526_221257_alter_info_resto_table;
+mod m20260526_221257_alter_commande_lignes_table;
+mod m20260526_221257_alter_menus_table;
+mod m20260526_221257_alter_contacts_table;
+mod m20260526_221257_create_desserts_table;
+mod m20260526_221257_create_plat_allergenes_table;
+mod m20260526_221257_create_entrees_table;
+mod m20260526_221257_create_dessert_allergenes_table;
+mod m20260526_221257_create_menu_plats_table;
+mod m20260526_221257_create_menu_desserts_table;
+mod m20260526_221257_create_menus_traiteur_table;
+mod m20260526_221257_create_menu_entrees_table;
+mod m20260526_221257_create_plat_supplements_table;
+mod m20260526_221257_create_menu_traiteur_plats_table;
+mod m20260526_221257_create_entree_allergenes_table;
 mod m20260516_010432_alter_plat_allergene_table;
 mod m20260516_020000_alter_info_resto_add_coords;
 mod m20260516_040000_alter_menu_resto_add_dessert;
@@ -10,6 +30,8 @@ mod m20260525_080000_alter_commandes_add_modifiable;
 mod m20260525_090000_entree_dessert_commande;
 mod m20260525_100000_remove_avec_legumes;
 mod m20260525_110000_create_menus_traiteur;
+mod m20260526_120000_create_plat_supplements;
+mod m20260526_130000_cleanup_garnitures;
 mod m20260516_010432_alter_menu_plat_table;
 mod m20260516_010422_alter_menu_resto_table;
 mod m20260516_010422_alter_menu_plat_table;
@@ -94,6 +116,28 @@ impl MigratorTrait for Migrator {
             Box::new(m20260525_090000_entree_dessert_commande::Migration),
             Box::new(m20260525_100000_remove_avec_legumes::Migration),
             Box::new(m20260525_110000_create_menus_traiteur::Migration),
+            Box::new(m20260526_120000_create_plat_supplements::Migration),
+            Box::new(m20260526_130000_cleanup_garnitures::Migration),
+            Box::new(m20260526_221257_create_entree_allergenes_table::Migration),
+            Box::new(m20260526_221257_create_menu_traiteur_plats_table::Migration),
+            Box::new(m20260526_221257_create_plat_supplements_table::Migration),
+            Box::new(m20260526_221257_create_menu_entrees_table::Migration),
+            Box::new(m20260526_221257_create_menus_traiteur_table::Migration),
+            Box::new(m20260526_221257_create_menu_desserts_table::Migration),
+            Box::new(m20260526_221257_create_menu_plats_table::Migration),
+            Box::new(m20260526_221257_create_dessert_allergenes_table::Migration),
+            Box::new(m20260526_221257_create_entrees_table::Migration),
+            Box::new(m20260526_221257_create_plat_allergenes_table::Migration),
+            Box::new(m20260526_221257_create_desserts_table::Migration),
+            Box::new(m20260526_221257_alter_contacts_table::Migration),
+            Box::new(m20260526_221257_alter_menus_table::Migration),
+            Box::new(m20260526_221257_alter_commande_lignes_table::Migration),
+            Box::new(m20260526_221257_alter_info_resto_table::Migration),
+            Box::new(m20260526_221257_alter_plats_table::Migration),
+            Box::new(m20260526_221257_alter_supplements_table::Migration),
+            Box::new(m20260526_221257_alter_commande_menu_choix_table::Migration),
+            Box::new(m20260526_221257_alter_commandes_table::Migration),
+            Box::new(m20260526_221257_alter_devis_traiteur_table::Migration),
         ]
     }
 }

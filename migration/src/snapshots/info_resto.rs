@@ -23,6 +23,8 @@ async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
                     .col(ColumnDef::new(Alias::new("google_maps")).string().null())
                     .col(ColumnDef::new(Alias::new("description")).string().null())
                     .col(ColumnDef::new(Alias::new("prix_livraison")).decimal().null())
+                    .col(ColumnDef::new(Alias::new("latitude")).decimal().null())
+                    .col(ColumnDef::new(Alias::new("longitude")).decimal().null())
                     .to_owned()
             )
             .await?;

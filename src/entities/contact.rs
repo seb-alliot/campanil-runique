@@ -4,7 +4,16 @@ model! {
     Contact,
     table: "contacts",
     pk: id => Pk,
+    enums: {
+        RaisonContact: [
+            Reservation = ("reservation", "Réservation"),
+            Traiteur    = ("traiteur",    "Traiteur"),
+            Commande    = ("commande",    "Commande"),
+            Autre       = ("autre",       "Autre"),
+        ],
+    },
     {
+        raison:      choice   [enum(RaisonContact), required],
         titre:       text     [required, max_length: 255],
         description: textarea [required],
         email:       email    [required],

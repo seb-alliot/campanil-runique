@@ -39,7 +39,7 @@
             count.textContent = visible + ' menu' + (visible > 1 ? 's' : '') + ' disponible' + (visible > 1 ? 's' : '');
         }
         if (noResults) {
-            noResults.style.display = visible === 0 ? '' : 'none';
+            noResults.style.display = visible === 0 ? 'block' : 'none';
         }
     };
 

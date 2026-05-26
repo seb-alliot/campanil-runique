@@ -816,6 +816,7 @@
   display: flex;
   gap: .5rem;
   flex-wrap: wrap;
+  margin-top: 1rem;
 }
 
 .plat-picker[hidden] { display: none; }

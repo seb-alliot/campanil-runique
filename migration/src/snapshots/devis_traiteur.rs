@@ -28,9 +28,9 @@ async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
             .create_foreign_key(
                 ForeignKey::create()
-                    .name("devis_traiteur_menu_id_menus_fkey")
+                    .name("devis_traiteur_menu_id_menus_traiteur_fkey")
                     .from(Alias::new("devis_traiteur"), Alias::new("menu_id"))
-                    .to(Alias::new("menus"), Alias::new("id"))
+                    .to(Alias::new("menus_traiteur"), Alias::new("id"))
                     .on_delete(ForeignKeyAction::NoAction)
                     .on_update(ForeignKeyAction::NoAction)
                     .to_owned(),
@@ -45,7 +45,7 @@ async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
             .drop_foreign_key(
                 ForeignKey::drop()
                     .table(Alias::new("devis_traiteur"))
-                    .name("devis_traiteur_menu_id_menus_fkey")
+                    .name("devis_traiteur_menu_id_menus_traiteur_fkey")
                     .to_owned(),
             )
             .await?;

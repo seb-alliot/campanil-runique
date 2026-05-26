@@ -86,6 +86,10 @@ pub async fn vue_ajouter_panier(request: Request) -> AppResult<Response> {
         .map(|v| v.split(',').filter_map(|s| s.parse().ok()).collect())
         .unwrap_or_default();
     let sans_sel = request.get_query("sans_sel") == Some("1");
+    let supplement_ids: Vec<Pk> = request
+        .get_query("supplement_ids")
+        .map(|v| v.split(',').filter_map(|s| s.parse().ok()).collect())
+        .unwrap_or_default();
 
     if supplement_id > 0 {
         let _ = panier_ajouter_supplement(
@@ -142,6 +146,16 @@ pub async fn vue_ajouter_panier(request: Request) -> AppResult<Response> {
             },
         )
         .await;
+        for sid in supplement_ids {
+            let _ = panier_ajouter_supplement(
+                &request.session,
+                &request.engine.db,
+                sid,
+                quantite,
+                user_id,
+            )
+            .await;
+        }
     }
 
     if is_json {

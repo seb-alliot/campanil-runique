@@ -1,6 +1,6 @@
 use runique::prelude::*;
 
-#[form(schema = crate::entities::contact, fields = [titre, email, description])]
+#[form(schema = crate::entities::contact, fields = [raison, titre, email, description])]
 pub struct ContactForm;
 
 impl RuniqueForm for ContactForm {

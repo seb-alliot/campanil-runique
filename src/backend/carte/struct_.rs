@@ -9,6 +9,12 @@ pub struct CarteGarniture {
 }
 
 #[derive(Serialize, Clone)]
+pub struct CarteGarnitureGroupe {
+    pub label: String,
+    pub items: Vec<CarteGarniture>,
+}
+
+#[derive(Serialize, Clone)]
 pub struct CartePlat {
     pub id: Pk,
     pub titre: String,
@@ -19,7 +25,8 @@ pub struct CartePlat {
     pub est_viande: bool,
     pub disponible: bool,
     pub allergenes: Vec<String>,
-    pub garnitures: Vec<CarteGarniture>,
+    pub garnitures: Vec<CarteGarnitureGroupe>,
+    pub supplements: Vec<CarteSupplementItem>,
 }
 
 #[derive(Serialize)]
@@ -39,7 +46,7 @@ pub struct CarteBoissonGroupe {
     pub items: Vec<CarteBoisson>,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Clone)]
 pub struct CarteSupplementItem {
     pub id: Pk,
     pub libelle: String,

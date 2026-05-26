@@ -14,7 +14,7 @@
                 <div class="svc-ligne-top">
                     <span class="svc-qte">×{{ l.quantite }}</span>
                     <span class="svc-titre">{{ l.titre }}</span>
-                    {% if l.cuisson %}<span class="svc-detail">{{ l.cuisson }}</span>{% endif %}
+                    <span class="svc-detail svc-detail-cuisson">{{ l.cuisson }}</span>
                     {% if l.sans_sel %}<span class="svc-detail svc-detail--alert">sans sel ajouté</span>{% endif %}
                 </div>
                 {% if l.garnitures %}
@@ -29,7 +29,7 @@
                     <li class="svc-menu-cours">
                         <span class="svc-menu-cours-label">{{ choix.cours_label }}</span>
                         <span class="svc-menu-cours-titre">{{ choix.titre }}</span>
-                        {% if choix.cuisson %}<span class="svc-detail">{{ choix.cuisson }}</span>{% endif %}
+                        <span class="svc-detail svc-detail-cuisson">{{ choix.cuisson }}</span>
                         {% if choix.sans_sel %}<span class="svc-detail svc-detail--alert">sans sel ajouté</span>{% endif %}
                         {% if choix.garnitures %}
                         <ul class="svc-composition">

@@ -14,7 +14,9 @@ async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
                     .col(ColumnDef::new(Alias::new("id")).integer().not_null().auto_increment().primary_key())
                     .col(ColumnDef::new(Alias::new("commande_ligne_id")).integer().not_null())
                     .col(ColumnDef::new(Alias::new("cours")).string().not_null())
-                    .col(ColumnDef::new(Alias::new("plat_id")).integer().not_null())
+                    .col(ColumnDef::new(Alias::new("plat_id")).integer().null())
+                    .col(ColumnDef::new(Alias::new("entree_id")).integer().null())
+                    .col(ColumnDef::new(Alias::new("dessert_id")).integer().null())
                     .to_owned()
             )
             .await?;

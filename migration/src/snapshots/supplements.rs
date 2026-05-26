@@ -17,6 +17,7 @@ async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
                     .col(ColumnDef::new(Alias::new("libelle")).string().null())
                     .col(ColumnDef::new(Alias::new("prix")).decimal().not_null())
                     .col(ColumnDef::new(Alias::new("disponible")).boolean().not_null())
+                    .col(ColumnDef::new(Alias::new("ordre")).integer().null())
                     .to_owned()
             )
             .await?;

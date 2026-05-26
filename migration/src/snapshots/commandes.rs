@@ -23,6 +23,7 @@ async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
                     .col(ColumnDef::new(Alias::new("ville_livraison")).string().null())
                     .col(ColumnDef::new(Alias::new("cp_livraison")).string().null())
                     .col(ColumnDef::new(Alias::new("prix_livraison")).decimal().null())
+                    .col(ColumnDef::new(Alias::new("modifiable")).boolean().not_null())
                     .col(ColumnDef::new(Alias::new("stripe_payment_intent_id")).string().null())
                     .col(ColumnDef::new(Alias::new("motif_annulation")).text().null())
                     .col(ColumnDef::new(Alias::new("mode_contact_annulation")).string().null())

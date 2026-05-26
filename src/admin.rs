@@ -53,10 +53,12 @@ admin! {
     contacts: contact::Model => contact::AdminForm {
         title: "Messages de contact",
         list_display: [
+            ["raison", "Raison"],
             ["titre", "Sujet"],
             ["email", "Email"],
             ["created_at", "Reçu le"],
         ],
+        list_filter: [["raison", "Raison", 10]],
     }
     garnitures: garniture::Model => garniture::AdminForm {
         title: "Garnitures",
@@ -136,8 +138,9 @@ admin! {
         ],
         group_action: [["disponible", "Rendre disponible"]],
         m2m: [
-            ["allergenes", "Allergènes", "plat_allergene", "plat_id", "allergene_id", "crate::entities::allergene", "libelle"],
-            ["garnitures", "Garnitures", "plat_garnitures", "plat_id", "garniture_id", "crate::entities::garniture", "libelle"],
+            ["allergenes",   "Allergènes",   "plat_allergene",   "plat_id", "allergene_id",   "crate::entities::allergene",   "libelle"],
+            ["garnitures",   "Garnitures",   "plat_garnitures",  "plat_id", "garniture_id",   "crate::entities::garniture",   "libelle"],
+            ["supplements",  "Suppléments",  "plat_supplements", "plat_id", "supplement_id",  "crate::entities::supplement",  "titre"],
         ],
     }
     menus: menu::Model => menu::AdminForm {
