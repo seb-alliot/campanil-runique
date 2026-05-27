@@ -1821,18 +1821,17 @@ pub fn admin_register() -> AdminRegistry {
             let result = entree::admin_from_form(&data, None).insert(&*db).await?;
             let inserted_id = result.id.to_string();
             for key in data.keys() {
-                if let Some(target_id) = key.strip_prefix("m2m_allergenes__") {
-                    if !target_id.is_empty()
-                        && target_id
-                            .chars()
-                            .all(|c| c.is_ascii_alphanumeric() || c == '-')
-                    {
-                        let sql = format!(
-                            "INSERT INTO entree_allergene (entree_id, allergene_id) VALUES ({}, {}) ON CONFLICT DO NOTHING",
-                            inserted_id, target_id
-                        );
-                        let _ = db.execute_unprepared(&sql).await;
-                    }
+                if let Some(target_id) = key.strip_prefix("m2m_allergenes__")
+                    && !target_id.is_empty()
+                    && target_id
+                        .chars()
+                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
+                {
+                    let sql = format!(
+                        "INSERT INTO entree_allergene (entree_id, allergene_id) VALUES ({}, {}) ON CONFLICT DO NOTHING",
+                        inserted_id, target_id
+                    );
+                    let _ = db.execute_unprepared(&sql).await;
                 }
             }
             Ok(())
@@ -1856,18 +1855,17 @@ pub fn admin_register() -> AdminRegistry {
                 ))
                 .await;
             for key in data.keys() {
-                if let Some(target_id) = key.strip_prefix("m2m_allergenes__") {
-                    if !target_id.is_empty()
-                        && target_id
-                            .chars()
-                            .all(|c| c.is_ascii_alphanumeric() || c == '-')
-                    {
-                        let sql = format!(
-                            "INSERT INTO entree_allergene (entree_id, allergene_id) VALUES ({}, {})",
-                            id_str, target_id
-                        );
-                        let _ = db.execute_unprepared(&sql).await;
-                    }
+                if let Some(target_id) = key.strip_prefix("m2m_allergenes__")
+                    && !target_id.is_empty()
+                    && target_id
+                        .chars()
+                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
+                {
+                    let sql = format!(
+                        "INSERT INTO entree_allergene (entree_id, allergene_id) VALUES ({}, {})",
+                        id_str, target_id
+                    );
+                    let _ = db.execute_unprepared(&sql).await;
                 }
             }
             Ok(())
@@ -2170,18 +2168,17 @@ pub fn admin_register() -> AdminRegistry {
             let result = dessert::admin_from_form(&data, None).insert(&*db).await?;
             let inserted_id = result.id.to_string();
             for key in data.keys() {
-                if let Some(target_id) = key.strip_prefix("m2m_allergenes__") {
-                    if !target_id.is_empty()
-                        && target_id
-                            .chars()
-                            .all(|c| c.is_ascii_alphanumeric() || c == '-')
-                    {
-                        let sql = format!(
-                            "INSERT INTO dessert_allergene (dessert_id, allergene_id) VALUES ({}, {}) ON CONFLICT DO NOTHING",
-                            inserted_id, target_id
-                        );
-                        let _ = db.execute_unprepared(&sql).await;
-                    }
+                if let Some(target_id) = key.strip_prefix("m2m_allergenes__")
+                    && !target_id.is_empty()
+                    && target_id
+                        .chars()
+                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
+                {
+                    let sql = format!(
+                        "INSERT INTO dessert_allergene (dessert_id, allergene_id) VALUES ({}, {}) ON CONFLICT DO NOTHING",
+                        inserted_id, target_id
+                    );
+                    let _ = db.execute_unprepared(&sql).await;
                 }
             }
             Ok(())
@@ -2205,18 +2202,17 @@ pub fn admin_register() -> AdminRegistry {
                 ))
                 .await;
             for key in data.keys() {
-                if let Some(target_id) = key.strip_prefix("m2m_allergenes__") {
-                    if !target_id.is_empty()
-                        && target_id
-                            .chars()
-                            .all(|c| c.is_ascii_alphanumeric() || c == '-')
-                    {
-                        let sql = format!(
-                            "INSERT INTO dessert_allergene (dessert_id, allergene_id) VALUES ({}, {})",
-                            id_str, target_id
-                        );
-                        let _ = db.execute_unprepared(&sql).await;
-                    }
+                if let Some(target_id) = key.strip_prefix("m2m_allergenes__")
+                    && !target_id.is_empty()
+                    && target_id
+                        .chars()
+                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
+                {
+                    let sql = format!(
+                        "INSERT INTO dessert_allergene (dessert_id, allergene_id) VALUES ({}, {})",
+                        id_str, target_id
+                    );
+                    let _ = db.execute_unprepared(&sql).await;
                 }
             }
             Ok(())
@@ -2516,48 +2512,45 @@ pub fn admin_register() -> AdminRegistry {
             let result = plat::admin_from_form(&data, None).insert(&*db).await?;
             let inserted_id = result.id.to_string();
             for key in data.keys() {
-                if let Some(target_id) = key.strip_prefix("m2m_allergenes__") {
-                    if !target_id.is_empty()
-                        && target_id
-                            .chars()
-                            .all(|c| c.is_ascii_alphanumeric() || c == '-')
-                    {
-                        let sql = format!(
-                            "INSERT INTO plat_allergene (plat_id, allergene_id) VALUES ({}, {}) ON CONFLICT DO NOTHING",
-                            inserted_id, target_id
-                        );
-                        let _ = db.execute_unprepared(&sql).await;
-                    }
+                if let Some(target_id) = key.strip_prefix("m2m_allergenes__")
+                    && !target_id.is_empty()
+                    && target_id
+                        .chars()
+                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
+                {
+                    let sql = format!(
+                        "INSERT INTO plat_allergene (plat_id, allergene_id) VALUES ({}, {}) ON CONFLICT DO NOTHING",
+                        inserted_id, target_id
+                    );
+                    let _ = db.execute_unprepared(&sql).await;
                 }
             }
             for key in data.keys() {
-                if let Some(target_id) = key.strip_prefix("m2m_garnitures__") {
-                    if !target_id.is_empty()
-                        && target_id
-                            .chars()
-                            .all(|c| c.is_ascii_alphanumeric() || c == '-')
-                    {
-                        let sql = format!(
-                            "INSERT INTO plat_garnitures (plat_id, garniture_id) VALUES ({}, {}) ON CONFLICT DO NOTHING",
-                            inserted_id, target_id
-                        );
-                        let _ = db.execute_unprepared(&sql).await;
-                    }
+                if let Some(target_id) = key.strip_prefix("m2m_garnitures__")
+                    && !target_id.is_empty()
+                    && target_id
+                        .chars()
+                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
+                {
+                    let sql = format!(
+                        "INSERT INTO plat_garnitures (plat_id, garniture_id) VALUES ({}, {}) ON CONFLICT DO NOTHING",
+                        inserted_id, target_id
+                    );
+                    let _ = db.execute_unprepared(&sql).await;
                 }
             }
             for key in data.keys() {
-                if let Some(target_id) = key.strip_prefix("m2m_supplements__") {
-                    if !target_id.is_empty()
-                        && target_id
-                            .chars()
-                            .all(|c| c.is_ascii_alphanumeric() || c == '-')
-                    {
-                        let sql = format!(
-                            "INSERT INTO plat_supplements (plat_id, supplement_id) VALUES ({}, {}) ON CONFLICT DO NOTHING",
-                            inserted_id, target_id
-                        );
-                        let _ = db.execute_unprepared(&sql).await;
-                    }
+                if let Some(target_id) = key.strip_prefix("m2m_supplements__")
+                    && !target_id.is_empty()
+                    && target_id
+                        .chars()
+                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
+                {
+                    let sql = format!(
+                        "INSERT INTO plat_supplements (plat_id, supplement_id) VALUES ({}, {}) ON CONFLICT DO NOTHING",
+                        inserted_id, target_id
+                    );
+                    let _ = db.execute_unprepared(&sql).await;
                 }
             }
             Ok(())
@@ -2579,18 +2572,17 @@ pub fn admin_register() -> AdminRegistry {
                 ))
                 .await;
             for key in data.keys() {
-                if let Some(target_id) = key.strip_prefix("m2m_allergenes__") {
-                    if !target_id.is_empty()
-                        && target_id
-                            .chars()
-                            .all(|c| c.is_ascii_alphanumeric() || c == '-')
-                    {
-                        let sql = format!(
-                            "INSERT INTO plat_allergene (plat_id, allergene_id) VALUES ({}, {})",
-                            id_str, target_id
-                        );
-                        let _ = db.execute_unprepared(&sql).await;
-                    }
+                if let Some(target_id) = key.strip_prefix("m2m_allergenes__")
+                    && !target_id.is_empty()
+                    && target_id
+                        .chars()
+                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
+                {
+                    let sql = format!(
+                        "INSERT INTO plat_allergene (plat_id, allergene_id) VALUES ({}, {})",
+                        id_str, target_id
+                    );
+                    let _ = db.execute_unprepared(&sql).await;
                 }
             }
             let _ = db
@@ -2600,18 +2592,17 @@ pub fn admin_register() -> AdminRegistry {
                 ))
                 .await;
             for key in data.keys() {
-                if let Some(target_id) = key.strip_prefix("m2m_garnitures__") {
-                    if !target_id.is_empty()
-                        && target_id
-                            .chars()
-                            .all(|c| c.is_ascii_alphanumeric() || c == '-')
-                    {
-                        let sql = format!(
-                            "INSERT INTO plat_garnitures (plat_id, garniture_id) VALUES ({}, {})",
-                            id_str, target_id
-                        );
-                        let _ = db.execute_unprepared(&sql).await;
-                    }
+                if let Some(target_id) = key.strip_prefix("m2m_garnitures__")
+                    && !target_id.is_empty()
+                    && target_id
+                        .chars()
+                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
+                {
+                    let sql = format!(
+                        "INSERT INTO plat_garnitures (plat_id, garniture_id) VALUES ({}, {})",
+                        id_str, target_id
+                    );
+                    let _ = db.execute_unprepared(&sql).await;
                 }
             }
             let _ = db
@@ -2621,18 +2612,17 @@ pub fn admin_register() -> AdminRegistry {
                 ))
                 .await;
             for key in data.keys() {
-                if let Some(target_id) = key.strip_prefix("m2m_supplements__") {
-                    if !target_id.is_empty()
-                        && target_id
-                            .chars()
-                            .all(|c| c.is_ascii_alphanumeric() || c == '-')
-                    {
-                        let sql = format!(
-                            "INSERT INTO plat_supplements (plat_id, supplement_id) VALUES ({}, {})",
-                            id_str, target_id
-                        );
-                        let _ = db.execute_unprepared(&sql).await;
-                    }
+                if let Some(target_id) = key.strip_prefix("m2m_supplements__")
+                    && !target_id.is_empty()
+                    && target_id
+                        .chars()
+                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
+                {
+                    let sql = format!(
+                        "INSERT INTO plat_supplements (plat_id, supplement_id) VALUES ({}, {})",
+                        id_str, target_id
+                    );
+                    let _ = db.execute_unprepared(&sql).await;
                 }
             }
             Ok(())
@@ -3122,48 +3112,45 @@ pub fn admin_register() -> AdminRegistry {
             let result = menu::admin_from_form(&data, None).insert(&*db).await?;
             let inserted_id = result.id.to_string();
             for key in data.keys() {
-                if let Some(target_id) = key.strip_prefix("m2m_entrees__") {
-                    if !target_id.is_empty()
-                        && target_id
-                            .chars()
-                            .all(|c| c.is_ascii_alphanumeric() || c == '-')
-                    {
-                        let sql = format!(
-                            "INSERT INTO menu_entrees (menu_id, entree_id) VALUES ({}, {}) ON CONFLICT DO NOTHING",
-                            inserted_id, target_id
-                        );
-                        let _ = db.execute_unprepared(&sql).await;
-                    }
+                if let Some(target_id) = key.strip_prefix("m2m_entrees__")
+                    && !target_id.is_empty()
+                    && target_id
+                        .chars()
+                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
+                {
+                    let sql = format!(
+                        "INSERT INTO menu_entrees (menu_id, entree_id) VALUES ({}, {}) ON CONFLICT DO NOTHING",
+                        inserted_id, target_id
+                    );
+                    let _ = db.execute_unprepared(&sql).await;
                 }
             }
             for key in data.keys() {
-                if let Some(target_id) = key.strip_prefix("m2m_plats__") {
-                    if !target_id.is_empty()
-                        && target_id
-                            .chars()
-                            .all(|c| c.is_ascii_alphanumeric() || c == '-')
-                    {
-                        let sql = format!(
-                            "INSERT INTO menu_plats (menu_id, plat_id) VALUES ({}, {}) ON CONFLICT DO NOTHING",
-                            inserted_id, target_id
-                        );
-                        let _ = db.execute_unprepared(&sql).await;
-                    }
+                if let Some(target_id) = key.strip_prefix("m2m_plats__")
+                    && !target_id.is_empty()
+                    && target_id
+                        .chars()
+                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
+                {
+                    let sql = format!(
+                        "INSERT INTO menu_plats (menu_id, plat_id) VALUES ({}, {}) ON CONFLICT DO NOTHING",
+                        inserted_id, target_id
+                    );
+                    let _ = db.execute_unprepared(&sql).await;
                 }
             }
             for key in data.keys() {
-                if let Some(target_id) = key.strip_prefix("m2m_desserts__") {
-                    if !target_id.is_empty()
-                        && target_id
-                            .chars()
-                            .all(|c| c.is_ascii_alphanumeric() || c == '-')
-                    {
-                        let sql = format!(
-                            "INSERT INTO menu_desserts (menu_id, dessert_id) VALUES ({}, {}) ON CONFLICT DO NOTHING",
-                            inserted_id, target_id
-                        );
-                        let _ = db.execute_unprepared(&sql).await;
-                    }
+                if let Some(target_id) = key.strip_prefix("m2m_desserts__")
+                    && !target_id.is_empty()
+                    && target_id
+                        .chars()
+                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
+                {
+                    let sql = format!(
+                        "INSERT INTO menu_desserts (menu_id, dessert_id) VALUES ({}, {}) ON CONFLICT DO NOTHING",
+                        inserted_id, target_id
+                    );
+                    let _ = db.execute_unprepared(&sql).await;
                 }
             }
             Ok(())
@@ -3185,18 +3172,17 @@ pub fn admin_register() -> AdminRegistry {
                 ))
                 .await;
             for key in data.keys() {
-                if let Some(target_id) = key.strip_prefix("m2m_entrees__") {
-                    if !target_id.is_empty()
-                        && target_id
-                            .chars()
-                            .all(|c| c.is_ascii_alphanumeric() || c == '-')
-                    {
-                        let sql = format!(
-                            "INSERT INTO menu_entrees (menu_id, entree_id) VALUES ({}, {})",
-                            id_str, target_id
-                        );
-                        let _ = db.execute_unprepared(&sql).await;
-                    }
+                if let Some(target_id) = key.strip_prefix("m2m_entrees__")
+                    && !target_id.is_empty()
+                    && target_id
+                        .chars()
+                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
+                {
+                    let sql = format!(
+                        "INSERT INTO menu_entrees (menu_id, entree_id) VALUES ({}, {})",
+                        id_str, target_id
+                    );
+                    let _ = db.execute_unprepared(&sql).await;
                 }
             }
             let _ = db
@@ -3206,18 +3192,17 @@ pub fn admin_register() -> AdminRegistry {
                 ))
                 .await;
             for key in data.keys() {
-                if let Some(target_id) = key.strip_prefix("m2m_plats__") {
-                    if !target_id.is_empty()
-                        && target_id
-                            .chars()
-                            .all(|c| c.is_ascii_alphanumeric() || c == '-')
-                    {
-                        let sql = format!(
-                            "INSERT INTO menu_plats (menu_id, plat_id) VALUES ({}, {})",
-                            id_str, target_id
-                        );
-                        let _ = db.execute_unprepared(&sql).await;
-                    }
+                if let Some(target_id) = key.strip_prefix("m2m_plats__")
+                    && !target_id.is_empty()
+                    && target_id
+                        .chars()
+                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
+                {
+                    let sql = format!(
+                        "INSERT INTO menu_plats (menu_id, plat_id) VALUES ({}, {})",
+                        id_str, target_id
+                    );
+                    let _ = db.execute_unprepared(&sql).await;
                 }
             }
             let _ = db
@@ -3227,18 +3212,17 @@ pub fn admin_register() -> AdminRegistry {
                 ))
                 .await;
             for key in data.keys() {
-                if let Some(target_id) = key.strip_prefix("m2m_desserts__") {
-                    if !target_id.is_empty()
-                        && target_id
-                            .chars()
-                            .all(|c| c.is_ascii_alphanumeric() || c == '-')
-                    {
-                        let sql = format!(
-                            "INSERT INTO menu_desserts (menu_id, dessert_id) VALUES ({}, {})",
-                            id_str, target_id
-                        );
-                        let _ = db.execute_unprepared(&sql).await;
-                    }
+                if let Some(target_id) = key.strip_prefix("m2m_desserts__")
+                    && !target_id.is_empty()
+                    && target_id
+                        .chars()
+                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
+                {
+                    let sql = format!(
+                        "INSERT INTO menu_desserts (menu_id, dessert_id) VALUES ({}, {})",
+                        id_str, target_id
+                    );
+                    let _ = db.execute_unprepared(&sql).await;
                 }
             }
             Ok(())
@@ -3578,18 +3562,17 @@ pub fn admin_register() -> AdminRegistry {
                 .await?;
             let inserted_id = result.id.to_string();
             for key in data.keys() {
-                if let Some(target_id) = key.strip_prefix("m2m_plats__") {
-                    if !target_id.is_empty()
-                        && target_id
-                            .chars()
-                            .all(|c| c.is_ascii_alphanumeric() || c == '-')
-                    {
-                        let sql = format!(
-                            "INSERT INTO menu_traiteur_plats (menu_traiteur_id, plat_id) VALUES ({}, {}) ON CONFLICT DO NOTHING",
-                            inserted_id, target_id
-                        );
-                        let _ = db.execute_unprepared(&sql).await;
-                    }
+                if let Some(target_id) = key.strip_prefix("m2m_plats__")
+                    && !target_id.is_empty()
+                    && target_id
+                        .chars()
+                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
+                {
+                    let sql = format!(
+                        "INSERT INTO menu_traiteur_plats (menu_traiteur_id, plat_id) VALUES ({}, {}) ON CONFLICT DO NOTHING",
+                        inserted_id, target_id
+                    );
+                    let _ = db.execute_unprepared(&sql).await;
                 }
             }
             Ok(())
@@ -3613,18 +3596,17 @@ pub fn admin_register() -> AdminRegistry {
                 ))
                 .await;
             for key in data.keys() {
-                if let Some(target_id) = key.strip_prefix("m2m_plats__") {
-                    if !target_id.is_empty()
-                        && target_id
-                            .chars()
-                            .all(|c| c.is_ascii_alphanumeric() || c == '-')
-                    {
-                        let sql = format!(
-                            "INSERT INTO menu_traiteur_plats (menu_traiteur_id, plat_id) VALUES ({}, {})",
-                            id_str, target_id
-                        );
-                        let _ = db.execute_unprepared(&sql).await;
-                    }
+                if let Some(target_id) = key.strip_prefix("m2m_plats__")
+                    && !target_id.is_empty()
+                    && target_id
+                        .chars()
+                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
+                {
+                    let sql = format!(
+                        "INSERT INTO menu_traiteur_plats (menu_traiteur_id, plat_id) VALUES ({}, {})",
+                        id_str, target_id
+                    );
+                    let _ = db.execute_unprepared(&sql).await;
                 }
             }
             Ok(())

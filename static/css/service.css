@@ -184,6 +184,20 @@ body {
 @media (max-width: 600px) {
     .svc-header { flex-direction: column; align-items: flex-start; gap: .4rem; }
     .svc-heure  { font-size: 1.2rem; }
+
+    .svc-tabs   { flex-wrap: wrap; }
+    .svc-tab    { flex: 1; text-align: center; padding: 8px 10px; font-size: 13px; }
+
+    .svc-subtabs        { gap: .5rem; padding: 8px 10px 0; }
+    .svc-subtab         { flex: 1; text-align: center; padding: 6px 8px; font-size: 12px; }
+    .svc-tab-count      { display: none; }
+
+    #tab-stock          { padding: 12px; overflow-x: auto; }
+    .stk-table          { min-width: 480px; }
+    .stk-col-num        { width: 90px; }
+    .stk-col-actions    { width: 130px; }
+
+    .svc-grille         { grid-template-columns: 1fr; }
 }
 
 /* ── Groupes de statut ── */
@@ -288,8 +302,31 @@ body {
 .s-muted { color: #475569; font-size: 13px; }
 .s-panel--mb { margin-bottom: 16px; }
 .s-bar[data-w] { width: 0; }
+
+/* ── Groupes filtres ── */
+.s-filter-group { margin-bottom: 16px; }
+.s-filter-group:last-child { margin-bottom: 0; }
+.s-filter-group-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--accent); margin: 0 0 6px; }
 .s-donut-wrap { position: relative; height: 220px; }
 .s-donut-wrap canvas { position: absolute; inset: 0; width: 100% !important; height: 100% !important; }
+
+@media (max-width: 320px) {
+    .svc-header     { padding: .5rem .75rem; }
+    .svc-logo       { font-size: .95rem; }
+    .svc-date       { font-size: .78rem; }
+    .svc-tab        { font-size: 11px; padding: 6px 6px; }
+    .svc-subtab     { font-size: 11px; padding: 5px 4px; }
+
+    .svc-card-header { padding: .5rem .75rem; }
+    .svc-heure      { font-size: 1rem; }
+    .svc-card-body  { padding: .5rem .75rem; }
+    .svc-card-footer { padding: .5rem .75rem; }
+    .svc-btn        { font-size: .72rem; padding: .3rem .55rem; }
+
+    #tab-stock      { padding: 8px; }
+    .stk-table      { font-size: .8rem; min-width: 420px; }
+    .stk-val        { font-size: .95rem; }
+}
 
 @media (max-width: 700px) {
     #tab-stats { padding: 12px; }

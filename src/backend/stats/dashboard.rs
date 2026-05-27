@@ -156,8 +156,8 @@ pub async fn load_stats(request: &Request, periode_jours: u32) -> StatsDashboard
     }
 
     let opts_f = mongodb::options::FindOptions::builder()
-        .sort(doc! { "count": -1 })
-        .limit(10)
+        .sort(doc! { "filtre": 1, "count": -1 })
+        .limit(50)
         .build();
     if let Ok(mut cur) = db
         .collection::<Document>("menu_filters")

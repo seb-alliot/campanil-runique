@@ -420,13 +420,28 @@
                 : '<tr><td colspan="2" class="s-muted">Aucune donnée.</td></tr>';
         }
 
-        var tbodyFiltres = document.getElementById('tbodyFiltres');
-        if (tbodyFiltres) {
-            tbodyFiltres.innerHTML = d.top_filtres.length
-                ? d.top_filtres.map(function (f) {
-                    return '<tr><td>' + esc(f.filtre.replace(/_/g, ' ')) + '</td><td>' + esc(f.valeur) + '</td><td>' + f.count + '</td></tr>';
-                }).join('')
-                : '<tr><td colspan="3" class="s-muted">Aucune donnée.</td></tr>';
+        var filtresWrap = document.getElementById('filtresWrap');
+        if (filtresWrap) {
+            if (!d.top_filtres.length) {
+                filtresWrap.innerHTML = '<p class="s-muted">Aucune donnée.</p>';
+            } else {
+                var LABELS = { theme: 'Thème', regime: 'Régime', prix_min: 'Prix min.', prix_max: 'Prix max.', nb_personnes: 'Nb personnes' };
+                var groups = {};
+                d.top_filtres.forEach(function (f) {
+                    if (!groups[f.filtre]) groups[f.filtre] = [];
+                    groups[f.filtre].push(f);
+                });
+                filtresWrap.innerHTML = Object.keys(groups).map(function (key) {
+                    var label = LABELS[key] || key.replace(/_/g, ' ');
+                    var rows = groups[key].map(function (f) {
+                        return '<tr><td>' + esc(f.valeur) + '</td><td>' + f.count + '</td></tr>';
+                    }).join('');
+                    return '<div class="s-filter-group">'
+                        + '<p class="s-filter-group-label">' + esc(label) + '</p>'
+                        + '<table class="s-table"><thead><tr><th>Valeur</th><th>Utilisations</th></tr></thead>'
+                        + '<tbody>' + rows + '</tbody></table></div>';
+                }).join('');
+            }
         }
     }
 

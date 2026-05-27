@@ -71,7 +71,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     "allergenes",
                     "horaires",
                     "contacts",
-                    "info_resto",
+                    "info resto",
                 ])
                 .with_rate_limiter(RateLimiter::new().max_requests(20).retry_after(3600))
                 .with_login_guard(LoginGuard::new().max_attempts(20).lockout_secs(300))

@@ -1,5 +1,21 @@
 # U Campanile — Restaurant corse à Corte
 
+[Repo github :] (https://github.com/seb-alliot/campanil-runique)
+[Techno utilisé]
+
+- [Java script : vanilla]
+- [Trello :] (https://trello.com/b/7rohcKGQ/campanile)
+- [Base de donnée : Postgres(relationnel)](https://www.postgresql.org/)
+- [Base de donnée non relationnel : Mongo db](https://www.mongodb.com/) installer en local pour les performances
+- [Runique (rust 1.88)](https://img.shields.io/badge/Runique-brightgreen)
+- [crate.io](https://runique.io)
+
+runique utilise toutes les techno si dessous
+
+- [Sea-orm] (https://www.sea-ql.org/SeaORM/)
+- [Moteur de templat = Tera](https://keats.github.io/tera/)
+- [Server = axum](https://docs.rs/axum/latest/axum/)
+
 Application web de commande en ligne pour le restaurant U Campanile, développée avec le framework Rust **Runique** (Axum + SeaORM + Tera).
 
 ---
