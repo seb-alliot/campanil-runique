@@ -64,6 +64,28 @@ impl DynForm for HoraireAdminFormDynWrapper {
     }
 }
 
+// ── DynForm edit wrapper for horaire (auto from bulk_create) ──
+struct HoraireEditFormDynWrapper(pub horaire::AdminForm);
+
+#[async_trait]
+impl DynForm for HoraireEditFormDynWrapper {
+    async fn is_valid(&mut self) -> bool {
+        self.0.is_valid().await
+    }
+
+    async fn save(&mut self, _db: &DatabaseConnection) -> Result<(), DbErr> {
+        Ok(()) // update_fn handles persistence
+    }
+
+    fn get_form(&self) -> &Forms {
+        self.0.get_form()
+    }
+
+    fn get_form_mut(&mut self) -> &mut Forms {
+        self.0.get_form_mut()
+    }
+}
+
 // ── DynForm wrapper for devis_traiteur::AdminForm ──
 struct DevisTraiteurAdminFormDynWrapper(pub devis_traiteur::AdminForm);
 
@@ -516,7 +538,8 @@ pub fn admin_register() -> AdminRegistry {
             .with_create_fn(create_fn)
             .with_update_fn(update_fn)
             .with_partial_update_fn(partial_update_fn)
-            .with_count_fn(count_fn),
+            .with_count_fn(count_fn)
+            .with_unique_fields(allergene::UNIQUE_FIELDS),
     );
 
     // ── Resource: horaires ──
@@ -617,6 +640,7 @@ pub fn admin_register() -> AdminRegistry {
 
     let create_fn: CreateFn = Arc::new(|db: ADb, data: StrMap| {
         Box::pin(async move {
+            use sea_orm::QueryFilter;
             let raw = data.get("jour").cloned().unwrap_or_default();
             let values: Vec<&str> = raw
                 .split(',')
@@ -626,7 +650,25 @@ pub fn admin_register() -> AdminRegistry {
             for val in values {
                 let mut row = data.clone();
                 row.insert("jour".to_string(), val.to_string());
-                horaire::admin_from_form(&row, None).insert(&*db).await?;
+                let escaped_bv = val.replace('\'', "''");
+                let existing_id: Option<String> = horaire::Entity::find()
+                    .filter(sea_orm::sea_query::Expr::cust(format!(
+                        "CAST(jour AS TEXT) = '{}'",
+                        escaped_bv
+                    )))
+                    .one(&*db)
+                    .await?
+                    .map(|m| m.id.to_string());
+                if let Some(id) = existing_id {
+                    let id = id
+                        .parse::<Pk>()
+                        .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
+                    horaire::admin_from_form(&row, Some(id))
+                        .update(&*db)
+                        .await?;
+                } else {
+                    horaire::admin_from_form(&row, None).insert(&*db).await?;
+                }
             }
             Ok(())
         })
@@ -655,6 +697,20 @@ pub fn admin_register() -> AdminRegistry {
                 .map(|_| ())
         })
     });
+
+    let edit_form_builder: FormBuilder = Arc::new(
+        |_db: ADb,
+         _vec: Vec<std::string::String>,
+         data: StrMap,
+         tera: ATera,
+         csrf: String,
+         method: Method| {
+            Box::pin(async move {
+                let form = horaire::AdminForm::build_with_data(&data, tera, &csrf, method).await;
+                Box::new(HoraireEditFormDynWrapper(form)) as Box<dyn DynForm>
+            })
+        },
+    );
 
     let meta = meta.display(
         DisplayConfig::new()
@@ -727,6 +783,7 @@ pub fn admin_register() -> AdminRegistry {
 
     registry.register(
         ResourceEntry::new(meta, form_builder)
+            .with_edit_form_builder(edit_form_builder)
             .with_list_fn(list_fn)
             .with_get_fn(get_fn)
             .with_delete_fn(delete_fn)
@@ -734,6 +791,7 @@ pub fn admin_register() -> AdminRegistry {
             .with_update_fn(update_fn)
             .with_partial_update_fn(partial_update_fn)
             .with_count_fn(count_fn)
+            .with_unique_fields(horaire::UNIQUE_FIELDS)
             .with_filter_fn(filter_fn)
             .with_group_actions(vec![GroupAction::bool("ferme", "Marquer fermé")]),
     );
@@ -942,6 +1000,7 @@ pub fn admin_register() -> AdminRegistry {
             .with_update_fn(update_fn)
             .with_partial_update_fn(partial_update_fn)
             .with_count_fn(count_fn)
+            .with_unique_fields(devis_traiteur::UNIQUE_FIELDS)
             .with_filter_fn(filter_fn)
             .with_group_actions(vec![GroupAction::bool("statut", "Marquer en cours")]),
     );
@@ -1147,6 +1206,7 @@ pub fn admin_register() -> AdminRegistry {
             .with_update_fn(update_fn)
             .with_partial_update_fn(partial_update_fn)
             .with_count_fn(count_fn)
+            .with_unique_fields(contact::UNIQUE_FIELDS)
             .with_filter_fn(filter_fn),
     );
 
@@ -1406,6 +1466,7 @@ pub fn admin_register() -> AdminRegistry {
             .with_update_fn(update_fn)
             .with_partial_update_fn(partial_update_fn)
             .with_count_fn(count_fn)
+            .with_unique_fields(garniture::UNIQUE_FIELDS)
             .with_filter_fn(filter_fn)
             .with_group_actions(vec![GroupAction::bool("disponible", "Rendre disponible")]),
     );
@@ -1719,6 +1780,7 @@ pub fn admin_register() -> AdminRegistry {
             .with_update_fn(update_fn)
             .with_partial_update_fn(partial_update_fn)
             .with_count_fn(count_fn)
+            .with_unique_fields(supplement::UNIQUE_FIELDS)
             .with_filter_fn(filter_fn)
             .with_group_actions(vec![GroupAction::bool("disponible", "Rendre disponible")]),
     );
@@ -2065,6 +2127,7 @@ pub fn admin_register() -> AdminRegistry {
             .with_update_fn(update_fn)
             .with_partial_update_fn(partial_update_fn)
             .with_count_fn(count_fn)
+            .with_unique_fields(entree::UNIQUE_FIELDS)
             .with_filter_fn(filter_fn)
             .with_group_actions(vec![GroupAction::bool("disponible", "Rendre disponible")])
             .with_m2m_loader(m2m_loader),
@@ -2412,6 +2475,7 @@ pub fn admin_register() -> AdminRegistry {
             .with_update_fn(update_fn)
             .with_partial_update_fn(partial_update_fn)
             .with_count_fn(count_fn)
+            .with_unique_fields(dessert::UNIQUE_FIELDS)
             .with_filter_fn(filter_fn)
             .with_group_actions(vec![GroupAction::bool("disponible", "Rendre disponible")])
             .with_m2m_loader(m2m_loader),
@@ -3011,6 +3075,7 @@ pub fn admin_register() -> AdminRegistry {
             .with_update_fn(update_fn)
             .with_partial_update_fn(partial_update_fn)
             .with_count_fn(count_fn)
+            .with_unique_fields(plat::UNIQUE_FIELDS)
             .with_filter_fn(filter_fn)
             .with_group_actions(vec![GroupAction::bool("disponible", "Rendre disponible")])
             .with_m2m_loader(m2m_loader),
@@ -3457,6 +3522,7 @@ pub fn admin_register() -> AdminRegistry {
             .with_update_fn(update_fn)
             .with_partial_update_fn(partial_update_fn)
             .with_count_fn(count_fn)
+            .with_unique_fields(menu::UNIQUE_FIELDS)
             .with_filter_fn(filter_fn)
             .with_m2m_loader(m2m_loader),
     );
@@ -3857,6 +3923,7 @@ pub fn admin_register() -> AdminRegistry {
             .with_update_fn(update_fn)
             .with_partial_update_fn(partial_update_fn)
             .with_count_fn(count_fn)
+            .with_unique_fields(menu_traiteur::UNIQUE_FIELDS)
             .with_filter_fn(filter_fn)
             .with_group_actions(vec![GroupAction::bool("actif", "Activer")])
             .with_m2m_loader(m2m_loader),
@@ -4119,6 +4186,7 @@ pub fn admin_register() -> AdminRegistry {
             .with_update_fn(update_fn)
             .with_partial_update_fn(partial_update_fn)
             .with_count_fn(count_fn)
+            .with_unique_fields(boisson::UNIQUE_FIELDS)
             .with_filter_fn(filter_fn)
             .with_group_actions(vec![GroupAction::bool("disponible", "Rendre disponible")]),
     );
@@ -4534,6 +4602,7 @@ pub fn admin_register() -> AdminRegistry {
             .with_update_fn(update_fn)
             .with_partial_update_fn(partial_update_fn)
             .with_count_fn(count_fn)
+            .with_unique_fields(commande::UNIQUE_FIELDS)
             .with_filter_fn(filter_fn),
     );
 
@@ -4839,6 +4908,7 @@ pub fn admin_register() -> AdminRegistry {
             .with_update_fn(update_fn)
             .with_partial_update_fn(partial_update_fn)
             .with_count_fn(count_fn)
+            .with_unique_fields(avis::UNIQUE_FIELDS)
             .with_filter_fn(filter_fn)
             .with_group_actions(vec![
                 GroupAction::val("statut", "Valider", "valide"),
@@ -5149,6 +5219,7 @@ pub fn admin_register() -> AdminRegistry {
             .with_update_fn(update_fn)
             .with_partial_update_fn(partial_update_fn)
             .with_count_fn(count_fn)
+            .with_unique_fields(avis_plat::UNIQUE_FIELDS)
             .with_filter_fn(filter_fn)
             .with_group_actions(vec![
                 GroupAction::val("statut", "Valider", "valide"),
@@ -5297,7 +5368,8 @@ pub fn admin_register() -> AdminRegistry {
             .with_create_fn(create_fn)
             .with_update_fn(update_fn)
             .with_partial_update_fn(partial_update_fn)
-            .with_count_fn(count_fn),
+            .with_count_fn(count_fn)
+            .with_unique_fields(info_resto::UNIQUE_FIELDS),
     );
 
     registry.configure(

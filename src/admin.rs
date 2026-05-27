@@ -35,6 +35,7 @@ admin! {
         list_filter: [["ferme", "Fermé", 10]],
         group_action: [
             ["ferme", "Marquer fermé"],
+
         ],
     }
     devis_traiteur: devis_traiteur::Model => devis_traiteur::AdminForm {

@@ -4,12 +4,12 @@
 
 ## Stack technique
 
-[Repo github :](https://github.com/seb-alliot/campanil-runique)
+[Repo github](https://github.com/seb-alliot/campanil-runique)
 
 *Techno utilisé*
 
 - [Java script : vanilla]
-- [Trello :](https://trello.com/b/7rohcKGQ/campanile)
+- [Trello](https://trello.com/b/7rohcKGQ/campanile)
 - [Base de donnée : Postgres(relationnel)](https://www.postgresql.org/)
 - [Base de donnée non relationnel : Mongo db](https://www.mongodb.com/)
 - [Rust](https://rustup.rs/) 1.88+installer en local pour les performances

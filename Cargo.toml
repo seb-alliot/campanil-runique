@@ -6,7 +6,7 @@ rust-version = "1.88"
 
 [dependencies]
 
-runique = { path = "../runique/runique", features = ["orm", "postgres", "acme"] }
+runique = { version = "2.1.8", features = ["orm", "postgres", "acme"] }
 
 serde = "1"
 

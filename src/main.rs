@@ -12,6 +12,7 @@ use runique::app::builder::RuniqueAppBuilder as builder;
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     password_init(PasswordConfig::auto_with(Manual::Argon2));
     set_lang(Lang::Fr);
+
     let config: RuniqueConfig = RuniqueConfig::from_env();
 
     let db_config = DatabaseConfig::from_env()?.build();
@@ -25,6 +26,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     builder::new(config)
         .routes(url::routes())
+        .with_log(|l| {
+            l.forms(|f| f.validate(Level::DEBUG).finalize(Level::DEBUG))
+                .admin(|a| a.crud(Level::INFO).auth(Level::WARN))
+                .auth(|a| a.login(Level::INFO).reset(Level::WARN))
+                .mailer(|m| m.send(Level::INFO))
+                .builder(|b| {
+                    b.templates(Level::INFO)
+                        .middleware(Level::DEBUG)
+                        .routes(Level::INFO)
+                        .statics(Level::INFO)
+                })
+                .rate_limit(Level::WARN)
+        })
         .with_database(db)
         .with_custom_db(mongo)
         .with_mailer_from_env()
