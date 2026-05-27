@@ -9,11 +9,11 @@ impl MigrationTrait for Migration {
         let db = manager.get_connection();
         db.execute_unprepared(
             "UPDATE supplements SET garniture_id = NULL \
-             WHERE garniture_id IN (SELECT id FROM garnitures WHERE type_garniture = 'accompagnement')",
+             WHERE garniture_id IN (SELECT id FROM garnitures WHERE type_garniture::text = 'accompagnement')",
         )
         .await?;
         db.execute_unprepared(
-            "DELETE FROM garnitures WHERE type_garniture = 'accompagnement'",
+            "DELETE FROM garnitures WHERE type_garniture::text = 'accompagnement'",
         )
         .await?;
         db.execute_unprepared(
