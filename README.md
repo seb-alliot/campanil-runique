@@ -1,7 +1,8 @@
 # U Campanile — Restaurant corse à Corte
 
 [Repo github :](https://github.com/seb-alliot/campanil-runique)
-[Techno utilisé]
+
+*Techno utilisé*
 
 - [Java script : vanilla]
 - [Trello :](https://trello.com/b/7rohcKGQ/campanile)
