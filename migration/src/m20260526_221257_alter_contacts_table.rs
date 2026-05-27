@@ -9,14 +9,9 @@ impl MigrationTrait for Migration {
         manager.get_connection().execute_unprepared(
             "CREATE TYPE raisoncontact AS ENUM ('reservation', 'traiteur', 'commande', 'autre')"
         ).await?;
-        manager
-            .alter_table(
-                Table::alter()
-                    .table(Alias::new("contacts"))
-                    .add_column(ColumnDef::new_with_type(Alias::new("raison"), ColumnType::Enum { name: Alias::new("raisoncontact").into_iden(), variants: vec![Alias::new("reservation").into_iden(), Alias::new("traiteur").into_iden(), Alias::new("commande").into_iden(), Alias::new("autre").into_iden()] }).not_null())
-                    .to_owned(),
-            )
-            .await?;
+        manager.get_connection().execute_unprepared(
+            "ALTER TABLE contacts ADD COLUMN raison raisoncontact NOT NULL DEFAULT 'autre'"
+        ).await?;
         Ok(())
     }
 
