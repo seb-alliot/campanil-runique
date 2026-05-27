@@ -22,6 +22,7 @@ DELETE FROM entree_allergene;
 DELETE FROM dessert_allergene;
 DELETE FROM plat_garnitures;
 DELETE FROM plat_allergene;
+DELETE FROM plat_supplements;
 DELETE FROM supplements;
 DELETE FROM garnitures;
 DELETE FROM boissons;
@@ -29,6 +30,7 @@ DELETE FROM entrees;
 DELETE FROM desserts;
 DELETE FROM plats;
 DELETE FROM menus;
+DELETE FROM contacts;
 DELETE FROM allergenes;
 
 -- ── 1. Allergènes (14 majeurs UE) ───────────────────────────
@@ -202,13 +204,27 @@ INSERT INTO plat_garnitures (id, plat_id, garniture_id, est_defaut) VALUES
 
 -- ── 5. Suppléments ──────────────────────────────────────────
 
-INSERT INTO supplements (id, garniture_id, titre, libelle, prix, disponible) VALUES
-    (1, NULL, 'Option Rossini',  'Foie gras frais poêlé',        7.00, true),
-    (2, 6,    NULL,              'Légumes grillés en supplément', 3.50, true),
-    (3, 1,    NULL,              'Purée maison en supplément',    3.50, true),
-    (4, 3,    NULL,              'Frites maison en supplément',   3.50, true),
-    (5, NULL, 'Pain artisanal',  NULL,                            2.00, true),
-    (6, NULL, 'Sauce du chef',   NULL,                            2.50, true);
+INSERT INTO supplements (id, garniture_id, titre, libelle, prix, disponible, ordre) VALUES
+    (1, NULL, 'Option Rossini',  'Foie gras frais poêlé',        7.00, true, 0),
+    (2, 6,    NULL,              'Légumes grillés en supplément', 3.50, true, 1),
+    (3, 1,    NULL,              'Purée maison en supplément',    3.50, true, 2),
+    (4, 3,    NULL,              'Frites maison en supplément',   3.50, true, 3),
+    (5, NULL, 'Pain artisanal',  NULL,                            2.00, true, 4),
+    (6, NULL, 'Sauce du chef',   NULL,                            2.50, true, 5);
+
+INSERT INTO plat_supplements (id, plat_id, supplement_id) VALUES
+    -- Filet bœuf (19) : Option Rossini, Sauce du chef
+    (1,  19, 1), (2,  19, 6),
+    -- Volaille noisette (17) : Frites maison, Sauce du chef
+    (3,  17, 4), (4,  17, 6),
+    -- Pulled porc (18) : Frites maison, Légumes grillés
+    (5,  18, 4), (6,  18, 2),
+    -- Daurade (21) : Légumes grillés, Purée
+    (7,  21, 2), (8,  21, 3),
+    -- Seiche cajou (23) : Légumes grillés
+    (9,  23, 2),
+    -- Burger saumon (24) : Légumes grillés
+    (10, 24, 2);
 
 -- ── 6. Boissons réelles ─────────────────────────────────────
 
@@ -365,7 +381,7 @@ BEGIN
         'entrees', 'entree_allergene',
         'plats', 'plat_allergene', 'garnitures', 'plat_garnitures',
         'desserts', 'dessert_allergene',
-        'supplements', 'boissons',
+        'supplements', 'plat_supplements', 'boissons',
         'menus_traiteur', 'menu_traiteur_plats',
         'menus', 'menu_entrees', 'menu_plats', 'menu_desserts',
         'horaires', 'info_resto',
