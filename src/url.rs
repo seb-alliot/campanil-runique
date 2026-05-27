@@ -40,18 +40,18 @@ pub fn routes() -> Router {
         "/sitemap.xml"                          => view!{ sitemap_xml },            name = "sitemap_xml",
         "/llms.txt"                             => view!{ llms_txt },               name = "llms_txt",
     }
-    // 10 req / 5 min — brute force login
-    .rate_limit_many(10, 300, vec![
+    // 10 req / 5 min — brute force login (toutes méthodes)
+    .rate_limit_many(10, 300, vec![], vec![
         ("/connexion".into(),  "connexion".into(),  view!{ connexion }, ),
         ("/inscription".into(), "inscription".into(), view!{ inscription }),
     ])
-    // 5 req / 10 min — anti-spam email
-    .rate_limit_many(5, 600, vec![
+    // 10 req / 10 min — anti-spam email - commande etc (POST uniquement)
+    .rate_limit_many(10, 600, vec![Method::POST], vec![
         ("/contact".into(),        "contact".into(),        view!{ contact }),
         ("/traiteur/devis".into(), "devis_traiteur".into(), view!{ devis_traiteur }),
     ])
-    // 3 req / 5 min — anti-spam commandes
-    .rate_limit("/panier/commander", "panier_commander", view!{ panier_commander_view }, 3, 300)
+    // 3 req / 5 min — anti-spam commandes (POST uniquement)
+    .rate_limit("/panier/commander", "panier_commander", view!{ panier_commander_view }, 3, 300, vec![Method::POST])
 }
 
 pub fn admin_extra_routes() -> Vec<(&'static str, runique::axum::routing::MethodRouter)> {

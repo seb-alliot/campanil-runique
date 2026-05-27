@@ -700,6 +700,8 @@ p {
 
 textarea.form-control { min-height: 120px; resize: vertical; }
 
+.hp-field { position: absolute; left: -9999px; }
+
 .select-field select {
     appearance: none;
     padding: .6rem 2.5rem .6rem .9rem;

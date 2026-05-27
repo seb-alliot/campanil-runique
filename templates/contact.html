@@ -46,11 +46,18 @@
 
     <section class="contact-form-section">
         <h2>Envoyer un message</h2>
-        <form method="post" action="/contact" novalidate>
+        <div id="contact-success" hidden>
+            <p class="message message-success">Votre message a bien été envoyé. Nous vous répondrons dans les meilleurs délais.</p>
+        </div>
+        <form id="contact-form" method="post" action="/contact" novalidate>
             {% form.contact_form %}
-            <button type="submit" class="btn btn-primary">Envoyer</button>
+            <button type="submit" class="btn btn-primary" id="contact-submit">Envoyer</button>
         </form>
     </section>
 
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script {% csp %} src="{% static "js/contact.js" %}"></script>
 {% endblock %}

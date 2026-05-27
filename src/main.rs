@@ -50,6 +50,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                         .with_upgrade_insecure(!is_debug())
                         .scripts(vec!["'self'", "'strict-dynamic'"])
                 })
+                .with_anti_bot()
         })
         .with_admin(|a| {
             a.sitemap("https://ucampanile.fr/sitemap.xml")
