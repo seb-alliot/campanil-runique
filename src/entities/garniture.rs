@@ -8,6 +8,7 @@ model! {
         TypeGarniture: [
             Feculent = ("feculent", "Féculent"),
             Legumes  = ("legumes",  "Légumes"),
+            Sauce    = ("sauce",    "Sauce"),
         ],
     },
     {

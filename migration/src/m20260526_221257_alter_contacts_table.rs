@@ -7,10 +7,10 @@ pub struct Migration;
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager.get_connection().execute_unprepared(
-            "CREATE TYPE raisoncontact AS ENUM ('reservation', 'traiteur', 'commande', 'autre')"
+            "DO $$ BEGIN CREATE TYPE raisoncontact AS ENUM ('reservation', 'traiteur', 'commande', 'autre'); EXCEPTION WHEN duplicate_object THEN NULL; END $$"
         ).await?;
         manager.get_connection().execute_unprepared(
-            "ALTER TABLE contacts ADD COLUMN raison raisoncontact NOT NULL DEFAULT 'autre'"
+            "ALTER TABLE contacts ADD COLUMN IF NOT EXISTS raison raisoncontact NOT NULL DEFAULT 'autre'"
         ).await?;
         Ok(())
     }
