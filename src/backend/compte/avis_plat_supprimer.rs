@@ -12,6 +12,10 @@ pub async fn handle_avis_plat_supprimer(request: Request) -> AppResult<Response>
         return Ok(axum::Json(json!({"ok": false, "error": "non authentifié"})).into_response());
     };
 
+    if !request.prisme.csrf_valid {
+        return Ok(axum::Json(json!({"ok": false, "error": "csrf"})).into_response());
+    }
+
     let plat_id: Pk = request.get_path_as::<Pk>("plat_id").unwrap_or(0);
     if plat_id == 0 {
         return Ok(axum::Json(json!({"ok": false, "error": "plat invalide"})).into_response());

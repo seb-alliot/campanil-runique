@@ -13,6 +13,10 @@ pub async fn handle_supprimer_compte(request: &mut Request) -> AppResult<Respons
         return Ok(Redirect::to("/connexion").into_response());
     };
 
+    if !request.prisme.csrf_valid {
+        return Ok(Redirect::to("/compte").into_response());
+    }
+
     let db = request.db();
 
     let cmd_ids: Vec<Pk> = search!(commande::Entity => UserId eq user.id,)

@@ -1,5 +1,7 @@
 use crate::backend::commande::generer_numero;
-use crate::backend::panier::{get_prix_livraison, panier_get, panier_vider};
+use crate::backend::panier::{
+    get_prix_livraison, panier_get, panier_vider, prix_livraison_distance,
+};
 use crate::backend::stats::{CommandeEventParams, get_commande_event};
 use crate::entities::{
     commande,
@@ -119,14 +121,12 @@ pub async fn panier_valider(
 
     let prix_total = panier.total();
     let prix_livraison = if is_livraison {
-        if let Some(p) = form
-            .prix_livraison
-            .as_deref()
-            .and_then(|s| Decimal::from_str(s).ok())
-        {
-            p
-        } else {
-            get_prix_livraison(db).await
+        let adresse = form.adresse_livraison.as_deref().unwrap_or("");
+        let cp = form.cp_livraison.as_deref().unwrap_or("");
+        let ville = form.ville_livraison.as_deref().unwrap_or("");
+        match prix_livraison_distance(db, adresse, cp, ville).await {
+            Some(p) => p,
+            None => get_prix_livraison(db).await,
         }
     } else {
         Decimal::ZERO
