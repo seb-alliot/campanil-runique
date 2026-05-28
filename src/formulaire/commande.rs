@@ -5,4 +5,5 @@ pub struct CommandeForm {
     pub adresse_livraison: Option<String>,
     pub ville_livraison: Option<String>,
     pub cp_livraison: Option<String>,
+    pub prix_livraison: Option<String>,
 }

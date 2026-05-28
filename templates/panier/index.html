@@ -122,18 +122,19 @@
             <div id="livraison-fields" style="display:none">
                 <div class="form-group">
                     <label class="form-label" for="adresse_livraison">Adresse</label>
-                    <input type="text" id="adresse_livraison" name="adresse_livraison" class="form-control" maxlength="255">
+                    <input type="text" id="adresse_livraison" name="adresse_livraison" class="form-control" maxlength="255" value="{{ profil.adresse | default(value='') }}">
                 </div>
                 <div class="form-grid-2">
                     <div class="form-group">
                         <label class="form-label" for="cp_livraison">Code postal</label>
-                        <input type="text" id="cp_livraison" name="cp_livraison" class="form-control" maxlength="10">
+                        <input type="text" id="cp_livraison" name="cp_livraison" class="form-control" maxlength="10" value="{{ profil.code_postal | default(value='') }}">
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="ville_livraison">Ville</label>
-                        <input type="text" id="ville_livraison" name="ville_livraison" class="form-control" maxlength="100">
+                        <input type="text" id="ville_livraison" name="ville_livraison" class="form-control" maxlength="100" value="{{ profil.ville | default(value='') }}">
                     </div>
                 </div>
+                <input type="hidden" name="prix_livraison" id="prix_livraison_hidden" value="{{ prix_livraison }}">
                 <p id="livraison-prix-info" style="font-size:.875rem;color:var(--text-muted);margin-top:.25rem"></p>
             </div>
 
@@ -175,12 +176,14 @@
 
         infoEl.textContent = 'Calcul en cours…';
         const params = new URLSearchParams({ adresse, cp, ville });
+        const hiddenEl = document.getElementById('prix_livraison_hidden');
         fetch('/panier/livraison-prix?' + params)
             .then(r => r.json())
             .then(data => {
                 if (data.prix) {
                     labelEl.textContent = data.prix;
                     infoEl.textContent  = 'Frais de livraison estimés : ' + data.prix + ' € (selon distance)';
+                    if (hiddenEl) hiddenEl.value = data.prix;
                 } else {
                     infoEl.textContent = data.erreur || 'Adresse introuvable';
                 }
@@ -194,6 +197,10 @@
             timer = setTimeout(updatePrix, 700);
         });
     });
+
+    if (adresseEl.value.trim() && villeEl.value.trim()) {
+        updatePrix();
+    }
 })();
 </script>
 <script {% csp %}>

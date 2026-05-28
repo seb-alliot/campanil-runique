@@ -13,5 +13,6 @@ pub fn commander_form_from_body(data: &std::collections::HashMap<String, String>
         adresse_livraison: get("adresse_livraison"),
         ville_livraison: get("ville_livraison"),
         cp_livraison: get("cp_livraison"),
+        prix_livraison: get("prix_livraison"),
     }
 }

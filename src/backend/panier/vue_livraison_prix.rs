@@ -1,4 +1,4 @@
-use crate::backend::panier::prix_livraison_distance;
+use crate::backend::panier::{get_prix_livraison, prix_livraison_distance};
 use runique::prelude::*;
 
 pub async fn vue_livraison_prix(request: Request) -> AppResult<Response> {
@@ -13,11 +13,9 @@ pub async fn vue_livraison_prix(request: Request) -> AppResult<Response> {
         );
     }
 
-    match prix_livraison_distance(&request.engine.db, &adresse, &cp, &ville).await {
-        Some(prix) => Ok(Json(serde_json::json!({ "prix": prix.to_string() })).into_response()),
-        None => Ok(
-            Json(serde_json::json!({ "prix": null, "erreur": "Adresse introuvable ou coordonnées du restaurant non configurées" }))
-                .into_response(),
-        ),
-    }
+    let prix = match prix_livraison_distance(&request.engine.db, &adresse, &cp, &ville).await {
+        Some(p) => p,
+        None => get_prix_livraison(&request.engine.db).await,
+    };
+    Ok(Json(serde_json::json!({ "prix": prix.to_string() })).into_response())
 }

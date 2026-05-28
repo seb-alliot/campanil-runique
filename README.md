@@ -32,6 +32,11 @@ Application web de commande en ligne pour le restaurant U Campanile, développé
 - PostgreSQL 15+
 - MongoDB 7+
 - Cargo (inclus avec Rust)
+- sea-orm-cli (pour les migrations)
+
+```bash
+cargo install sea-orm-cli
+```
 
 ---
 

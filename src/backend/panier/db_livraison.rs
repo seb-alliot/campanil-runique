@@ -29,6 +29,13 @@ pub async fn prix_livraison_distance(
     ville: &str,
 ) -> Option<Decimal> {
     let row = search!(info_resto::Entity).first(db).await.ok().flatten()?;
+
+    if let Some(ref resto_ville) = row.ville
+        && resto_ville.trim().to_lowercase() == ville.trim().to_lowercase()
+    {
+        return Some(Decimal::ZERO);
+    }
+
     let resto_lat = row.latitude?.to_string().parse::<f64>().ok()?;
     let resto_lon = row.longitude?.to_string().parse::<f64>().ok()?;
 
@@ -38,8 +45,21 @@ pub async fn prix_livraison_distance(
         urlencoding::encode(&query)
     );
 
+    let email = row
+        .email
+        .as_deref()
+        .unwrap_or("alliotsebastien04@gmail.com");
+    let user_agent = format!("UCampanile/1.0 ({})", email);
     let client = reqwest::Client::new();
-    let resp: serde_json::Value = client.get(&url).send().await.ok()?.json().await.ok()?;
+    let resp: serde_json::Value = client
+        .get(&url)
+        .header("User-Agent", user_agent)
+        .send()
+        .await
+        .ok()?
+        .json()
+        .await
+        .ok()?;
     let result = resp.get(0)?;
     let lat: f64 = result.get("lat")?.as_str()?.parse().ok()?;
     let lon: f64 = result.get("lon")?.as_str()?.parse().ok()?;

@@ -1,6 +1,7 @@
 use runique::prelude::migrations_table;
 use sea_orm_migration::prelude::*;
 mod m20260527_144740_alter_menu_traiteur_plats_table;
+mod m20260528_000000_alter_info_resto_add_ville;
 mod m20260526_221257_alter_devis_traiteur_table;
 mod m20260526_221257_alter_commandes_table;
 mod m20260526_221257_alter_commande_menu_choix_table;
@@ -140,6 +141,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20260526_221257_alter_commandes_table::Migration),
             Box::new(m20260526_221257_alter_devis_traiteur_table::Migration),
             Box::new(m20260527_144740_alter_menu_traiteur_plats_table::Migration),
+            Box::new(m20260528_000000_alter_info_resto_add_ville::Migration),
         ]
     }
 }

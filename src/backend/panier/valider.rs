@@ -119,7 +119,15 @@ pub async fn panier_valider(
 
     let prix_total = panier.total();
     let prix_livraison = if is_livraison {
-        get_prix_livraison(db).await
+        if let Some(p) = form
+            .prix_livraison
+            .as_deref()
+            .and_then(|s| Decimal::from_str(s).ok())
+        {
+            p
+        } else {
+            get_prix_livraison(db).await
+        }
     } else {
         Decimal::ZERO
     };
