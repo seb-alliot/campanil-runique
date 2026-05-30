@@ -23,5 +23,5 @@ pub async fn vue_boissons_type(request: &mut Request) -> AppResult<Response> {
         "type_label" => type_label,
         "boissons"   => boissons,
     });
-    request.render("menus/boisson_type.html")
+    request.render("menus/boissons_type.html")
 }
