@@ -9,10 +9,10 @@
 
 <div class="container devis-layout">
 
-    {% if menu %}
+    {% if menu is defined and menu %}
     <div class="devis-menu-recap">
-        <h2>{{ menu.nom }}</h2>
-        <p class="devis-menu-prix">{{ menu.prix }} €</p>
+        <h2>{{ menu.titre }}</h2>
+        <p class="devis-menu-prix">{{ menu.prix_par_personne }} €</p>
         {% if menu.description %}
         <p class="devis-menu-desc">{{ menu.description }}</p>
         {% endif %}
@@ -22,7 +22,7 @@
     <div class="devis-form-wrapper">
         <p class="devis-intro">Remplissez ce formulaire pour nous soumettre votre demande. Nous vous répondrons par email dans les meilleurs délais.</p>
 
-        <form method="post" action="/traiteur/devis{% if menu %}?menu_id={{ menu.id }}{% endif %}" class="form-contact">
+        <form method="post" action="/traiteur/devis{% if menu is defined and menu %}?menu_id={{ menu.id }}{% endif %}" class="form-contact">
             {% form.devis_form %}
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">Envoyer la demande</button>

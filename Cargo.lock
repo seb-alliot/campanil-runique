@@ -4747,9 +4747,9 @@ dependencies = [
 
 [[package]]
 name = "runique"
-version = "2.1.8"
+version = "2.1.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2040239c50d62162027006fae818bd5e692bb2d24442046f97efa915aac2d274"
+checksum = "53d7c9763fc82f925f5b83c1dabedbefe192197cfd4c03c733047276c24318e2"
 dependencies = [
  "ammonia",
  "anyhow",
