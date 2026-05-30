@@ -42,7 +42,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     h.enabled(true)
                         .host("localhost:8000")
                         .host("127.0.0.1:8000")
-                        .host("U-Campanile.fr")
                         .host("test-itsuki.fr")
                 })
                 .with_csp(|c| {
