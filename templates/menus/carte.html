@@ -79,16 +79,16 @@
 {% endmacro plat_actions %}
 
 {% block style %}
-<link rel="stylesheet" href='{% static "css/main.css" %}'>
-<link rel="stylesheet" href='{% static "css/menu-livre.css" %}'>
+<link rel="stylesheet" href="{% static "css/main.css" %}">
+<link rel="stylesheet" href="{% static "css/menu-livre.css" %}">
 {% endblock %}
 
 {% block content %}
 <div class="livre-scene">
 
   <picture class="livre-scene-bg" aria-hidden="true">
-    <source srcset='{% static "image/restonica.avif" %}' type="image/avif">
-    <img src='{% static "image/restonica.avif" %}' alt="" loading="eager" decoding="async">
+    <source srcset="{% static "image/restonica.avif" %}" type="image/avif">
+    <img src="{% static "image/restonica.avif" %}" alt="" loading="eager" decoding="async">
   </picture>
 
   <!-- COUVERTURE (état fermé) -->

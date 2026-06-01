@@ -9,13 +9,13 @@
     <title>{% block title %}{{ info_resto.nom | default(value="U Campanile") }}{% endblock %}</title>
     <link rel="icon" href='{% media "favicon/images.ico" %}'>
     <link rel="alternate" hreflang="x-default" href="https://U-Campanile-corte.fr/">
-    <link rel="canonical" href="https://U-Campanile-corte.fr{% if canonical %}{{ canonical }}{% else %}/{% endif %}">
+    <link rel="canonical" href="https://U-Campanile-corte.fr{% if canonical %}{{ canonical }}{% endif %}">
     <meta name="description" content="{% if description %}{{ description }}{% else %}Découvrez notre carte et nos menus traiteur à Corte, U Campanile.{% endif %}">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="U-Campanile-corte.fr">
     <meta property="og:image" content="{{ og_image }}">
     {% block style %}
-    <link rel="stylesheet" href='{% static "css/main.css" %}'>
+    <link rel="stylesheet" href="{% static "css/main.css" %}">
     {% endblock %}
 
 
