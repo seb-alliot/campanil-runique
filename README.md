@@ -35,6 +35,7 @@ Application web de commande en ligne pour le restaurant U Campanile, développé
 - sea-orm-cli (pour les migrations)
 
 ```bash
+cargo install runique (pour pouvoir utiliser les cli de runique)
 cargo install sea-orm-cli
 ```
 
