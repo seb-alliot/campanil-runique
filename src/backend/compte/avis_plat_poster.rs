@@ -74,7 +74,7 @@ pub async fn handle_avis_plat(request: Request) -> AppResult<Response> {
     let commentaire = form.cleaned_string("commentaire").unwrap_or_default();
 
     let nouveau = avis_plat::ActiveModel {
-        plat_id: Set(plat_id),
+        plat_id: Set(Some(plat_id)),
         user_id: Set(Some(user.id)),
         note: Set(note),
         commentaire: Set(commentaire.trim().to_string()),
