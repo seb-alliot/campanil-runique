@@ -39,6 +39,8 @@ cargo install runique (pour pouvoir utiliser les cli de runique)
 cargo install sea-orm-cli
 ```
 
+- [MongoDB Community](https://www.mongodb.com/try/download/community) — doit tourner localement (aucune base à créer, l'app la génère au premier démarrage)
+
 ---
 
 ## Installation locale
@@ -90,8 +92,13 @@ MONGO_URI=mongodb://localhost:27017
 
 ### 3. Créer la base de données
 
+Plusieurs solution possible , soit utiliser l'orm soit creer les tables manuellement.
+La solution la plus propre est l'orm pour le suivis de l'historique, pour la maitrise du sql c'est la version manuellement.
+Le fichier schema.sql creer les tables via du sql pur, tendis que runique migration up wrap la cli de sea-orm pour appliqué les migrations automatiquement.
+Ensuite le seed peuple la base de données pour l'exemple.
+
 ```bash
-psql -U postgres -c "CREATE DATABASE campanile;"
+psql -U postgres -d campanile -f schema.sql
 ```
 
 ### 4. Appliquer les migrations
@@ -124,12 +131,10 @@ L'application est accessible sur `http://localhost:3000`.
 
 ## Comptes de démonstration
 
-| Rôle | Email | Mot de passe |
+| Rôle | Pseudo | Mot de passe |
 |------|-------|--------------|
-| Administrateur | admin@campanile.fr | Admin1234! |
-| Employé | employe@campanile.fr | Employe1234! |
-| Utilisateur | client@campanile.fr | Client1234! |
-
+| Administrateur | jeff | UCampanile20250 |
+| les roles sont a definir dans la vue admin | test | test12345. |
 ---
 
 ## Parcours disponibles
@@ -185,3 +190,5 @@ templates/               # Templates Tera (HTML)
 static/                  # CSS, JS, images
 seed.sql                 # Données de démonstration
 ```
+
+En l'état actuel , il me semble avoir oublié le decompte des stock en fonction des commandes effectué, j'ai adapté le site en fonction d'une vrai utilité dans une vrai cuisine. Le sujet la mal placé , mais il pourrais etre ajouter sur chaque plat pour qu'un serveur puisse avoir le decompte en temps reel mais aussi relier au commandes , je vais l'ajouté entre temps

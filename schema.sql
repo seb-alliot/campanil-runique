@@ -2,6 +2,9 @@
 -- SCHEMA SQL POSTGRESQL — U CAMPANILE
 -- ============================================================================
 
+CREATE DATABASE IF NOT EXISTS campanile;
+\c campanile
+
 SET client_encoding = 'UTF8';
 
 -- ============================================================================
