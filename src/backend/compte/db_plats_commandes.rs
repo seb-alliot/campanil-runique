@@ -1,6 +1,6 @@
 use crate::backend::compte::PlatCommande;
 use crate::entities::commande::StatutCommande;
-use crate::entities::{avis_plat, commande, commande_ligne, plat};
+use crate::entities::{avis_plat, commande, commande_ligne, dessert, entree, plat};
 use runique::prelude::*;
 use std::collections::HashMap;
 
@@ -32,35 +32,83 @@ pub async fn get_plats_commandes_user(
     plat_ids.sort_unstable();
     plat_ids.dedup();
 
-    if plat_ids.is_empty() {
+    let mut entree_ids: Vec<i32> = lignes.iter().filter_map(|l| l.entree_id).collect();
+    entree_ids.sort_unstable();
+    entree_ids.dedup();
+
+    let mut dessert_ids: Vec<i32> = lignes.iter().filter_map(|l| l.dessert_id).collect();
+    dessert_ids.sort_unstable();
+    dessert_ids.dedup();
+
+    if plat_ids.is_empty() && entree_ids.is_empty() && dessert_ids.is_empty() {
         return vec![];
     }
 
-    let plats = search!(plat::Entity => Id in (plat_ids.clone()), asc Titre,)
-        .all(db)
-        .await
-        .unwrap_or_default();
-
-    let avis_map: HashMap<i32, avis_plat::Model> =
-        search!(avis_plat::Entity => UserId eq user_id, PlatId in (plat_ids),)
+    let avis_map: HashMap<i32, avis_plat::Model> = if !plat_ids.is_empty() {
+        search!(avis_plat::Entity => UserId eq user_id, PlatId in (plat_ids.clone()),)
             .all(db)
             .await
             .unwrap_or_default()
             .into_iter()
             .map(|a| (a.plat_id, a))
-            .collect();
+            .collect()
+    } else {
+        HashMap::new()
+    };
 
-    plats
-        .into_iter()
-        .map(|p| {
+    let mut result: Vec<PlatCommande> = Vec::new();
+
+    if !plat_ids.is_empty() {
+        let plats = search!(plat::Entity => Id in (plat_ids), asc Titre,)
+            .all(db)
+            .await
+            .unwrap_or_default();
+        for p in plats {
             let avis = avis_map.get(&p.id);
-            PlatCommande {
+            result.push(PlatCommande {
                 id: p.id,
                 titre: p.titre,
                 image: p.image,
                 avis_note: avis.map(|a| a.note),
                 avis_statut: avis.map(|a| a.statut.to_string()),
-            }
-        })
-        .collect()
+                can_review: true,
+            });
+        }
+    }
+
+    if !entree_ids.is_empty() {
+        let entrees = search!(entree::Entity => Id in (entree_ids), asc Titre,)
+            .all(db)
+            .await
+            .unwrap_or_default();
+        for e in entrees {
+            result.push(PlatCommande {
+                id: e.id,
+                titre: e.titre,
+                image: e.image,
+                avis_note: None,
+                avis_statut: None,
+                can_review: false,
+            });
+        }
+    }
+
+    if !dessert_ids.is_empty() {
+        let desserts = search!(dessert::Entity => Id in (dessert_ids), asc Titre,)
+            .all(db)
+            .await
+            .unwrap_or_default();
+        for d in desserts {
+            result.push(PlatCommande {
+                id: d.id,
+                titre: d.titre,
+                image: d.image,
+                avis_note: None,
+                avis_statut: None,
+                can_review: false,
+            });
+        }
+    }
+
+    result
 }

@@ -221,36 +221,38 @@
                     {% endif %}
                     <div class="plat-avis-body">
                         <strong class="plat-avis-titre">{{ p.titre }}</strong>
-                        {% if p.avis_note %}
-                            {% if p.avis_statut == "Validé" %}
-                            <span class="avis-badge avis-valide">Avis publié — {{ p.avis_note }}★</span>
-                            {% elif p.avis_statut == "En attente" %}
-                            <span class="avis-badge avis-attente">En attente de modération — {{ p.avis_note }}★</span>
+                        {% if p.can_review %}
+                            {% if p.avis_note %}
+                                {% if p.avis_statut == "Validé" %}
+                                <span class="avis-badge avis-valide">Avis publié — {{ p.avis_note }}★</span>
+                                {% elif p.avis_statut == "En attente" %}
+                                <span class="avis-badge avis-attente">En attente de modération — {{ p.avis_note }}★</span>
+                                {% else %}
+                                <span class="avis-badge avis-refuse">Avis non publié</span>
+                                {% endif %}
+                                <button type="button" class="btn btn-sm btn-danger js-supprimer-avis-plat avis-plat-suppr-form" data-plat-id="{{ p.id }}">Supprimer mon avis</button>
                             {% else %}
-                            <span class="avis-badge avis-refuse">Avis non publié</span>
+                            <details class="avis-form-wrap">
+                                <summary>Laisser un avis</summary>
+                                <form method="post" action="/compte/avis-plat/{{ p.id }}" class="avis-form">
+                                    {% csrf %}
+                                    <div class="avis-etoiles">
+                                        <input type="radio" name="note" value="5" id="ps5-{{ p.id }}" required>
+                                        <label for="ps5-{{ p.id }}" title="5 étoiles">★</label>
+                                        <input type="radio" name="note" value="4" id="ps4-{{ p.id }}">
+                                        <label for="ps4-{{ p.id }}" title="4 étoiles">★</label>
+                                        <input type="radio" name="note" value="3" id="ps3-{{ p.id }}">
+                                        <label for="ps3-{{ p.id }}" title="3 étoiles">★</label>
+                                        <input type="radio" name="note" value="2" id="ps2-{{ p.id }}">
+                                        <label for="ps2-{{ p.id }}" title="2 étoiles">★</label>
+                                        <input type="radio" name="note" value="1" id="ps1-{{ p.id }}">
+                                        <label for="ps1-{{ p.id }}" title="1 étoile">★</label>
+                                    </div>
+                                    <textarea name="commentaire" rows="2" placeholder="Votre avis sur ce plat..." required class="avis-textarea"></textarea>
+                                    <button type="submit" class="btn btn-sm btn-primary">Envoyer</button>
+                                </form>
+                            </details>
                             {% endif %}
-                            <button type="button" class="btn btn-sm btn-danger js-supprimer-avis-plat avis-plat-suppr-form" data-plat-id="{{ p.id }}">Supprimer mon avis</button>
-                        {% else %}
-                        <details class="avis-form-wrap">
-                            <summary>Laisser un avis</summary>
-                            <form method="post" action="/compte/avis-plat/{{ p.id }}" class="avis-form">
-                                {% csrf %}
-                                <div class="avis-etoiles">
-                                    <input type="radio" name="note" value="5" id="ps5-{{ p.id }}" required>
-                                    <label for="ps5-{{ p.id }}" title="5 étoiles">★</label>
-                                    <input type="radio" name="note" value="4" id="ps4-{{ p.id }}">
-                                    <label for="ps4-{{ p.id }}" title="4 étoiles">★</label>
-                                    <input type="radio" name="note" value="3" id="ps3-{{ p.id }}">
-                                    <label for="ps3-{{ p.id }}" title="3 étoiles">★</label>
-                                    <input type="radio" name="note" value="2" id="ps2-{{ p.id }}">
-                                    <label for="ps2-{{ p.id }}" title="2 étoiles">★</label>
-                                    <input type="radio" name="note" value="1" id="ps1-{{ p.id }}">
-                                    <label for="ps1-{{ p.id }}" title="1 étoile">★</label>
-                                </div>
-                                <textarea name="commentaire" rows="2" placeholder="Votre avis sur ce plat..." required class="avis-textarea"></textarea>
-                                <button type="submit" class="btn btn-sm btn-primary">Envoyer</button>
-                            </form>
-                        </details>
                         {% endif %}
                     </div>
                 </div>

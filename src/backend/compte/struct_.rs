@@ -25,6 +25,7 @@ pub struct PlatCommande {
     pub image: Option<String>,
     pub avis_note: Option<i32>,
     pub avis_statut: Option<String>,
+    pub can_review: bool,
 }
 
 #[derive(Serialize)]
