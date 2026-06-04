@@ -192,3 +192,4 @@ seed.sql                 # Données de démonstration
 ```
 
 En l'état actuel , il me semble avoir oublié le decompte des stock en fonction des commandes effectué, j'ai adapté le site en fonction d'une vrai utilité dans une vrai cuisine. Le sujet la mal placé , mais il pourrais etre ajouter sur chaque plat pour qu'un serveur puisse avoir le decompte en temps reel mais aussi relier au commandes , je vais l'ajouté entre temps
+Ainsi que le mode de paiement, stripe est manquant meme en version d'essai
