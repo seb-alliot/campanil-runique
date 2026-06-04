@@ -75,6 +75,8 @@ pub async fn handle_avis_plat(request: Request) -> AppResult<Response> {
 
     let nouveau = avis_plat::ActiveModel {
         plat_id: Set(Some(plat_id)),
+        entree_id: Set(None),
+        dessert_id: Set(None),
         user_id: Set(Some(user.id)),
         note: Set(note),
         commentaire: Set(commentaire.trim().to_string()),

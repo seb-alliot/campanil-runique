@@ -24,11 +24,20 @@ pub async fn handle_avis_article_supprimer(request: Request) -> AppResult<Respon
 
     let existant = match type_article.as_str() {
         "plat" => search!(avis_plat::Entity => PlatId eq article_id, UserId eq user.id,)
-            .first(request.db()).await.ok().flatten(),
+            .first(request.db())
+            .await
+            .ok()
+            .flatten(),
         "entree" => search!(avis_plat::Entity => EntreeId eq article_id, UserId eq user.id,)
-            .first(request.db()).await.ok().flatten(),
+            .first(request.db())
+            .await
+            .ok()
+            .flatten(),
         "dessert" => search!(avis_plat::Entity => DessertId eq article_id, UserId eq user.id,)
-            .first(request.db()).await.ok().flatten(),
+            .first(request.db())
+            .await
+            .ok()
+            .flatten(),
         _ => None,
     };
 

@@ -46,27 +46,47 @@ pub async fn get_plats_commandes_user(
 
     let avis_plats_map: HashMap<i32, avis_plat::Model> = if !plat_ids.is_empty() {
         search!(avis_plat::Entity => UserId eq user_id, PlatId in (plat_ids.clone()),)
-            .all(db).await.unwrap_or_default()
-            .into_iter().map(|a| (a.plat_id.unwrap_or(0), a)).collect()
-    } else { HashMap::new() };
+            .all(db)
+            .await
+            .unwrap_or_default()
+            .into_iter()
+            .map(|a| (a.plat_id.unwrap_or(0), a))
+            .collect()
+    } else {
+        HashMap::new()
+    };
 
     let avis_entrees_map: HashMap<i32, avis_plat::Model> = if !entree_ids.is_empty() {
         search!(avis_plat::Entity => UserId eq user_id, EntreeId in (entree_ids.clone()),)
-            .all(db).await.unwrap_or_default()
-            .into_iter().map(|a| (a.entree_id.unwrap_or(0), a)).collect()
-    } else { HashMap::new() };
+            .all(db)
+            .await
+            .unwrap_or_default()
+            .into_iter()
+            .map(|a| (a.entree_id.unwrap_or(0), a))
+            .collect()
+    } else {
+        HashMap::new()
+    };
 
     let avis_desserts_map: HashMap<i32, avis_plat::Model> = if !dessert_ids.is_empty() {
         search!(avis_plat::Entity => UserId eq user_id, DessertId in (dessert_ids.clone()),)
-            .all(db).await.unwrap_or_default()
-            .into_iter().map(|a| (a.dessert_id.unwrap_or(0), a)).collect()
-    } else { HashMap::new() };
+            .all(db)
+            .await
+            .unwrap_or_default()
+            .into_iter()
+            .map(|a| (a.dessert_id.unwrap_or(0), a))
+            .collect()
+    } else {
+        HashMap::new()
+    };
 
     let mut result: Vec<PlatCommande> = Vec::new();
 
     if !plat_ids.is_empty() {
         let plats = search!(plat::Entity => Id in (plat_ids), asc Titre,)
-            .all(db).await.unwrap_or_default();
+            .all(db)
+            .await
+            .unwrap_or_default();
         for p in plats {
             let avis = avis_plats_map.get(&p.id);
             result.push(PlatCommande {
@@ -83,7 +103,9 @@ pub async fn get_plats_commandes_user(
 
     if !entree_ids.is_empty() {
         let entrees = search!(entree::Entity => Id in (entree_ids), asc Titre,)
-            .all(db).await.unwrap_or_default();
+            .all(db)
+            .await
+            .unwrap_or_default();
         for e in entrees {
             let avis = avis_entrees_map.get(&e.id);
             result.push(PlatCommande {
@@ -100,7 +122,9 @@ pub async fn get_plats_commandes_user(
 
     if !dessert_ids.is_empty() {
         let desserts = search!(dessert::Entity => Id in (dessert_ids), asc Titre,)
-            .all(db).await.unwrap_or_default();
+            .all(db)
+            .await
+            .unwrap_or_default();
         for d in desserts {
             let avis = avis_desserts_map.get(&d.id);
             result.push(PlatCommande {

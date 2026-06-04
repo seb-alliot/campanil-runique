@@ -59,11 +59,20 @@ pub async fn handle_avis_article(request: Request) -> AppResult<Response> {
     // Vérification doublon
     let existant = match type_article.as_str() {
         "plat" => search!(avis_plat::Entity => PlatId eq article_id, UserId eq user.id,)
-            .first(request.db()).await.ok().flatten(),
+            .first(request.db())
+            .await
+            .ok()
+            .flatten(),
         "entree" => search!(avis_plat::Entity => EntreeId eq article_id, UserId eq user.id,)
-            .first(request.db()).await.ok().flatten(),
+            .first(request.db())
+            .await
+            .ok()
+            .flatten(),
         "dessert" => search!(avis_plat::Entity => DessertId eq article_id, UserId eq user.id,)
-            .first(request.db()).await.ok().flatten(),
+            .first(request.db())
+            .await
+            .ok()
+            .flatten(),
         _ => None,
     };
 
@@ -72,7 +81,9 @@ pub async fn handle_avis_article(request: Request) -> AppResult<Response> {
     }
 
     let note: i32 = request
-        .prisme.data.get("note")
+        .prisme
+        .data
+        .get("note")
         .and_then(|v| v.parse().ok())
         .unwrap_or(0);
 
