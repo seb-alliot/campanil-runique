@@ -111,6 +111,12 @@ pub async fn avis_plat_poster(request: Request) -> AppResult<Response> {
 pub async fn avis_plat_supprimer(request: Request) -> AppResult<Response> {
     handle_avis_plat_supprimer(request).await
 }
+pub async fn avis_article_poster(request: Request) -> AppResult<Response> {
+    handle_avis_article(request).await
+}
+pub async fn avis_article_supprimer(request: Request) -> AppResult<Response> {
+    handle_avis_article_supprimer(request).await
+}
 
 pub async fn profil_post(mut request: Request) -> AppResult<Response> {
     handle_profil_post(&mut request).await

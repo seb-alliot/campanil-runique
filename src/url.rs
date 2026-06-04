@@ -34,6 +34,8 @@ pub fn routes() -> Router {
         "/compte/avis/{commande_id}/supprimer"  => view!{ avis_supprimer },         name = "avis_supprimer",
         "/compte/avis-plat/{plat_id}"           => view!{ avis_plat_poster },            name = "avis_plat_poster",
         "/compte/avis-plat/{plat_id}/supprimer" => view!{ avis_plat_supprimer },         name = "avis_plat_supprimer",
+        "/compte/avis-article/{type_article}/{id}"           => view!{ avis_article_poster },    name = "avis_article_poster",
+        "/compte/avis-article/{type_article}/{id}/supprimer" => view!{ avis_article_supprimer }, name = "avis_article_supprimer",
         "/compte/profil"                        => view!{ profil_post },            name = "profil_post",
         "/traiteur/devis/confirmation"          => view!{ devis_confirmation },     name = "devis_confirmation",
         "/mentions-legales"                     => view!{ mentions_legales },       name = "mentions_legales",

@@ -230,11 +230,11 @@
                                 {% else %}
                                 <span class="avis-badge avis-refuse">Avis non publié</span>
                                 {% endif %}
-                                <button type="button" class="btn btn-sm btn-danger js-supprimer-avis-plat avis-plat-suppr-form" data-plat-id="{{ p.id }}">Supprimer mon avis</button>
+                                <button type="button" class="btn btn-sm btn-danger js-supprimer-avis-plat avis-plat-suppr-form" data-plat-id="{{ p.id }}" data-type-article="{{ p.type_article }}">Supprimer mon avis</button>
                             {% else %}
                             <details class="avis-form-wrap">
                                 <summary>Laisser un avis</summary>
-                                <form method="post" action="/compte/avis-plat/{{ p.id }}" class="avis-form">
+                                <form method="post" action="/compte/avis-article/{{ p.type_article }}/{{ p.id }}" class="avis-form">
                                     {% csrf %}
                                     <div class="avis-etoiles">
                                         <input type="radio" name="note" value="5" id="ps5-{{ p.id }}" required>
@@ -248,7 +248,7 @@
                                         <input type="radio" name="note" value="1" id="ps1-{{ p.id }}">
                                         <label for="ps1-{{ p.id }}" title="1 étoile">★</label>
                                     </div>
-                                    <textarea name="commentaire" rows="2" placeholder="Votre avis sur ce plat..." required class="avis-textarea"></textarea>
+                                    <textarea name="commentaire" rows="2" placeholder="Votre avis..." required class="avis-textarea"></textarea>
                                     <button type="submit" class="btn btn-sm btn-primary">Envoyer</button>
                                 </form>
                             </details>

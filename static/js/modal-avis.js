@@ -63,11 +63,13 @@ const btnConfirmerPlat = document.getElementById('btn-confirmer-avis-plat');
 const btnAnnulerPlat   = document.getElementById('btn-annuler-avis-plat');
 let pendingPlatId = null;
 let pendingPlatBtn = null;
+let pendingTypeArticle = null;
 
 document.addEventListener('click', function (e) {
     const btn = e.target.closest('.js-supprimer-avis-plat');
     if (!btn) return;
     pendingPlatId = btn.dataset.platId;
+    pendingTypeArticle = btn.dataset.typeArticle || 'plat';
     pendingPlatBtn = btn;
     modalAvisPlat.showModal();
 });
@@ -78,7 +80,10 @@ btnConfirmerPlat.addEventListener('click', function () {
     if (!pendingPlatId) return;
     btnConfirmerPlat.disabled = true;
 
-    fetch('/compte/avis-plat/' + pendingPlatId + '/supprimer', {
+    const suppressionUrl = pendingTypeArticle === 'plat'
+        ? '/compte/avis-plat/' + pendingPlatId + '/supprimer'
+        : '/compte/avis-article/' + pendingTypeArticle + '/' + pendingPlatId + '/supprimer';
+    fetch(suppressionUrl, {
         method: 'POST',
         credentials: 'same-origin',
         headers: { 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content || '' },
