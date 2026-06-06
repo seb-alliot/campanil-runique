@@ -10,7 +10,8 @@ WORKDIR /app
 
 # CLI Runique
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
-    cargo install runique --version "=2.1.14" --features "orm,postgres"
+    cargo install runique --version "=2.1.14" --features "orm,postgres" && \
+    find /usr/local/cargo/registry -path "*/runique-2.1.14/static" -type d -exec cp -r {} /tmp/runique-static \;
 
 # Build de l'app
 COPY Cargo.toml Cargo.lock ./
@@ -38,6 +39,7 @@ WORKDIR /app
 COPY --from=builder /tmp/campanile ./
 COPY --from=builder /tmp/campanile-migration ./migrate
 COPY --from=builder /usr/local/cargo/bin/runique ./runique
+COPY --from=builder /tmp/runique-static ./runique-static
 COPY static ./static
 COPY templates ./templates
 RUN mkdir -p media
