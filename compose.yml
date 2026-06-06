@@ -2,10 +2,9 @@ services:
   app:
     build: .
     env_file: .env
-    environment:
-      # Remplace localhost par host.docker.internal sur Windows/Mac
-      DATABASE_URL: postgresql://postgres:Studietudiant1.@host.docker.internal:5432/campanile
     ports:
       - "3001:3000"
     volumes:
       - ./media:/app/media
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
