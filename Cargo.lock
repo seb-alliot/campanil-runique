@@ -706,9 +706,9 @@ checksum = "1e4b40c7323adcfc0a41c4b88143ed58346ff65a288fc144329c5c45e05d70c6"
 
 [[package]]
 name = "bitflags"
-version = "2.12.1"
+version = "2.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "84d7ced0ae9557296835c32bf1b1e02b44c746701f898460fb000d7eaa84f00a"
+checksum = "b4388bee8683e3d04af747c73422af53102d2bd24d9eadb6cbc100baef4b43f8"
 dependencies = [
  "serde_core",
 ]
@@ -2758,9 +2758,9 @@ dependencies = [
 
 [[package]]
 name = "imgref"
-version = "1.12.1"
+version = "1.12.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "40fac9d56ed6437b198fddba683305e8e2d651aa42647f00f5ae542e7f5c94a2"
+checksum = "89194689a993ab15268672e99e7b0e19da2da3268ac682e8f02d29d4d1434cd7"
 
 [[package]]
 name = "indexmap"
@@ -4781,9 +4781,9 @@ dependencies = [
 
 [[package]]
 name = "runique"
-version = "2.1.13"
+version = "2.1.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1d304328e4b29e9ede4ad06a00fe57a703f1907d9a859de23fdc68971ebb3d19"
+checksum = "bf93fa7d456fe29d48710e2e5bee21590999288842ebae8c90c0898d837ef764"
 dependencies = [
  "ammonia",
  "anyhow",
