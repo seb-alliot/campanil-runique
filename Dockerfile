@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # ── Build ────────────────────────────────────────────────────────────────────
-FROM rust:1.94-slim-bookworm AS builder
+FROM rust:1.88-slim-bookworm AS builder
 
 RUN apt-get update && apt-get install -y \
     pkg-config libssl-dev cmake perl \
@@ -10,7 +10,7 @@ WORKDIR /app
 
 # CLI Runique
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
-    cargo install runique --version "=2.1.13" --features "orm,postgres" --locked
+    cargo install runique --version "=2.1.14" --features "orm,postgres"
 
 # Build de l'app
 COPY Cargo.toml Cargo.lock ./
@@ -44,6 +44,6 @@ RUN mkdir -p media
 
 ENV BASE_DIR=/app
 
-EXPOSE 3000
+EXPOSE 3001
 
 CMD ["./campanile"]
