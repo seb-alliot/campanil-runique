@@ -9,7 +9,7 @@
 {% block content %}
 <div class="btype-hero">
     <h1>{{ type_label }}</h1>
-    <a class="btype-hero-retour" href="/carte">&#8592; Retour à la carte</a>
+    <a class="btype-hero-retour" href="{% link "carte" %}">&#8592; Retour à la carte</a>
 </div>
 
 {% if boissons %}
@@ -41,7 +41,7 @@
     {% endfor %}
 </div>
 {% else %}
-<p class="btype-vide">Cette boisson n'est pas proposée à la carte.<br><a href="/carte">Voir toutes nos boissons</a></p>
+<p class="btype-vide">Cette boisson n'est pas proposée à la carte.<br><a href="{% link "carte" %}">Voir toutes nos boissons</a></p>
 {% endif %}
 {% endblock %}
 

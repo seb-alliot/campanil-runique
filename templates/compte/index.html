@@ -14,7 +14,7 @@
             <div class="compte-avatar">{{ current_user.username | truncate(length=1, end="") | upper }}</div>
             <strong>{{ current_user.username }}</strong>
         </div>
-        <a href="/deconnexion" class="btn btn-secondary btn-sm">Se déconnecter</a>
+        <a href="{% link "deconnexion" %}" class="btn btn-secondary btn-sm">Se déconnecter</a>
     </aside>
 
     <main class="compte-main">
@@ -32,10 +32,10 @@
             <h2>Mes commandes</h2>
 
             <div class="commandes-filtres">
-                <button type="button" class="btn btn-sm js-filtre-statut{% if statut_filtre == "" %} btn-primary{% else %} btn-secondary{% endif %}" data-filtre="" data-href="/compte?tab=commandes&statut=">Toutes</button>
-                <button type="button" class="btn btn-sm js-filtre-statut{% if statut_filtre == "en_cours" %} btn-primary{% else %} btn-secondary{% endif %}" data-filtre="en-cours" data-href="/compte?tab=commandes&statut=en_cours">En cours</button>
-                <button type="button" class="btn btn-sm js-filtre-statut{% if statut_filtre == "termine" %} btn-primary{% else %} btn-secondary{% endif %}" data-filtre="termine" data-href="/compte?tab=commandes&statut=termine">Terminées</button>
-                <button type="button" class="btn btn-sm js-filtre-statut{% if statut_filtre == "annule" %} btn-primary{% else %} btn-secondary{% endif %}" data-filtre="annule" data-href="/compte?tab=commandes&statut=annule">Annulées</button>
+                <button type="button" class="btn btn-sm js-filtre-statut{% if statut_filtre == "" %} btn-primary{% else %} btn-secondary{% endif %}" data-filtre="" data-href="{% link "compte" %}?tab=commandes&statut=">Toutes</button>
+                <button type="button" class="btn btn-sm js-filtre-statut{% if statut_filtre == "en_cours" %} btn-primary{% else %} btn-secondary{% endif %}" data-filtre="en-cours" data-href="{% link "compte" %}?tab=commandes&statut=en_cours">En cours</button>
+                <button type="button" class="btn btn-sm js-filtre-statut{% if statut_filtre == "termine" %} btn-primary{% else %} btn-secondary{% endif %}" data-filtre="termine" data-href="{% link "compte" %}?tab=commandes&statut=termine">Terminées</button>
+                <button type="button" class="btn btn-sm js-filtre-statut{% if statut_filtre == "annule" %} btn-primary{% else %} btn-secondary{% endif %}" data-filtre="annule" data-href="{% link "compte" %}?tab=commandes&statut=annule">Annulées</button>
             </div>
             <div class="commandes-filtres commandes-filtres--service">
                 <button type="button" class="btn btn-sm js-filtre-service{% if service_filtre == "" %} btn-primary{% else %} btn-secondary{% endif %}" data-service="">Tous services</button>
@@ -197,7 +197,7 @@
             {% if total_pages > 1 %}
             <nav class="pagination" aria-label="Pages commandes">
                 {% if page_precedente %}
-                <a href="/compte?tab=commandes&statut={{ statut_filtre }}&service={{ service_filtre }}&page={{ page_precedente }}" class="btn btn-sm">&larr; Précédent</a>
+                <a href="{% link "compte" %}?tab=commandes&statut={{ statut_filtre }}&service={{ service_filtre }}&page={{ page_precedente }}" class="btn btn-sm">&larr; Précédent</a>
                 {% else %}
                 <span class="btn btn-sm disabled">&larr; Précédent</span>
                 {% endif %}
@@ -205,7 +205,7 @@
                 <span class="pagination-info">Page {{ page_courante }} / {{ total_pages }}</span>
 
                 {% if page_suivante %}
-                <a href="/compte?tab=commandes&statut={{ statut_filtre }}&service={{ service_filtre }}&page={{ page_suivante }}" class="btn btn-sm">Suivant &rarr;</a>
+                <a href="{% link "compte" %}?tab=commandes&statut={{ statut_filtre }}&service={{ service_filtre }}&page={{ page_suivante }}" class="btn btn-sm">Suivant &rarr;</a>
                 {% else %}
                 <span class="btn btn-sm disabled">Suivant &rarr;</span>
                 {% endif %}
@@ -215,7 +215,7 @@
             {% else %}
             <div class="compte-empty">
                 <p>Vous n'avez pas encore passé de commande.</p>
-                <a href="/carte" class="btn btn-primary">Découvrir la carte</a>
+                <a href="{% link "carte" %}" class="btn btn-primary">Découvrir la carte</a>
             </div>
             {% endif %}
         </section>
@@ -272,7 +272,7 @@
             {% else %}
             <div class="compte-empty">
                 <p>Vous n'avez pas encore commandé de plats.</p>
-                <a href="/carte" class="btn btn-primary">Découvrir la carte</a>
+                <a href="{% link "carte" %}" class="btn btn-primary">Découvrir la carte</a>
             </div>
             {% endif %}
         </section>
@@ -300,7 +300,7 @@
             {% else %}
             <div class="compte-empty">
                 <p>Vous n'avez pas encore fait de demande de devis traiteur.</p>
-                <a href="/traiteur" class="btn btn-primary">Découvrir nos menus traiteur</a>
+                <a href="{% link "menus" %}" class="btn btn-primary">Découvrir nos menus traiteur</a>
             </div>
             {% endif %}
         </section>

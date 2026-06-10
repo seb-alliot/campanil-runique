@@ -87,7 +87,7 @@
 
     <section class="panier-checkout">
         <h2>Finaliser la commande</h2>
-        <form method="POST" action="/panier/commander">
+        <form method="POST" action="{% link "panier_commander" %}">
             {% csrf %}
 
             <div class="form-group">
@@ -139,7 +139,7 @@
             </div>
 
             <div class="form-actions">
-                <a href="/carte" class="btn btn-secondary">Continuer mes achats</a>
+                <a href="{% link "carte" %}" class="btn btn-secondary">Continuer mes achats</a>
                 <button type="submit" class="btn btn-primary">Commander</button>
             </div>
         </form>
@@ -148,7 +148,7 @@
     {% else %}
     <div class="panier-empty">
         <p>Votre panier est vide.</p>
-        <a href="/carte" class="btn btn-primary">Voir la carte</a>
+        <a href="{% link "carte" %}" class="btn btn-primary">Voir la carte</a>
     </div>
     {% endif %}
 

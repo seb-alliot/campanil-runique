@@ -96,7 +96,7 @@
                             <span class="menu-min">À partir de {{ card.nb_personnes_min }} pers.</span>
                         </div>
                         {% if card.stock > 0 %}
-                        <a href="/menus/{{ card.id }}" class="btn btn-primary btn-sm">Voir le menu</a>
+                        <a href="{% link "menu_detail" id=card.id %}" class="btn btn-primary btn-sm">Voir le menu</a>
                         {% else %}
                         <span class="btn btn-disabled btn-sm">Indisponible</span>
                         {% endif %}
@@ -108,12 +108,12 @@
         </div>
         <div class="menus-empty" id="menus-no-results">
             <p><strong>Pas de menu pour ces critères ?</strong> Pas de problème,<br>
-            <a href="/contact">contactez-nous</a>, nous élaborons des menus sur mesure pour toute demande spécifique.</p>
+            <a href="{% link "contact" %}">contactez-nous</a>, nous élaborons des menus sur mesure pour toute demande spécifique.</p>
         </div>
         {% else %}
         <div class="menus-empty">
             <p>Aucun menu ne correspond à vos critères.</p>
-            <a href="/menus" class="btn btn-secondary">Voir tous les menus</a>
+            <a href="{% link "menus" %}" class="btn btn-secondary">Voir tous les menus</a>
         </div>
         {% endif %}
     </section>

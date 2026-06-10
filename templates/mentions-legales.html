@@ -67,7 +67,7 @@
                 {% if info_resto.email %}
                 joignable à l'adresse <a href="mailto:{{ info_resto.email }}">{{ info_resto.email }}</a>.
                 {% else %}
-                joignable via le <a href="/contact">formulaire de contact</a>.
+                joignable via le <a href="{% link "contact" %}">formulaire de contact</a>.
                 {% endif %}
             </p>
 
@@ -166,7 +166,7 @@
                 {% if info_resto.email %}
                 par email à <a href="mailto:{{ info_resto.email }}">{{ info_resto.email }}</a>.
                 {% else %}
-                via notre <a href="/contact">formulaire de contact</a>.
+                via notre <a href="{% link "contact" %}">formulaire de contact</a>.
                 {% endif %}
             </p>
         </section>
@@ -188,7 +188,7 @@
                 {% if info_resto.email %}
                 par email à <a href="mailto:{{ info_resto.email }}">{{ info_resto.email }}</a>
                 {% else %}
-                via notre <a href="/contact">formulaire de contact</a>
+                via notre <a href="{% link "contact" %}">formulaire de contact</a>
                 {% endif %}
                 en précisant votre demande. Nous vous répondrons dans un délai de 30 jours.
             </p>

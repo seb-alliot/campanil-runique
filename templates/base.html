@@ -27,14 +27,14 @@
     {% endif %}
 
     <nav class="nav">
-        <a href="/" class="nav-logo">{{ info_resto.nom | default(value="U Campanile") }}</a>
+        <a href="{% link "index" %}" class="nav-logo">{{ info_resto.nom | default(value="U Campanile") }}</a>
         <ul class="nav-links">
-            <li><a href="/">Accueil</a></li>
-            <li><a href="/carte">La Carte</a></li>
-            <li><a href="/menus">Menus traiteur</a></li>
-            <li><a href="/contact">Contact</a></li>
+            <li><a href="{% link "index" %}">Accueil</a></li>
+            <li><a href="{% link "carte" %}">La Carte</a></li>
+            <li><a href="{% link "menus" %}">Menus traiteur</a></li>
+            <li><a href="{% link "contact" %}">Contact</a></li>
             {% if user and user.is_staff %}<li><a href="{% link "service" %}">Service</a></li>{% endif %}
-            {% if user and is_admin %}<li><a href="/admin-campanile">Admin</a></li>{% endif %}
+            {% if user and is_admin %}<li><a href="{% link "admin" %}">Admin</a></li>{% endif %}
         </ul>
         <button class="nav-burger" id="navBurger" aria-label="Menu" aria-expanded="false" aria-controls="navMenu">
             <span></span><span></span><span></span>
@@ -45,7 +45,7 @@
             {% else %}
                 <a href="{% link "connexion" %}" class="site-nav-link-action">Se connecter</a>
             {% endif %}
-            <a href="/panier" class="btn-panier">
+            <a href="{% link "panier" %}" class="btn-panier">
                 Panier
                 <span id="panier-badge" class="panier-badge{% if panier_nb | default(value=0) == 0 %} panier-badge--hidden{% endif %}">{{ panier_nb | default(value=0) }}</span>
             </a>
@@ -53,12 +53,12 @@
     </nav>
     <div class="nav-menu" id="navMenu" hidden>
         <ul>
-            <li><a href="/">Accueil</a></li>
-            <li><a href="/carte">La Carte</a></li>
-            <li><a href="/menus">Menus traiteur</a></li>
-            <li><a href="/contact">Contact</a></li>
+            <li><a href="{% link "index" %}">Accueil</a></li>
+            <li><a href="{% link "carte" %}">La Carte</a></li>
+            <li><a href="{% link "menus" %}">Menus traiteur</a></li>
+            <li><a href="{% link "contact" %}">Contact</a></li>
             {% if user and user.is_staff %}<li><a href="{% link "service" %}">Service</a></li>{% endif %}
-            {% if user and is_admin %}<li><a href="/admin-campanile">Admin</a></li>{% endif %}
+            {% if user and is_admin %}<li><a href="{% link "admin" %}">Admin</a></li>{% endif %}
             {% if user %}
                 <li><a href="{% link "compte" %}">{{ user.username }}</a></li>
             {% else %}
@@ -104,10 +104,10 @@
             <div class="footer-section">
                 <h3>Navigation</h3>
                 <ul>
-                    <li><a href="/carte">La Carte</a></li>
-                    <li><a href="/menus">Menus traiteur</a></li>
-                    <li><a href="/contact">Contact</a></li>
-                    <li><a href="/mentions-legales">Mentions légales</a></li>
+                    <li><a href="{% link "carte" %}">La Carte</a></li>
+                    <li><a href="{% link "menus" %}">Menus traiteur</a></li>
+                    <li><a href="{% link "contact" %}">Contact</a></li>
+                    <li><a href="{% link "mentions_legales" %}">Mentions légales</a></li>
                 </ul>
             </div>
         </div>

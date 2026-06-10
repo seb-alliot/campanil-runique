@@ -10,13 +10,13 @@
 
         {% messages %}
 
-        <form method="post" action="/inscription">
+        <form method="post" action="{% link "inscription" %}">
             {% form.inscription_form %}
             <button type="submit" class="btn-primary btn-full">Créer mon compte</button>
         </form>
 
         <div class="auth-links">
-            <p>Déjà un compte ? <a href="/connexion">Se connecter</a></p>
+            <p>Déjà un compte ? <a href="{% link "connexion" %}">Se connecter</a></p>
         </div>
     </div>
 </div>

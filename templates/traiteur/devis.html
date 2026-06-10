@@ -62,11 +62,11 @@
             <input type="text" class="form-control" value="{{ user.username }}" readonly disabled>
         </div>
 
-        <form method="post" action="/traiteur/devis{% if menu is defined and menu %}?menu_id={{ menu.id }}{% endif %}" class="form-contact">
+        <form method="post" action="{% link "devis_traiteur" %}{% if menu is defined and menu %}?menu_id={{ menu.id }}{% endif %}" class="form-contact">
             {% form.devis_form %}
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">Envoyer la demande</button>
-                <a href="/menus" class="btn btn-secondary">Retour aux menus</a>
+                <a href="{% link "menus" %}" class="btn btn-secondary">Retour aux menus</a>
             </div>
         </form>
     </div>

@@ -105,8 +105,8 @@
     {% endif %}
 
     <div class="menu-detail-footer">
-        <a href="/menus" class="btn btn-secondary">&larr; Retour aux menus</a>
-        <a href="/traiteur/devis?menu_id={{ menu.id }}" class="btn btn-primary">Demander un devis</a>
+        <a href="{% link "menus" %}" class="btn btn-secondary">&larr; Retour aux menus</a>
+        <a href="{% link "devis_traiteur" %}?menu_id={{ menu.id }}" class="btn btn-primary">Demander un devis</a>
     </div>
 
 </div>
