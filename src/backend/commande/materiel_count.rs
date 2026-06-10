@@ -84,3 +84,55 @@ pub async fn handle_materiel_count(request: &Request) -> AppResult<Response> {
     let count = process_penalites(request.db(), &request.engine.tera).await;
     Ok(Json(serde_json::json!({ "count": count })).into_response())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::add_jours_ouvres;
+    use chrono::NaiveDateTime;
+
+    fn dt(s: &str) -> NaiveDateTime {
+        NaiveDateTime::parse_from_str(s, "%Y-%m-%d %H:%M:%S").unwrap()
+    }
+
+    #[test]
+    fn cinq_jours_depuis_lundi() {
+        // Lundi 2026-06-08 + 5 jours ouvrés = Lundi 2026-06-15
+        assert_eq!(
+            add_jours_ouvres(dt("2026-06-08 10:00:00"), 5),
+            dt("2026-06-15 10:00:00")
+        );
+    }
+
+    #[test]
+    fn un_jour_depuis_vendredi_saute_weekend() {
+        // Vendredi 2026-06-12 + 1 jour ouvré = Lundi 2026-06-15
+        assert_eq!(
+            add_jours_ouvres(dt("2026-06-12 10:00:00"), 1),
+            dt("2026-06-15 10:00:00")
+        );
+    }
+
+    #[test]
+    fn dix_jours_traverse_deux_weekends() {
+        // Lundi 2026-06-08 + 10 jours ouvrés = Lundi 2026-06-22
+        assert_eq!(
+            add_jours_ouvres(dt("2026-06-08 10:00:00"), 10),
+            dt("2026-06-22 10:00:00")
+        );
+    }
+
+    #[test]
+    fn zero_jours_inchange() {
+        let start = dt("2026-06-10 08:00:00");
+        assert_eq!(add_jours_ouvres(start, 0), start);
+    }
+
+    #[test]
+    fn depuis_samedi_saute_weekend() {
+        // Samedi 2026-06-13 + 1 jour ouvré = Lundi 2026-06-15
+        assert_eq!(
+            add_jours_ouvres(dt("2026-06-13 10:00:00"), 1),
+            dt("2026-06-15 10:00:00")
+        );
+    }
+}

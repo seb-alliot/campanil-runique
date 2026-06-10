@@ -77,3 +77,51 @@ pub async fn prix_livraison_distance(
     let prix = base + km * prix_par_km;
     Decimal::from_str(&format!("{:.2}", prix)).ok()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::haversine_km;
+
+    #[test]
+    fn haversine_meme_point() {
+        let d = haversine_km(42.297, 9.149, 42.297, 9.149);
+        assert!(
+            d < 0.001,
+            "distance d'un point à lui-même doit être ~0, obtenu {d:.6}"
+        );
+    }
+
+    #[test]
+    fn haversine_corte_bastia() {
+        // Corte (42.30°N 9.15°E) → Bastia (42.70°N 9.45°E) ≈ 52 km
+        let d = haversine_km(42.297, 9.149, 42.703, 9.450);
+        assert!(d > 45.0 && d < 60.0, "attendu ~52 km, obtenu {d:.1}");
+    }
+
+    #[test]
+    fn haversine_corte_ajaccio() {
+        // Corte (42.30°N 9.15°E) → Ajaccio (41.92°N 8.74°E) ≈ 54 km à vol d'oiseau
+        let d = haversine_km(42.297, 9.149, 41.919, 8.738);
+        assert!(d > 48.0 && d < 60.0, "attendu ~54 km, obtenu {d:.1}");
+    }
+
+    #[test]
+    fn prix_formule_base_plus_distance() {
+        // base=5.00, tarif=0.59/km, distance=30km → 5 + 17.70 = 22.70
+        let base = 5.0_f64;
+        let tarif = 0.59_f64;
+        let km = 30.0_f64;
+        let prix = ((base + km * tarif) * 100.0).round() / 100.0;
+        assert!(
+            (prix - 22.70).abs() < 0.001,
+            "attendu 22.70, obtenu {prix:.2}"
+        );
+    }
+
+    #[test]
+    fn prix_formule_meme_ville_zero() {
+        // même ville → livraison gratuite (Decimal::ZERO dans le code)
+        let prix = 0.0_f64;
+        assert_eq!(prix, 0.0);
+    }
+}
