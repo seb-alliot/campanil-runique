@@ -1529,7 +1529,7 @@ dependencies = [
 [[package]]
 name = "derive_form"
 version = "2.1.8"
-source = "git+https://github.com/seb-alliot/runique?branch=main#e418ff79bb8c79ac2659a25d715e8fb51dc64936"
+source = "git+https://github.com/seb-alliot/runique?branch=main#7161d7b22e0dbe43867fa0d31b31fd5e117aa8bd"
 dependencies = [
  "dotenvy",
  "proc-macro2",
@@ -2061,11 +2061,10 @@ dependencies = [
 
 [[package]]
 name = "getset"
-version = "0.1.6"
+version = "0.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9cf0fc11e47561d47397154977bc219f4cf809b2974facc3ccb3b89e2436f912"
+checksum = "6cf442baaabe4213ce7d1239afc26c039180b6456da2cededa316ae2c8a77a77"
 dependencies = [
- "proc-macro-error2",
  "proc-macro2",
  "quote",
  "syn 2.0.117",
@@ -4608,7 +4607,7 @@ dependencies = [
 [[package]]
 name = "runique"
 version = "2.1.15"
-source = "git+https://github.com/seb-alliot/runique?branch=main#e418ff79bb8c79ac2659a25d715e8fb51dc64936"
+source = "git+https://github.com/seb-alliot/runique?branch=main#7161d7b22e0dbe43867fa0d31b31fd5e117aa8bd"
 dependencies = [
  "ammonia",
  "anyhow",
