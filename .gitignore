@@ -4,6 +4,7 @@
 *.db
 *.sqlite
 .env
+nginx-campanile.conf
 
 # Rust
 Cargo.lock
