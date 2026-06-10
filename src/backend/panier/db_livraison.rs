@@ -1,7 +1,8 @@
 use crate::entities::info_resto;
 use runique::prelude::*;
 use std::str::FromStr;
-const PRIX_PAR_KM_FALLBACK: f64 = 0.54;
+const PRIX_PAR_KM_FALLBACK: f64 = 0.59;
+const BASE_LIVRAISON_FALLBACK: f64 = 5.0;
 
 pub async fn get_prix_livraison(db: &sea_orm::DatabaseConnection) -> Decimal {
     search!(info_resto::Entity)
@@ -68,7 +69,11 @@ pub async fn prix_livraison_distance(
         .prix_livraison
         .and_then(|p| p.to_string().parse::<f64>().ok())
         .unwrap_or(PRIX_PAR_KM_FALLBACK);
+    let base = row
+        .prix_livraison_minimal
+        .and_then(|p| p.to_string().parse::<f64>().ok())
+        .unwrap_or(BASE_LIVRAISON_FALLBACK);
     let km = haversine_km(resto_lat, resto_lon, lat, lon);
-    let prix = km * prix_par_km;
+    let prix = base + km * prix_par_km;
     Decimal::from_str(&format!("{:.2}", prix)).ok()
 }

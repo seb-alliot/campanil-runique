@@ -1,4 +1,6 @@
-use crate::backend::compte::{get_commandes_user, get_plats_commandes_user, load_profil};
+use crate::backend::compte::{
+    get_commandes_user, get_devis_user, get_plats_commandes_user, load_profil,
+};
 use crate::backend::utils::inject_auth;
 use runique::prelude::*;
 
@@ -14,10 +16,11 @@ pub async fn handle_compte(request: &mut Request) -> AppResult<Response> {
     let filtre = request.get_query("statut").unwrap_or("").to_string();
     let service = request.get_query("service").unwrap_or("").to_string();
     let db = request.db();
-    let ((commandes, page_courante, total_pages), profil, plats_commandes) = tokio::join!(
+    let ((commandes, page_courante, total_pages), profil, plats_commandes, devis_traiteur) = tokio::join!(
         get_commandes_user(db, user.id, page, &filtre, &service),
         load_profil(db, user.id),
         get_plats_commandes_user(db, user.id),
+        get_devis_user(db, user.id),
     );
     let tab = request.get_query("tab").unwrap_or("commandes").to_string();
     let page_precedente = if page_courante > 1 {
@@ -43,6 +46,7 @@ pub async fn handle_compte(request: &mut Request) -> AppResult<Response> {
         "page_precedente"   => &page_precedente,
         "page_suivante"     => &page_suivante,
         "plats_commandes"   => &plats_commandes,
+        "devis_traiteur"    => &devis_traiteur,
     });
     request.render("compte/index.html")
 }

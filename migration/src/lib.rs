@@ -3,6 +3,13 @@ use sea_orm_migration::prelude::*;
 mod m20260527_144740_alter_menu_traiteur_plats_table;
 mod m20260528_000000_alter_info_resto_add_ville;
 mod m20260605_000000_alter_avis_plats_entree_dessert;
+mod m20260608_000000_alter_devis_traiteur_add_user_id;
+mod m20260608_010000_alter_info_resto_add_prix_minimal;
+mod m20260609_000000_alter_devis_traiteur_date_evenement;
+mod m20260609_010000_alter_menus_traiteur_add_remise;
+mod m20260609_020000_alter_devis_traiteur_add_prix_total;
+mod m20260610_000000_alter_menus_traiteur_add_remise_min;
+mod m20260610_010000_alter_devis_traiteur_add_remise_appliquee;
 mod m20260526_221257_alter_devis_traiteur_table;
 mod m20260526_221257_alter_commandes_table;
 mod m20260526_221257_alter_commande_menu_choix_table;
@@ -144,6 +151,13 @@ impl MigratorTrait for Migrator {
             Box::new(m20260527_144740_alter_menu_traiteur_plats_table::Migration),
             Box::new(m20260528_000000_alter_info_resto_add_ville::Migration),
             Box::new(m20260605_000000_alter_avis_plats_entree_dessert::Migration),
+            Box::new(m20260608_000000_alter_devis_traiteur_add_user_id::Migration),
+            Box::new(m20260608_010000_alter_info_resto_add_prix_minimal::Migration),
+            Box::new(m20260609_000000_alter_devis_traiteur_date_evenement::Migration),
+            Box::new(m20260609_010000_alter_menus_traiteur_add_remise::Migration),
+            Box::new(m20260609_020000_alter_devis_traiteur_add_prix_total::Migration),
+            Box::new(m20260610_000000_alter_menus_traiteur_add_remise_min::Migration),
+            Box::new(m20260610_010000_alter_devis_traiteur_add_remise_appliquee::Migration),
         ]
     }
 }

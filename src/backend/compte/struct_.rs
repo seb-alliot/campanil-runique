@@ -54,3 +54,16 @@ pub struct CommandeResume {
     pub lignes: Vec<LigneResume>,
     pub statuts: Vec<StatutHistorique>,
 }
+
+#[derive(Serialize)]
+pub struct DevisCard {
+    pub id: i32,
+    pub menu_titre: String,
+    pub date_evenement: String,
+    pub nb_personnes: i32,
+    pub prix_total: Option<String>,
+    pub remise_appliquee: Option<String>,
+    pub statut_label: String,
+    pub statut_css: String,
+    pub created_at: String,
+}

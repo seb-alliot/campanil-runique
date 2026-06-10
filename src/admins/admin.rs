@@ -428,10 +428,14 @@ pub fn admin_register() -> AdminRegistry {
         Box::pin(async move {
             use sea_orm::{
                 QueryFilter,
-                sea_query::{Alias, Expr, Order},
+                sea_query::{Alias, Expr, ExprTrait, Order},
             };
             let mut query = allergene::Entity::find();
-            if let Some(ref col) = params.sort_by {
+            const SORT_COLS: &[&str] = &["id", "libelle"];
+            const FILTER_COLS: &[&str] = &[];
+            if let Some(ref col) = params.sort_by
+                && SORT_COLS.contains(&col.as_str())
+            {
                 let order = if params.sort_dir == SortDir::Desc {
                     Order::Desc
                 } else {
@@ -440,8 +444,14 @@ pub fn admin_register() -> AdminRegistry {
                 query = query.order_by(Expr::col(Alias::new(col.as_str())), order);
             }
             for (col, val) in &params.column_filters {
-                let escaped = val.replace('\'', "''");
-                query = query.filter(Expr::cust(format!("CAST({} AS TEXT) = '{}'", col, escaped)));
+                if !FILTER_COLS.contains(&col.as_str()) {
+                    continue;
+                }
+                query = query.filter(
+                    Expr::col(Alias::new(col.as_str()))
+                        .cast_as(Alias::new("TEXT"))
+                        .eq(val.clone()),
+                );
             }
             if let Some(ref search_str) = params.search {
                 let search_cond =
@@ -572,10 +582,22 @@ pub fn admin_register() -> AdminRegistry {
         Box::pin(async move {
             use sea_orm::{
                 QueryFilter,
-                sea_query::{Alias, Expr, Order},
+                sea_query::{Alias, Expr, ExprTrait, Order},
             };
             let mut query = horaire::Entity::find();
-            if let Some(ref col) = params.sort_by {
+            const SORT_COLS: &[&str] = &[
+                "id",
+                "jour",
+                "ouverture_midi",
+                "fermeture_midi",
+                "ouverture_soir",
+                "fermeture_soir",
+                "ferme",
+            ];
+            const FILTER_COLS: &[&str] = &["ferme"];
+            if let Some(ref col) = params.sort_by
+                && SORT_COLS.contains(&col.as_str())
+            {
                 let order = if params.sort_dir == SortDir::Desc {
                     Order::Desc
                 } else {
@@ -584,8 +606,14 @@ pub fn admin_register() -> AdminRegistry {
                 query = query.order_by(Expr::col(Alias::new(col.as_str())), order);
             }
             for (col, val) in &params.column_filters {
-                let escaped = val.replace('\'', "''");
-                query = query.filter(Expr::cust(format!("CAST({} AS TEXT) = '{}'", col, escaped)));
+                if !FILTER_COLS.contains(&col.as_str()) {
+                    continue;
+                }
+                query = query.filter(
+                    Expr::col(Alias::new(col.as_str()))
+                        .cast_as(Alias::new("TEXT"))
+                        .eq(val.clone()),
+                );
             }
             if let Some(ref search_str) = params.search {
                 let search_cond = search_cond!(horaire::Entity => or("jour" icontains search_str, "ouverture_midi" icontains search_str, "fermeture_midi" icontains search_str, "ouverture_soir" icontains search_str, "fermeture_soir" icontains search_str, "ferme" icontains search_str));
@@ -640,7 +668,10 @@ pub fn admin_register() -> AdminRegistry {
 
     let create_fn: CreateFn = Arc::new(|db: ADb, data: StrMap| {
         Box::pin(async move {
-            use sea_orm::QueryFilter;
+            use sea_orm::{
+                QueryFilter,
+                sea_query::{Alias, Expr, ExprTrait},
+            };
             let raw = data.get("jour").cloned().unwrap_or_default();
             let values: Vec<&str> = raw
                 .split(',')
@@ -650,12 +681,12 @@ pub fn admin_register() -> AdminRegistry {
             for val in values {
                 let mut row = data.clone();
                 row.insert("jour".to_string(), val.to_string());
-                let escaped_bv = val.replace('\'', "''");
                 let existing_id: Option<String> = horaire::Entity::find()
-                    .filter(sea_orm::sea_query::Expr::cust(format!(
-                        "CAST(jour AS TEXT) = '{}'",
-                        escaped_bv
-                    )))
+                    .filter(
+                        Expr::col(Alias::new("jour"))
+                            .cast_as(Alias::new("TEXT"))
+                            .eq(val.to_string()),
+                    )
                     .one(&*db)
                     .await?
                     .map(|m| m.id.to_string());
@@ -773,8 +804,8 @@ pub fn admin_register() -> AdminRegistry {
                 .filter_map(|r| r.try_get_by_index::<String>(0).ok())
                 .collect();
             vals_ferme.sort_by(|a, b| match (a.parse::<i64>(), b.parse::<i64>()) {
-                (Ok(x), Ok(y)) => x.cmp(&y),
-                _ => a.cmp(b),
+                (Ok(x), Ok(y)) => y.cmp(&x),
+                _ => b.cmp(a),
             });
             result.insert("ferme".to_string(), (vals_ferme, total_ferme));
             Ok(result)
@@ -823,10 +854,24 @@ pub fn admin_register() -> AdminRegistry {
         Box::pin(async move {
             use sea_orm::{
                 QueryFilter,
-                sea_query::{Alias, Expr, Order},
+                sea_query::{Alias, Expr, ExprTrait, Order},
             };
             let mut query = devis_traiteur::Entity::find();
-            if let Some(ref col) = params.sort_by {
+            const SORT_COLS: &[&str] = &[
+                "id",
+                "nom",
+                "email",
+                "date_evenement",
+                "nb_personnes",
+                "prix_total",
+                "remise_appliquee",
+                "statut",
+                "created_at",
+            ];
+            const FILTER_COLS: &[&str] = &["statut"];
+            if let Some(ref col) = params.sort_by
+                && SORT_COLS.contains(&col.as_str())
+            {
                 let order = if params.sort_dir == SortDir::Desc {
                     Order::Desc
                 } else {
@@ -835,11 +880,17 @@ pub fn admin_register() -> AdminRegistry {
                 query = query.order_by(Expr::col(Alias::new(col.as_str())), order);
             }
             for (col, val) in &params.column_filters {
-                let escaped = val.replace('\'', "''");
-                query = query.filter(Expr::cust(format!("CAST({} AS TEXT) = '{}'", col, escaped)));
+                if !FILTER_COLS.contains(&col.as_str()) {
+                    continue;
+                }
+                query = query.filter(
+                    Expr::col(Alias::new(col.as_str()))
+                        .cast_as(Alias::new("TEXT"))
+                        .eq(val.clone()),
+                );
             }
             if let Some(ref search_str) = params.search {
-                let search_cond = search_cond!(devis_traiteur::Entity => or("nom" icontains search_str, "email" icontains search_str, "date_evenement" icontains search_str, "nb_personnes" icontains search_str, "statut" icontains search_str, "created_at" icontains search_str));
+                let search_cond = search_cond!(devis_traiteur::Entity => or("nom" icontains search_str, "email" icontains search_str, "date_evenement" icontains search_str, "nb_personnes" icontains search_str, "prix_total" icontains search_str, "remise_appliquee" icontains search_str, "statut" icontains search_str, "created_at" icontains search_str));
                 query = query.filter(search_cond);
             }
             let db_rows = query
@@ -860,7 +911,7 @@ pub fn admin_register() -> AdminRegistry {
             use sea_orm::QueryFilter;
             let mut query = devis_traiteur::Entity::find();
             if let Some(ref search_str) = _search {
-                let search_cond = search_cond!(devis_traiteur::Entity => or("nom" icontains search_str, "email" icontains search_str, "date_evenement" icontains search_str, "nb_personnes" icontains search_str, "statut" icontains search_str, "created_at" icontains search_str));
+                let search_cond = search_cond!(devis_traiteur::Entity => or("nom" icontains search_str, "email" icontains search_str, "date_evenement" icontains search_str, "nb_personnes" icontains search_str, "prix_total" icontains search_str, "remise_appliquee" icontains search_str, "statut" icontains search_str, "created_at" icontains search_str));
                 query = query.filter(search_cond);
             }
             query.count(&*db).await
@@ -929,6 +980,8 @@ pub fn admin_register() -> AdminRegistry {
                 ("email", "Email"),
                 ("date_evenement", "Date événement"),
                 ("nb_personnes", "Personnes"),
+                ("prix_total", "Estimation"),
+                ("remise_appliquee", "Remise"),
                 ("statut", "Statut"),
                 ("created_at", "Reçu le"),
             ])
@@ -983,8 +1036,8 @@ pub fn admin_register() -> AdminRegistry {
                 .filter_map(|r| r.try_get_by_index::<String>(0).ok())
                 .collect();
             vals_statut.sort_by(|a, b| match (a.parse::<i64>(), b.parse::<i64>()) {
-                (Ok(x), Ok(y)) => x.cmp(&y),
-                _ => a.cmp(b),
+                (Ok(x), Ok(y)) => y.cmp(&x),
+                _ => b.cmp(a),
             });
             result.insert("statut".to_string(), (vals_statut, total_statut));
             Ok(result)
@@ -1031,10 +1084,14 @@ pub fn admin_register() -> AdminRegistry {
         Box::pin(async move {
             use sea_orm::{
                 QueryFilter,
-                sea_query::{Alias, Expr, Order},
+                sea_query::{Alias, Expr, ExprTrait, Order},
             };
             let mut query = contact::Entity::find();
-            if let Some(ref col) = params.sort_by {
+            const SORT_COLS: &[&str] = &["id", "raison", "titre", "email", "created_at"];
+            const FILTER_COLS: &[&str] = &["raison"];
+            if let Some(ref col) = params.sort_by
+                && SORT_COLS.contains(&col.as_str())
+            {
                 let order = if params.sort_dir == SortDir::Desc {
                     Order::Desc
                 } else {
@@ -1043,8 +1100,14 @@ pub fn admin_register() -> AdminRegistry {
                 query = query.order_by(Expr::col(Alias::new(col.as_str())), order);
             }
             for (col, val) in &params.column_filters {
-                let escaped = val.replace('\'', "''");
-                query = query.filter(Expr::cust(format!("CAST({} AS TEXT) = '{}'", col, escaped)));
+                if !FILTER_COLS.contains(&col.as_str()) {
+                    continue;
+                }
+                query = query.filter(
+                    Expr::col(Alias::new(col.as_str()))
+                        .cast_as(Alias::new("TEXT"))
+                        .eq(val.clone()),
+                );
             }
             if let Some(ref search_str) = params.search {
                 let search_cond = search_cond!(contact::Entity => or("raison" icontains search_str, "titre" icontains search_str, "email" icontains search_str, "created_at" icontains search_str));
@@ -1189,8 +1252,8 @@ pub fn admin_register() -> AdminRegistry {
                 .filter_map(|r| r.try_get_by_index::<String>(0).ok())
                 .collect();
             vals_raison.sort_by(|a, b| match (a.parse::<i64>(), b.parse::<i64>()) {
-                (Ok(x), Ok(y)) => x.cmp(&y),
-                _ => a.cmp(b),
+                (Ok(x), Ok(y)) => y.cmp(&x),
+                _ => b.cmp(a),
             });
             result.insert("raison".to_string(), (vals_raison, total_raison));
             Ok(result)
@@ -1236,10 +1299,14 @@ pub fn admin_register() -> AdminRegistry {
         Box::pin(async move {
             use sea_orm::{
                 QueryFilter,
-                sea_query::{Alias, Expr, Order},
+                sea_query::{Alias, Expr, ExprTrait, Order},
             };
             let mut query = garniture::Entity::find();
-            if let Some(ref col) = params.sort_by {
+            const SORT_COLS: &[&str] = &["id", "libelle", "type_garniture", "disponible"];
+            const FILTER_COLS: &[&str] = &["type_garniture", "disponible"];
+            if let Some(ref col) = params.sort_by
+                && SORT_COLS.contains(&col.as_str())
+            {
                 let order = if params.sort_dir == SortDir::Desc {
                     Order::Desc
                 } else {
@@ -1248,8 +1315,14 @@ pub fn admin_register() -> AdminRegistry {
                 query = query.order_by(Expr::col(Alias::new(col.as_str())), order);
             }
             for (col, val) in &params.column_filters {
-                let escaped = val.replace('\'', "''");
-                query = query.filter(Expr::cust(format!("CAST({} AS TEXT) = '{}'", col, escaped)));
+                if !FILTER_COLS.contains(&col.as_str()) {
+                    continue;
+                }
+                query = query.filter(
+                    Expr::col(Alias::new(col.as_str()))
+                        .cast_as(Alias::new("TEXT"))
+                        .eq(val.clone()),
+                );
             }
             if let Some(ref search_str) = params.search {
                 let search_cond = search_cond!(garniture::Entity => or("libelle" icontains search_str, "type_garniture" icontains search_str, "disponible" icontains search_str));
@@ -1396,8 +1469,8 @@ pub fn admin_register() -> AdminRegistry {
                 .filter_map(|r| r.try_get_by_index::<String>(0).ok())
                 .collect();
             vals_type_garniture.sort_by(|a, b| match (a.parse::<i64>(), b.parse::<i64>()) {
-                (Ok(x), Ok(y)) => x.cmp(&y),
-                _ => a.cmp(b),
+                (Ok(x), Ok(y)) => y.cmp(&x),
+                _ => b.cmp(a),
             });
             result.insert(
                 "type_garniture".to_string(),
@@ -1446,8 +1519,8 @@ pub fn admin_register() -> AdminRegistry {
                 .filter_map(|r| r.try_get_by_index::<String>(0).ok())
                 .collect();
             vals_disponible.sort_by(|a, b| match (a.parse::<i64>(), b.parse::<i64>()) {
-                (Ok(x), Ok(y)) => x.cmp(&y),
-                _ => a.cmp(b),
+                (Ok(x), Ok(y)) => y.cmp(&x),
+                _ => b.cmp(a),
             });
             result.insert(
                 "disponible".to_string(),
@@ -1522,10 +1595,14 @@ pub fn admin_register() -> AdminRegistry {
         Box::pin(async move {
             use sea_orm::{
                 QueryFilter,
-                sea_query::{Alias, Expr, Order},
+                sea_query::{Alias, Expr, ExprTrait, Order},
             };
             let mut query = supplement::Entity::find();
-            if let Some(ref col) = params.sort_by {
+            const SORT_COLS: &[&str] = &["id", "titre", "garniture_id", "prix", "disponible"];
+            const FILTER_COLS: &[&str] = &["disponible"];
+            if let Some(ref col) = params.sort_by
+                && SORT_COLS.contains(&col.as_str())
+            {
                 let order = if params.sort_dir == SortDir::Desc {
                     Order::Desc
                 } else {
@@ -1534,8 +1611,14 @@ pub fn admin_register() -> AdminRegistry {
                 query = query.order_by(Expr::col(Alias::new(col.as_str())), order);
             }
             for (col, val) in &params.column_filters {
-                let escaped = val.replace('\'', "''");
-                query = query.filter(Expr::cust(format!("CAST({} AS TEXT) = '{}'", col, escaped)));
+                if !FILTER_COLS.contains(&col.as_str()) {
+                    continue;
+                }
+                query = query.filter(
+                    Expr::col(Alias::new(col.as_str()))
+                        .cast_as(Alias::new("TEXT"))
+                        .eq(val.clone()),
+                );
             }
             if let Some(ref search_str) = params.search {
                 let search_cond = search_cond!(supplement::Entity => or("titre" icontains search_str, "prix" icontains search_str, "disponible" icontains search_str));
@@ -1760,8 +1843,8 @@ pub fn admin_register() -> AdminRegistry {
                 .filter_map(|r| r.try_get_by_index::<String>(0).ok())
                 .collect();
             vals_disponible.sort_by(|a, b| match (a.parse::<i64>(), b.parse::<i64>()) {
-                (Ok(x), Ok(y)) => x.cmp(&y),
-                _ => a.cmp(b),
+                (Ok(x), Ok(y)) => y.cmp(&x),
+                _ => b.cmp(a),
             });
             result.insert(
                 "disponible".to_string(),
@@ -1811,10 +1894,14 @@ pub fn admin_register() -> AdminRegistry {
         Box::pin(async move {
             use sea_orm::{
                 QueryFilter,
-                sea_query::{Alias, Expr, Order},
+                sea_query::{Alias, Expr, ExprTrait, Order},
             };
             let mut query = entree::Entity::find();
-            if let Some(ref col) = params.sort_by {
+            const SORT_COLS: &[&str] = &["id", "titre", "usage", "prix", "disponible"];
+            const FILTER_COLS: &[&str] = &["usage", "disponible"];
+            if let Some(ref col) = params.sort_by
+                && SORT_COLS.contains(&col.as_str())
+            {
                 let order = if params.sort_dir == SortDir::Desc {
                     Order::Desc
                 } else {
@@ -1823,8 +1910,14 @@ pub fn admin_register() -> AdminRegistry {
                 query = query.order_by(Expr::col(Alias::new(col.as_str())), order);
             }
             for (col, val) in &params.column_filters {
-                let escaped = val.replace('\'', "''");
-                query = query.filter(Expr::cust(format!("CAST({} AS TEXT) = '{}'", col, escaped)));
+                if !FILTER_COLS.contains(&col.as_str()) {
+                    continue;
+                }
+                query = query.filter(
+                    Expr::col(Alias::new(col.as_str()))
+                        .cast_as(Alias::new("TEXT"))
+                        .eq(val.clone()),
+                );
             }
             if let Some(ref search_str) = params.search {
                 let search_cond = search_cond!(entree::Entity => or("titre" icontains search_str, "usage" icontains search_str, "prix" icontains search_str, "disponible" icontains search_str));
@@ -1972,11 +2065,15 @@ pub fn admin_register() -> AdminRegistry {
                     })
                     .collect();
                 let selected = if let Some(ref oid) = object_id {
-                    use sea_orm::sea_query::{Alias, Expr, Query};
+                    use sea_orm::sea_query::{Alias, Expr, ExprTrait, Query};
                     let stmt = Query::select()
                         .expr(Expr::cust("CAST(allergene_id AS TEXT)"))
                         .from(Alias::new("entree_allergene"))
-                        .and_where(Expr::cust(format!("CAST(entree_id AS TEXT) = '{}'", oid)))
+                        .and_where(
+                            Expr::col(Alias::new("entree_id"))
+                                .cast_as(Alias::new("TEXT"))
+                                .eq(oid.clone()),
+                        )
                         .to_owned();
                     db.query_all(&stmt)
                         .await
@@ -2060,8 +2157,8 @@ pub fn admin_register() -> AdminRegistry {
                 .filter_map(|r| r.try_get_by_index::<String>(0).ok())
                 .collect();
             vals_usage.sort_by(|a, b| match (a.parse::<i64>(), b.parse::<i64>()) {
-                (Ok(x), Ok(y)) => x.cmp(&y),
-                _ => a.cmp(b),
+                (Ok(x), Ok(y)) => y.cmp(&x),
+                _ => b.cmp(a),
             });
             result.insert("usage".to_string(), (vals_usage, total_usage));
             let page_size_disponible = 10u64;
@@ -2107,8 +2204,8 @@ pub fn admin_register() -> AdminRegistry {
                 .filter_map(|r| r.try_get_by_index::<String>(0).ok())
                 .collect();
             vals_disponible.sort_by(|a, b| match (a.parse::<i64>(), b.parse::<i64>()) {
-                (Ok(x), Ok(y)) => x.cmp(&y),
-                _ => a.cmp(b),
+                (Ok(x), Ok(y)) => y.cmp(&x),
+                _ => b.cmp(a),
             });
             result.insert(
                 "disponible".to_string(),
@@ -2159,10 +2256,14 @@ pub fn admin_register() -> AdminRegistry {
         Box::pin(async move {
             use sea_orm::{
                 QueryFilter,
-                sea_query::{Alias, Expr, Order},
+                sea_query::{Alias, Expr, ExprTrait, Order},
             };
             let mut query = dessert::Entity::find();
-            if let Some(ref col) = params.sort_by {
+            const SORT_COLS: &[&str] = &["id", "titre", "usage", "prix", "disponible"];
+            const FILTER_COLS: &[&str] = &["usage", "disponible"];
+            if let Some(ref col) = params.sort_by
+                && SORT_COLS.contains(&col.as_str())
+            {
                 let order = if params.sort_dir == SortDir::Desc {
                     Order::Desc
                 } else {
@@ -2171,8 +2272,14 @@ pub fn admin_register() -> AdminRegistry {
                 query = query.order_by(Expr::col(Alias::new(col.as_str())), order);
             }
             for (col, val) in &params.column_filters {
-                let escaped = val.replace('\'', "''");
-                query = query.filter(Expr::cust(format!("CAST({} AS TEXT) = '{}'", col, escaped)));
+                if !FILTER_COLS.contains(&col.as_str()) {
+                    continue;
+                }
+                query = query.filter(
+                    Expr::col(Alias::new(col.as_str()))
+                        .cast_as(Alias::new("TEXT"))
+                        .eq(val.clone()),
+                );
             }
             if let Some(ref search_str) = params.search {
                 let search_cond = search_cond!(dessert::Entity => or("titre" icontains search_str, "usage" icontains search_str, "prix" icontains search_str, "disponible" icontains search_str));
@@ -2320,11 +2427,15 @@ pub fn admin_register() -> AdminRegistry {
                     })
                     .collect();
                 let selected = if let Some(ref oid) = object_id {
-                    use sea_orm::sea_query::{Alias, Expr, Query};
+                    use sea_orm::sea_query::{Alias, Expr, ExprTrait, Query};
                     let stmt = Query::select()
                         .expr(Expr::cust("CAST(allergene_id AS TEXT)"))
                         .from(Alias::new("dessert_allergene"))
-                        .and_where(Expr::cust(format!("CAST(dessert_id AS TEXT) = '{}'", oid)))
+                        .and_where(
+                            Expr::col(Alias::new("dessert_id"))
+                                .cast_as(Alias::new("TEXT"))
+                                .eq(oid.clone()),
+                        )
                         .to_owned();
                     db.query_all(&stmt)
                         .await
@@ -2408,8 +2519,8 @@ pub fn admin_register() -> AdminRegistry {
                 .filter_map(|r| r.try_get_by_index::<String>(0).ok())
                 .collect();
             vals_usage.sort_by(|a, b| match (a.parse::<i64>(), b.parse::<i64>()) {
-                (Ok(x), Ok(y)) => x.cmp(&y),
-                _ => a.cmp(b),
+                (Ok(x), Ok(y)) => y.cmp(&x),
+                _ => b.cmp(a),
             });
             result.insert("usage".to_string(), (vals_usage, total_usage));
             let page_size_disponible = 10u64;
@@ -2455,8 +2566,8 @@ pub fn admin_register() -> AdminRegistry {
                 .filter_map(|r| r.try_get_by_index::<String>(0).ok())
                 .collect();
             vals_disponible.sort_by(|a, b| match (a.parse::<i64>(), b.parse::<i64>()) {
-                (Ok(x), Ok(y)) => x.cmp(&y),
-                _ => a.cmp(b),
+                (Ok(x), Ok(y)) => y.cmp(&x),
+                _ => b.cmp(a),
             });
             result.insert(
                 "disponible".to_string(),
@@ -2507,10 +2618,22 @@ pub fn admin_register() -> AdminRegistry {
         Box::pin(async move {
             use sea_orm::{
                 QueryFilter,
-                sea_query::{Alias, Expr, Order},
+                sea_query::{Alias, Expr, ExprTrait, Order},
             };
             let mut query = plat::Entity::find();
-            if let Some(ref col) = params.sort_by {
+            const SORT_COLS: &[&str] = &[
+                "id",
+                "titre",
+                "type_plat",
+                "usage",
+                "prix",
+                "disponible",
+                "est_viande",
+            ];
+            const FILTER_COLS: &[&str] = &["type_plat", "usage", "disponible", "est_viande"];
+            if let Some(ref col) = params.sort_by
+                && SORT_COLS.contains(&col.as_str())
+            {
                 let order = if params.sort_dir == SortDir::Desc {
                     Order::Desc
                 } else {
@@ -2519,8 +2642,14 @@ pub fn admin_register() -> AdminRegistry {
                 query = query.order_by(Expr::col(Alias::new(col.as_str())), order);
             }
             for (col, val) in &params.column_filters {
-                let escaped = val.replace('\'', "''");
-                query = query.filter(Expr::cust(format!("CAST({} AS TEXT) = '{}'", col, escaped)));
+                if !FILTER_COLS.contains(&col.as_str()) {
+                    continue;
+                }
+                query = query.filter(
+                    Expr::col(Alias::new(col.as_str()))
+                        .cast_as(Alias::new("TEXT"))
+                        .eq(val.clone()),
+                );
             }
             if let Some(ref search_str) = params.search {
                 let search_cond = search_cond!(plat::Entity => or("titre" icontains search_str, "type_plat" icontains search_str, "usage" icontains search_str, "prix" icontains search_str, "disponible" icontains search_str, "est_viande" icontains search_str));
@@ -2731,11 +2860,15 @@ pub fn admin_register() -> AdminRegistry {
                     })
                     .collect();
                 let selected = if let Some(ref oid) = object_id {
-                    use sea_orm::sea_query::{Alias, Expr, Query};
+                    use sea_orm::sea_query::{Alias, Expr, ExprTrait, Query};
                     let stmt = Query::select()
                         .expr(Expr::cust("CAST(allergene_id AS TEXT)"))
                         .from(Alias::new("plat_allergene"))
-                        .and_where(Expr::cust(format!("CAST(plat_id AS TEXT) = '{}'", oid)))
+                        .and_where(
+                            Expr::col(Alias::new("plat_id"))
+                                .cast_as(Alias::new("TEXT"))
+                                .eq(oid.clone()),
+                        )
                         .to_owned();
                     db.query_all(&stmt)
                         .await
@@ -2775,11 +2908,15 @@ pub fn admin_register() -> AdminRegistry {
                     })
                     .collect();
                 let selected = if let Some(ref oid) = object_id {
-                    use sea_orm::sea_query::{Alias, Expr, Query};
+                    use sea_orm::sea_query::{Alias, Expr, ExprTrait, Query};
                     let stmt = Query::select()
                         .expr(Expr::cust("CAST(garniture_id AS TEXT)"))
                         .from(Alias::new("plat_garnitures"))
-                        .and_where(Expr::cust(format!("CAST(plat_id AS TEXT) = '{}'", oid)))
+                        .and_where(
+                            Expr::col(Alias::new("plat_id"))
+                                .cast_as(Alias::new("TEXT"))
+                                .eq(oid.clone()),
+                        )
                         .to_owned();
                     db.query_all(&stmt)
                         .await
@@ -2819,11 +2956,15 @@ pub fn admin_register() -> AdminRegistry {
                     })
                     .collect();
                 let selected = if let Some(ref oid) = object_id {
-                    use sea_orm::sea_query::{Alias, Expr, Query};
+                    use sea_orm::sea_query::{Alias, Expr, ExprTrait, Query};
                     let stmt = Query::select()
                         .expr(Expr::cust("CAST(supplement_id AS TEXT)"))
                         .from(Alias::new("plat_supplements"))
-                        .and_where(Expr::cust(format!("CAST(plat_id AS TEXT) = '{}'", oid)))
+                        .and_where(
+                            Expr::col(Alias::new("plat_id"))
+                                .cast_as(Alias::new("TEXT"))
+                                .eq(oid.clone()),
+                        )
                         .to_owned();
                     db.query_all(&stmt)
                         .await
@@ -2911,8 +3052,8 @@ pub fn admin_register() -> AdminRegistry {
                 .filter_map(|r| r.try_get_by_index::<String>(0).ok())
                 .collect();
             vals_type_plat.sort_by(|a, b| match (a.parse::<i64>(), b.parse::<i64>()) {
-                (Ok(x), Ok(y)) => x.cmp(&y),
-                _ => a.cmp(b),
+                (Ok(x), Ok(y)) => y.cmp(&x),
+                _ => b.cmp(a),
             });
             result.insert("type_plat".to_string(), (vals_type_plat, total_type_plat));
             let page_size_usage = 10u64;
@@ -2958,8 +3099,8 @@ pub fn admin_register() -> AdminRegistry {
                 .filter_map(|r| r.try_get_by_index::<String>(0).ok())
                 .collect();
             vals_usage.sort_by(|a, b| match (a.parse::<i64>(), b.parse::<i64>()) {
-                (Ok(x), Ok(y)) => x.cmp(&y),
-                _ => a.cmp(b),
+                (Ok(x), Ok(y)) => y.cmp(&x),
+                _ => b.cmp(a),
             });
             result.insert("usage".to_string(), (vals_usage, total_usage));
             let page_size_disponible = 10u64;
@@ -3005,8 +3146,8 @@ pub fn admin_register() -> AdminRegistry {
                 .filter_map(|r| r.try_get_by_index::<String>(0).ok())
                 .collect();
             vals_disponible.sort_by(|a, b| match (a.parse::<i64>(), b.parse::<i64>()) {
-                (Ok(x), Ok(y)) => x.cmp(&y),
-                _ => a.cmp(b),
+                (Ok(x), Ok(y)) => y.cmp(&x),
+                _ => b.cmp(a),
             });
             result.insert(
                 "disponible".to_string(),
@@ -3055,8 +3196,8 @@ pub fn admin_register() -> AdminRegistry {
                 .filter_map(|r| r.try_get_by_index::<String>(0).ok())
                 .collect();
             vals_est_viande.sort_by(|a, b| match (a.parse::<i64>(), b.parse::<i64>()) {
-                (Ok(x), Ok(y)) => x.cmp(&y),
-                _ => a.cmp(b),
+                (Ok(x), Ok(y)) => y.cmp(&x),
+                _ => b.cmp(a),
             });
             result.insert(
                 "est_viande".to_string(),
@@ -3108,10 +3249,14 @@ pub fn admin_register() -> AdminRegistry {
         Box::pin(async move {
             use sea_orm::{
                 QueryFilter,
-                sea_query::{Alias, Expr, Order},
+                sea_query::{Alias, Expr, ExprTrait, Order},
             };
             let mut query = menu::Entity::find();
-            if let Some(ref col) = params.sort_by {
+            const SORT_COLS: &[&str] = &["id", "nom", "type_menu", "prix", "ordre"];
+            const FILTER_COLS: &[&str] = &["type_menu"];
+            if let Some(ref col) = params.sort_by
+                && SORT_COLS.contains(&col.as_str())
+            {
                 let order = if params.sort_dir == SortDir::Desc {
                     Order::Desc
                 } else {
@@ -3120,8 +3265,14 @@ pub fn admin_register() -> AdminRegistry {
                 query = query.order_by(Expr::col(Alias::new(col.as_str())), order);
             }
             for (col, val) in &params.column_filters {
-                let escaped = val.replace('\'', "''");
-                query = query.filter(Expr::cust(format!("CAST({} AS TEXT) = '{}'", col, escaped)));
+                if !FILTER_COLS.contains(&col.as_str()) {
+                    continue;
+                }
+                query = query.filter(
+                    Expr::col(Alias::new(col.as_str()))
+                        .cast_as(Alias::new("TEXT"))
+                        .eq(val.clone()),
+                );
             }
             if let Some(ref search_str) = params.search {
                 let search_cond = search_cond!(menu::Entity => or("nom" icontains search_str, "type_menu" icontains search_str, "prix" icontains search_str, "ordre" icontains search_str));
@@ -3332,11 +3483,15 @@ pub fn admin_register() -> AdminRegistry {
                     })
                     .collect();
                 let selected = if let Some(ref oid) = object_id {
-                    use sea_orm::sea_query::{Alias, Expr, Query};
+                    use sea_orm::sea_query::{Alias, Expr, ExprTrait, Query};
                     let stmt = Query::select()
                         .expr(Expr::cust("CAST(entree_id AS TEXT)"))
                         .from(Alias::new("menu_entrees"))
-                        .and_where(Expr::cust(format!("CAST(menu_id AS TEXT) = '{}'", oid)))
+                        .and_where(
+                            Expr::col(Alias::new("menu_id"))
+                                .cast_as(Alias::new("TEXT"))
+                                .eq(oid.clone()),
+                        )
                         .to_owned();
                     db.query_all(&stmt)
                         .await
@@ -3376,11 +3531,15 @@ pub fn admin_register() -> AdminRegistry {
                     })
                     .collect();
                 let selected = if let Some(ref oid) = object_id {
-                    use sea_orm::sea_query::{Alias, Expr, Query};
+                    use sea_orm::sea_query::{Alias, Expr, ExprTrait, Query};
                     let stmt = Query::select()
                         .expr(Expr::cust("CAST(plat_id AS TEXT)"))
                         .from(Alias::new("menu_plats"))
-                        .and_where(Expr::cust(format!("CAST(menu_id AS TEXT) = '{}'", oid)))
+                        .and_where(
+                            Expr::col(Alias::new("menu_id"))
+                                .cast_as(Alias::new("TEXT"))
+                                .eq(oid.clone()),
+                        )
                         .to_owned();
                     db.query_all(&stmt)
                         .await
@@ -3420,11 +3579,15 @@ pub fn admin_register() -> AdminRegistry {
                     })
                     .collect();
                 let selected = if let Some(ref oid) = object_id {
-                    use sea_orm::sea_query::{Alias, Expr, Query};
+                    use sea_orm::sea_query::{Alias, Expr, ExprTrait, Query};
                     let stmt = Query::select()
                         .expr(Expr::cust("CAST(dessert_id AS TEXT)"))
                         .from(Alias::new("menu_desserts"))
-                        .and_where(Expr::cust(format!("CAST(menu_id AS TEXT) = '{}'", oid)))
+                        .and_where(
+                            Expr::col(Alias::new("menu_id"))
+                                .cast_as(Alias::new("TEXT"))
+                                .eq(oid.clone()),
+                        )
                         .to_owned();
                     db.query_all(&stmt)
                         .await
@@ -3505,8 +3668,8 @@ pub fn admin_register() -> AdminRegistry {
                 .filter_map(|r| r.try_get_by_index::<String>(0).ok())
                 .collect();
             vals_type_menu.sort_by(|a, b| match (a.parse::<i64>(), b.parse::<i64>()) {
-                (Ok(x), Ok(y)) => x.cmp(&y),
-                _ => a.cmp(b),
+                (Ok(x), Ok(y)) => y.cmp(&x),
+                _ => b.cmp(a),
             });
             result.insert("type_menu".to_string(), (vals_type_menu, total_type_menu));
             Ok(result)
@@ -3554,10 +3717,25 @@ pub fn admin_register() -> AdminRegistry {
         Box::pin(async move {
             use sea_orm::{
                 QueryFilter,
-                sea_query::{Alias, Expr, Order},
+                sea_query::{Alias, Expr, ExprTrait, Order},
             };
             let mut query = menu_traiteur::Entity::find();
-            if let Some(ref col) = params.sort_by {
+            const SORT_COLS: &[&str] = &[
+                "id",
+                "titre",
+                "theme",
+                "regime",
+                "prix_par_personne",
+                "nb_personnes_min",
+                "remise_groupe",
+                "remise_groupe_min",
+                "stock",
+                "actif",
+            ];
+            const FILTER_COLS: &[&str] = &["theme", "regime", "actif"];
+            if let Some(ref col) = params.sort_by
+                && SORT_COLS.contains(&col.as_str())
+            {
                 let order = if params.sort_dir == SortDir::Desc {
                     Order::Desc
                 } else {
@@ -3566,11 +3744,17 @@ pub fn admin_register() -> AdminRegistry {
                 query = query.order_by(Expr::col(Alias::new(col.as_str())), order);
             }
             for (col, val) in &params.column_filters {
-                let escaped = val.replace('\'', "''");
-                query = query.filter(Expr::cust(format!("CAST({} AS TEXT) = '{}'", col, escaped)));
+                if !FILTER_COLS.contains(&col.as_str()) {
+                    continue;
+                }
+                query = query.filter(
+                    Expr::col(Alias::new(col.as_str()))
+                        .cast_as(Alias::new("TEXT"))
+                        .eq(val.clone()),
+                );
             }
             if let Some(ref search_str) = params.search {
-                let search_cond = search_cond!(menu_traiteur::Entity => or("titre" icontains search_str, "theme" icontains search_str, "regime" icontains search_str, "prix_par_personne" icontains search_str, "nb_personnes_min" icontains search_str, "stock" icontains search_str, "actif" icontains search_str));
+                let search_cond = search_cond!(menu_traiteur::Entity => or("titre" icontains search_str, "theme" icontains search_str, "regime" icontains search_str, "prix_par_personne" icontains search_str, "nb_personnes_min" icontains search_str, "remise_groupe" icontains search_str, "remise_groupe_min" icontains search_str, "stock" icontains search_str, "actif" icontains search_str));
                 query = query.filter(search_cond);
             }
             let db_rows = query
@@ -3591,7 +3775,7 @@ pub fn admin_register() -> AdminRegistry {
             use sea_orm::QueryFilter;
             let mut query = menu_traiteur::Entity::find();
             if let Some(ref search_str) = _search {
-                let search_cond = search_cond!(menu_traiteur::Entity => or("titre" icontains search_str, "theme" icontains search_str, "regime" icontains search_str, "prix_par_personne" icontains search_str, "nb_personnes_min" icontains search_str, "stock" icontains search_str, "actif" icontains search_str));
+                let search_cond = search_cond!(menu_traiteur::Entity => or("titre" icontains search_str, "theme" icontains search_str, "regime" icontains search_str, "prix_par_personne" icontains search_str, "nb_personnes_min" icontains search_str, "remise_groupe" icontains search_str, "remise_groupe_min" icontains search_str, "stock" icontains search_str, "actif" icontains search_str));
                 query = query.filter(search_cond);
             }
             query.count(&*db).await
@@ -3717,14 +3901,15 @@ pub fn admin_register() -> AdminRegistry {
                     })
                     .collect();
                 let selected = if let Some(ref oid) = object_id {
-                    use sea_orm::sea_query::{Alias, Expr, Query};
+                    use sea_orm::sea_query::{Alias, Expr, ExprTrait, Query};
                     let stmt = Query::select()
                         .expr(Expr::cust("CAST(plat_id AS TEXT)"))
                         .from(Alias::new("menu_traiteur_plats"))
-                        .and_where(Expr::cust(format!(
-                            "CAST(menu_traiteur_id AS TEXT) = '{}'",
-                            oid
-                        )))
+                        .and_where(
+                            Expr::col(Alias::new("menu_traiteur_id"))
+                                .cast_as(Alias::new("TEXT"))
+                                .eq(oid.clone()),
+                        )
                         .to_owned();
                     db.query_all(&stmt)
                         .await
@@ -3754,6 +3939,8 @@ pub fn admin_register() -> AdminRegistry {
                 ("regime", "Régime"),
                 ("prix_par_personne", "Prix / pers."),
                 ("nb_personnes_min", "Personnes min"),
+                ("remise_groupe", "Remise groupe"),
+                ("remise_groupe_min", "Remise dès"),
                 ("stock", "Stock"),
                 ("actif", "Actif"),
             ])
@@ -3812,8 +3999,8 @@ pub fn admin_register() -> AdminRegistry {
                 .filter_map(|r| r.try_get_by_index::<String>(0).ok())
                 .collect();
             vals_theme.sort_by(|a, b| match (a.parse::<i64>(), b.parse::<i64>()) {
-                (Ok(x), Ok(y)) => x.cmp(&y),
-                _ => a.cmp(b),
+                (Ok(x), Ok(y)) => y.cmp(&x),
+                _ => b.cmp(a),
             });
             result.insert("theme".to_string(), (vals_theme, total_theme));
             let page_size_regime = 10u64;
@@ -3859,8 +4046,8 @@ pub fn admin_register() -> AdminRegistry {
                 .filter_map(|r| r.try_get_by_index::<String>(0).ok())
                 .collect();
             vals_regime.sort_by(|a, b| match (a.parse::<i64>(), b.parse::<i64>()) {
-                (Ok(x), Ok(y)) => x.cmp(&y),
-                _ => a.cmp(b),
+                (Ok(x), Ok(y)) => y.cmp(&x),
+                _ => b.cmp(a),
             });
             result.insert("regime".to_string(), (vals_regime, total_regime));
             let page_size_actif = 10u64;
@@ -3906,8 +4093,8 @@ pub fn admin_register() -> AdminRegistry {
                 .filter_map(|r| r.try_get_by_index::<String>(0).ok())
                 .collect();
             vals_actif.sort_by(|a, b| match (a.parse::<i64>(), b.parse::<i64>()) {
-                (Ok(x), Ok(y)) => x.cmp(&y),
-                _ => a.cmp(b),
+                (Ok(x), Ok(y)) => y.cmp(&x),
+                _ => b.cmp(a),
             });
             result.insert("actif".to_string(), (vals_actif, total_actif));
             Ok(result)
@@ -3955,10 +4142,14 @@ pub fn admin_register() -> AdminRegistry {
         Box::pin(async move {
             use sea_orm::{
                 QueryFilter,
-                sea_query::{Alias, Expr, Order},
+                sea_query::{Alias, Expr, ExprTrait, Order},
             };
             let mut query = boisson::Entity::find();
-            if let Some(ref col) = params.sort_by {
+            const SORT_COLS: &[&str] = &["id", "titre", "type_boisson", "prix", "disponible"];
+            const FILTER_COLS: &[&str] = &["type_boisson", "disponible"];
+            if let Some(ref col) = params.sort_by
+                && SORT_COLS.contains(&col.as_str())
+            {
                 let order = if params.sort_dir == SortDir::Desc {
                     Order::Desc
                 } else {
@@ -3967,8 +4158,14 @@ pub fn admin_register() -> AdminRegistry {
                 query = query.order_by(Expr::col(Alias::new(col.as_str())), order);
             }
             for (col, val) in &params.column_filters {
-                let escaped = val.replace('\'', "''");
-                query = query.filter(Expr::cust(format!("CAST({} AS TEXT) = '{}'", col, escaped)));
+                if !FILTER_COLS.contains(&col.as_str()) {
+                    continue;
+                }
+                query = query.filter(
+                    Expr::col(Alias::new(col.as_str()))
+                        .cast_as(Alias::new("TEXT"))
+                        .eq(val.clone()),
+                );
             }
             if let Some(ref search_str) = params.search {
                 let search_cond = search_cond!(boisson::Entity => or("titre" icontains search_str, "type_boisson" icontains search_str, "prix" icontains search_str, "disponible" icontains search_str));
@@ -4116,8 +4313,8 @@ pub fn admin_register() -> AdminRegistry {
                 .filter_map(|r| r.try_get_by_index::<String>(0).ok())
                 .collect();
             vals_type_boisson.sort_by(|a, b| match (a.parse::<i64>(), b.parse::<i64>()) {
-                (Ok(x), Ok(y)) => x.cmp(&y),
-                _ => a.cmp(b),
+                (Ok(x), Ok(y)) => y.cmp(&x),
+                _ => b.cmp(a),
             });
             result.insert(
                 "type_boisson".to_string(),
@@ -4166,8 +4363,8 @@ pub fn admin_register() -> AdminRegistry {
                 .filter_map(|r| r.try_get_by_index::<String>(0).ok())
                 .collect();
             vals_disponible.sort_by(|a, b| match (a.parse::<i64>(), b.parse::<i64>()) {
-                (Ok(x), Ok(y)) => x.cmp(&y),
-                _ => a.cmp(b),
+                (Ok(x), Ok(y)) => y.cmp(&x),
+                _ => b.cmp(a),
             });
             result.insert(
                 "disponible".to_string(),
@@ -4240,10 +4437,23 @@ pub fn admin_register() -> AdminRegistry {
         Box::pin(async move {
             use sea_orm::{
                 QueryFilter,
-                sea_query::{Alias, Expr, Order},
+                sea_query::{Alias, Expr, ExprTrait, Order},
             };
             let mut query = commande::Entity::find();
-            if let Some(ref col) = params.sort_by {
+            const SORT_COLS: &[&str] = &[
+                "id",
+                "numero",
+                "user_id",
+                "type_retrait",
+                "statut",
+                "mode_paiement",
+                "prix_total",
+                "created_at",
+            ];
+            const FILTER_COLS: &[&str] = &["type_retrait", "statut", "mode_paiement"];
+            if let Some(ref col) = params.sort_by
+                && SORT_COLS.contains(&col.as_str())
+            {
                 let order = if params.sort_dir == SortDir::Desc {
                     Order::Desc
                 } else {
@@ -4252,8 +4462,14 @@ pub fn admin_register() -> AdminRegistry {
                 query = query.order_by(Expr::col(Alias::new(col.as_str())), order);
             }
             for (col, val) in &params.column_filters {
-                let escaped = val.replace('\'', "''");
-                query = query.filter(Expr::cust(format!("CAST({} AS TEXT) = '{}'", col, escaped)));
+                if !FILTER_COLS.contains(&col.as_str()) {
+                    continue;
+                }
+                query = query.filter(
+                    Expr::col(Alias::new(col.as_str()))
+                        .cast_as(Alias::new("TEXT"))
+                        .eq(val.clone()),
+                );
             }
             if let Some(ref search_str) = params.search {
                 let search_cond = search_cond!(commande::Entity => or("numero" icontains search_str, "type_retrait" icontains search_str, "statut" icontains search_str, "mode_paiement" icontains search_str, "prix_total" icontains search_str, "created_at" icontains search_str));
@@ -4485,8 +4701,8 @@ pub fn admin_register() -> AdminRegistry {
                 .filter_map(|r| r.try_get_by_index::<String>(0).ok())
                 .collect();
             vals_type_retrait.sort_by(|a, b| match (a.parse::<i64>(), b.parse::<i64>()) {
-                (Ok(x), Ok(y)) => x.cmp(&y),
-                _ => a.cmp(b),
+                (Ok(x), Ok(y)) => y.cmp(&x),
+                _ => b.cmp(a),
             });
             result.insert(
                 "type_retrait".to_string(),
@@ -4535,8 +4751,8 @@ pub fn admin_register() -> AdminRegistry {
                 .filter_map(|r| r.try_get_by_index::<String>(0).ok())
                 .collect();
             vals_statut.sort_by(|a, b| match (a.parse::<i64>(), b.parse::<i64>()) {
-                (Ok(x), Ok(y)) => x.cmp(&y),
-                _ => a.cmp(b),
+                (Ok(x), Ok(y)) => y.cmp(&x),
+                _ => b.cmp(a),
             });
             result.insert("statut".to_string(), (vals_statut, total_statut));
             let page_size_mode_paiement = 10u64;
@@ -4582,8 +4798,8 @@ pub fn admin_register() -> AdminRegistry {
                 .filter_map(|r| r.try_get_by_index::<String>(0).ok())
                 .collect();
             vals_mode_paiement.sort_by(|a, b| match (a.parse::<i64>(), b.parse::<i64>()) {
-                (Ok(x), Ok(y)) => x.cmp(&y),
-                _ => a.cmp(b),
+                (Ok(x), Ok(y)) => y.cmp(&x),
+                _ => b.cmp(a),
             });
             result.insert(
                 "mode_paiement".to_string(),
@@ -4656,10 +4872,14 @@ pub fn admin_register() -> AdminRegistry {
         Box::pin(async move {
             use sea_orm::{
                 QueryFilter,
-                sea_query::{Alias, Expr, Order},
+                sea_query::{Alias, Expr, ExprTrait, Order},
             };
             let mut query = avis::Entity::find();
-            if let Some(ref col) = params.sort_by {
+            const SORT_COLS: &[&str] = &["id", "commande_id", "note", "statut", "created_at"];
+            const FILTER_COLS: &[&str] = &["statut"];
+            if let Some(ref col) = params.sort_by
+                && SORT_COLS.contains(&col.as_str())
+            {
                 let order = if params.sort_dir == SortDir::Desc {
                     Order::Desc
                 } else {
@@ -4668,8 +4888,14 @@ pub fn admin_register() -> AdminRegistry {
                 query = query.order_by(Expr::col(Alias::new(col.as_str())), order);
             }
             for (col, val) in &params.column_filters {
-                let escaped = val.replace('\'', "''");
-                query = query.filter(Expr::cust(format!("CAST({} AS TEXT) = '{}'", col, escaped)));
+                if !FILTER_COLS.contains(&col.as_str()) {
+                    continue;
+                }
+                query = query.filter(
+                    Expr::col(Alias::new(col.as_str()))
+                        .cast_as(Alias::new("TEXT"))
+                        .eq(val.clone()),
+                );
             }
             if let Some(ref search_str) = params.search {
                 let search_cond = search_cond!(avis::Entity => or("note" icontains search_str, "statut" icontains search_str, "created_at" icontains search_str));
@@ -4891,8 +5117,8 @@ pub fn admin_register() -> AdminRegistry {
                 .filter_map(|r| r.try_get_by_index::<String>(0).ok())
                 .collect();
             vals_statut.sort_by(|a, b| match (a.parse::<i64>(), b.parse::<i64>()) {
-                (Ok(x), Ok(y)) => x.cmp(&y),
-                _ => a.cmp(b),
+                (Ok(x), Ok(y)) => y.cmp(&x),
+                _ => b.cmp(a),
             });
             result.insert("statut".to_string(), (vals_statut, total_statut));
             Ok(result)
@@ -4964,10 +5190,14 @@ pub fn admin_register() -> AdminRegistry {
         Box::pin(async move {
             use sea_orm::{
                 QueryFilter,
-                sea_query::{Alias, Expr, Order},
+                sea_query::{Alias, Expr, ExprTrait, Order},
             };
             let mut query = avis_plat::Entity::find();
-            if let Some(ref col) = params.sort_by {
+            const SORT_COLS: &[&str] = &["id", "plat_id", "note", "statut", "created_at"];
+            const FILTER_COLS: &[&str] = &["statut"];
+            if let Some(ref col) = params.sort_by
+                && SORT_COLS.contains(&col.as_str())
+            {
                 let order = if params.sort_dir == SortDir::Desc {
                     Order::Desc
                 } else {
@@ -4976,8 +5206,14 @@ pub fn admin_register() -> AdminRegistry {
                 query = query.order_by(Expr::col(Alias::new(col.as_str())), order);
             }
             for (col, val) in &params.column_filters {
-                let escaped = val.replace('\'', "''");
-                query = query.filter(Expr::cust(format!("CAST({} AS TEXT) = '{}'", col, escaped)));
+                if !FILTER_COLS.contains(&col.as_str()) {
+                    continue;
+                }
+                query = query.filter(
+                    Expr::col(Alias::new(col.as_str()))
+                        .cast_as(Alias::new("TEXT"))
+                        .eq(val.clone()),
+                );
             }
             if let Some(ref search_str) = params.search {
                 let search_cond = search_cond!(avis_plat::Entity => or("note" icontains search_str, "statut" icontains search_str, "created_at" icontains search_str));
@@ -5202,8 +5438,8 @@ pub fn admin_register() -> AdminRegistry {
                 .filter_map(|r| r.try_get_by_index::<String>(0).ok())
                 .collect();
             vals_statut.sort_by(|a, b| match (a.parse::<i64>(), b.parse::<i64>()) {
-                (Ok(x), Ok(y)) => x.cmp(&y),
-                _ => a.cmp(b),
+                (Ok(x), Ok(y)) => y.cmp(&x),
+                _ => b.cmp(a),
             });
             result.insert("statut".to_string(), (vals_statut, total_statut));
             Ok(result)
@@ -5253,10 +5489,22 @@ pub fn admin_register() -> AdminRegistry {
         Box::pin(async move {
             use sea_orm::{
                 QueryFilter,
-                sea_query::{Alias, Expr, Order},
+                sea_query::{Alias, Expr, ExprTrait, Order},
             };
             let mut query = info_resto::Entity::find();
-            if let Some(ref col) = params.sort_by {
+            const SORT_COLS: &[&str] = &[
+                "id",
+                "nom",
+                "adresse",
+                "telephone",
+                "email",
+                "latitude",
+                "longitude",
+            ];
+            const FILTER_COLS: &[&str] = &[];
+            if let Some(ref col) = params.sort_by
+                && SORT_COLS.contains(&col.as_str())
+            {
                 let order = if params.sort_dir == SortDir::Desc {
                     Order::Desc
                 } else {
@@ -5265,8 +5513,14 @@ pub fn admin_register() -> AdminRegistry {
                 query = query.order_by(Expr::col(Alias::new(col.as_str())), order);
             }
             for (col, val) in &params.column_filters {
-                let escaped = val.replace('\'', "''");
-                query = query.filter(Expr::cust(format!("CAST({} AS TEXT) = '{}'", col, escaped)));
+                if !FILTER_COLS.contains(&col.as_str()) {
+                    continue;
+                }
+                query = query.filter(
+                    Expr::col(Alias::new(col.as_str()))
+                        .cast_as(Alias::new("TEXT"))
+                        .eq(val.clone()),
+                );
             }
             if let Some(ref search_str) = params.search {
                 let search_cond = search_cond!(info_resto::Entity => or("nom" icontains search_str, "adresse" icontains search_str, "telephone" icontains search_str, "email" icontains search_str, "latitude" icontains search_str, "longitude" icontains search_str));

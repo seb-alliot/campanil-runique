@@ -39,3 +39,6 @@ pub use modifier_ligne::handle_modifier_ligne;
 
 pub mod supprimer_ligne;
 pub use supprimer_ligne::handle_supprimer_ligne;
+
+pub mod db_devis_traiteur;
+pub use db_devis_traiteur::get_devis_user;

@@ -1176,6 +1176,8 @@ textarea.form-control { min-height: 120px; resize: vertical; }
     align-items: start;
 }
 
+.compte-main { min-width: 0; }
+
 .compte-sidebar {
     background: var(--color-bg-light);
     border: 1px solid var(--color-border);
@@ -1255,11 +1257,42 @@ textarea.form-control { min-height: 120px; resize: vertical; }
     padding: .2rem .65rem;
     border-radius: 999px;
 }
-.statut-en-cours  { background: #fff3cd; color: #856404; }
-.statut-livraison { background: #cce5ff; color: #004085; }
-.statut-termine   { background: #d4edda; color: #155724; }
-.statut-annule    { background: #f8d7da; color: #721c24; }
-.statut-retour    { background: #e2e3e5; color: #383d41; }
+.statut-en-cours   { background: #fff3cd; color: #856404; }
+.statut-livraison  { background: #cce5ff; color: #004085; }
+.statut-termine    { background: #d4edda; color: #155724; }
+.statut-annule     { background: #f8d7da; color: #721c24; }
+.statut-retour     { background: #e2e3e5; color: #383d41; }
+.statut-en_attente { background: #fff3cd; color: #856404; }
+.statut-en_cours   { background: #cce5ff; color: #004085; }
+.statut-accepte    { background: #d4edda; color: #155724; }
+.statut-refuse     { background: #f8d7da; color: #721c24; }
+
+.devis-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .4rem 1.5rem;
+    padding: .75rem 1rem;
+    font-size: .82rem;
+    color: var(--color-muted);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.devis-estimation {
+    font-weight: 600;
+    font-size: .88rem;
+    color: var(--color-dark);
+}
+
+.devis-remise-badge {
+    display: inline-block;
+    background: #d4edda;
+    color: #155724;
+    font-size: .75rem;
+    font-weight: 600;
+    padding: .15rem .55rem;
+    border-radius: 999px;
+    grid-column: 1 / -1;
+}
 
 .commande-meta {
     display: flex;
@@ -1386,8 +1419,26 @@ textarea.form-control { min-height: 120px; resize: vertical; }
     .commande-meta { flex-wrap: wrap; gap: .4rem; }
     .commande-date { margin-left: 0; }
     .commande-card-footer { flex-direction: column; align-items: flex-start; }
-    .compte-tabs { gap: 0; }
-    .compte-tab { flex: 1; text-align: center; padding: .6rem .75rem; }
+    .compte-tabs { flex: 1; justify-content: center; overflow: visible; }
+    .compte-tab { display: none; font-size: .9rem; }
+    .compte-tab.active { display: block; }
+    .compte-tabs-wrapper { position: relative; display: flex; align-items: stretch; }
+    .compte-tabs-arrow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.5rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1.4rem;
+        color: var(--color-muted);
+        padding: 0;
+        flex-shrink: 0;
+    }
+    .compte-tabs-arrow:disabled { opacity: .25; cursor: default; }
+    .compte-tabs-arrow--prev { order: -1; }
+    .compte-tabs-arrow--next { order: 1; }
 }
 
 @media (max-width: 480px) {
@@ -1395,6 +1446,8 @@ textarea.form-control { min-height: 120px; resize: vertical; }
     .commande-meta { flex-direction: column; gap: .2rem; }
     .commande-lignes li { flex-wrap: wrap; }
     .commande-ligne-prix { width: 100%; text-align: right; }
+    .devis-meta { grid-template-columns: 1fr; }
+    .devis-remise-badge { grid-column: 1; }
     .pagination { gap: .5rem; }
     .pagination .btn, .pagination .btn.disabled, .pagination span.disabled { padding: .4rem .7rem; }
     .pagination-info { font-size: .75rem; }
@@ -2179,6 +2232,14 @@ textarea.form-control { min-height: 120px; resize: vertical; }
 .rq-modal-ok:hover { background: #b91c1c; }
 
 /* ── Onglets compte ── */
+@media (min-width: 601px) { .compte-tabs-arrow { display: none; } }
+.compte-section[id^="tab-"] { display: none; }
+.compte-section[id^="tab-"].tab-active { display: block; animation: tab-fadein 0.18s ease; }
+@keyframes tab-fadein {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
 .compte-tabs {
     display: flex;
     gap: 0;
@@ -2189,6 +2250,7 @@ textarea.form-control { min-height: 120px; resize: vertical; }
     padding: 0.6rem 1.25rem;
     background: none;
     border: none;
+    text-decoration: none;
     border-bottom: 2px solid transparent;
     margin-bottom: -2px;
     cursor: pointer;

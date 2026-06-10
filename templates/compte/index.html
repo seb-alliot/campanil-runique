@@ -19,13 +19,16 @@
 
     <main class="compte-main">
 
-        <nav class="compte-tabs" id="compteTabs">
-            <button class="compte-tab{% if active_tab != "profil" and active_tab != "plats" %} active{% endif %}" data-tab="commandes">Mes commandes</button>
-            <button class="compte-tab{% if active_tab == "plats" %} active{% endif %}" data-tab="plats">Mes plats</button>
-            <button class="compte-tab{% if active_tab == "profil" %} active{% endif %}" data-tab="profil">Informations</button>
-        </nav>
+        <div class="compte-tabs-wrapper">
+            <nav class="compte-tabs">
+                <a class="compte-tab" href="#tab-commandes">Mes commandes</a>
+                <a class="compte-tab" href="#tab-plats">Mes plats</a>
+                <a class="compte-tab" href="#tab-devis">Mes devis traiteur</a>
+                <a class="compte-tab" href="#tab-profil">Informations</a>
+            </nav>
+        </div>
 
-        <section class="compte-section" id="tab-commandes" {% if active_tab == "profil" or active_tab == "plats" %}hidden{% endif %}>
+        <section class="compte-section" id="tab-commandes">
             <h2>Mes commandes</h2>
 
             <div class="commandes-filtres">
@@ -208,7 +211,7 @@
             </div>
             {% endif %}
         </section>
-        <section class="compte-section" id="tab-plats" {% if active_tab != "plats" %}hidden{% endif %}>
+        <section class="compte-section" id="tab-plats">
             <h2>Mes plats commandés</h2>
             {% if plats_commandes %}
             <div class="plats-avis-liste">
@@ -266,7 +269,35 @@
             {% endif %}
         </section>
 
-        <section class="compte-section" id="tab-profil" {% if active_tab != "profil" %}hidden{% endif %}>
+        <section class="compte-section" id="tab-devis">
+            <h2>Mes demandes de devis traiteur</h2>
+            {% if devis_traiteur %}
+            <div class="commandes-list">
+                {% for d in devis_traiteur %}
+                <div class="commande-card">
+                    <div class="commande-card-header">
+                        <span class="commande-numero">{{ d.menu_titre }}</span>
+                        <span class="commande-badge statut-{{ d.statut_css }}">{{ d.statut_label }}</span>
+                    </div>
+                    <div class="devis-meta">
+                        <span>Événement le <strong>{{ d.date_evenement }}</strong></span>
+                        <span>Demande du {{ d.created_at }}</span>
+                        <span>{{ d.nb_personnes }} personnes</span>
+                        {% if d.prix_total %}<span class="devis-estimation">Estimation : {{ d.prix_total }} €</span>{% endif %}
+                        {% if d.remise_appliquee %}<span class="devis-remise-badge">Remise groupe {{ d.remise_appliquee }}</span>{% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="compte-empty">
+                <p>Vous n'avez pas encore fait de demande de devis traiteur.</p>
+                <a href="/traiteur" class="btn btn-primary">Découvrir nos menus traiteur</a>
+            </div>
+            {% endif %}
+        </section>
+
+        <section class="compte-section" id="tab-profil">
             <h2>Informations personnelles</h2>
             <form method="post" action="/compte/profil" class="profil-form">
                 {% csrf %}

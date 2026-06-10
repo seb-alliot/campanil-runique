@@ -1,6 +1,8 @@
 use crate::backend::utils::inject_auth;
 use crate::entities::{devis_traiteur, info_resto, menu_traiteur};
 use crate::formulaire::DevisTraiteurForm;
+use runique::auth::session::UserEntity;
+use runique::auth::user::BuiltinUserEntity;
 use runique::context;
 use runique::prelude::*;
 use sea_orm::{ActiveModelTrait, Set};
@@ -10,6 +12,14 @@ pub async fn handle_devis_traiteur(
     form: &mut DevisTraiteurForm,
 ) -> AppResult<Response> {
     inject_auth(request).await;
+
+    let Some(current_user) = request.user.clone() else {
+        return Ok(Redirect::to("/connexion").into_response());
+    };
+
+    let db = request.db();
+    let user_full = BuiltinUserEntity::find_by_id(db, current_user.id).await;
+
     let template = "traiteur/devis.html";
 
     let menu_id = request
@@ -26,6 +36,8 @@ pub async fn handle_devis_traiteur(
         None
     };
 
+    let user_email = user_full.as_ref().map(|u| u.email.as_str()).unwrap_or("");
+
     if request.is_get() {
         context_update!(request => {
             "title"      => "Demande de devis — U Campanile",
@@ -36,26 +48,37 @@ pub async fn handle_devis_traiteur(
     }
 
     if request.is_post() && form.is_valid().await {
-        let nom = form.cleaned_string("nom").unwrap_or_default();
-        let email = form.cleaned_string("email").unwrap_or_default();
+        let nom = current_user.username.clone();
+        let email = user_email.to_string();
         let telephone = form.cleaned_string("telephone").filter(|s| !s.is_empty());
-        let date_evenement = form.cleaned_string("date_evenement").unwrap_or_default();
-        let nb_personnes = form
-            .cleaned_string("nb_personnes")
-            .unwrap_or_default()
-            .parse::<i32>()
-            .unwrap_or(0);
+        let date_evenement = form
+            .cleaned_naive_date("date_evenement")
+            .unwrap_or_default();
+        let nb_personnes = form.cleaned_i32("nb_personnes").unwrap_or(0);
         let message = form.cleaned_string("message").unwrap_or_default();
-        let menu_id_val = menu_id;
+
+        let prix_total = menu_model.as_ref().map(|menu| {
+            let base = menu.prix_par_personne * Decimal::from(nb_personnes);
+            if let Some(remise) = menu.remise_groupe
+                && remise > Decimal::ZERO
+                && nb_personnes >= menu.nb_personnes_min + 5
+            {
+                base * (Decimal::ONE - remise / Decimal::from(100))
+            } else {
+                base
+            }
+        });
 
         let model = devis_traiteur::ActiveModel {
+            user_id: Set(current_user.id),
             nom: Set(nom.clone()),
             email: Set(email.clone()),
             telephone: Set(telephone.clone()),
-            date_evenement: Set(date_evenement.clone()),
+            date_evenement: Set(date_evenement),
             nb_personnes: Set(nb_personnes),
             message: Set(message.clone()),
-            menu_id: Set(menu_id_val),
+            prix_total: Set(prix_total),
+            menu_id: Set(menu_id),
             statut: Set(devis_traiteur::StatutDevis::EnAttente),
             ..Default::default()
         };

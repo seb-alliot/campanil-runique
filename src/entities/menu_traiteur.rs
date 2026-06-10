@@ -27,6 +27,8 @@ model! {
         theme:             choice   [enum(ThemeMenu), required, default: "autre"],
         regime:            choice   [enum(RegimeMenu), required, default: "standard"],
         conditions:        textarea,
+        remise_groupe:     decimal,
+        remise_groupe_min: int      [default: 0],
         stock:             int      [required, default: 0],
         actif:             bool     [required, default: true],
         created_at:        datetime [auto_now],

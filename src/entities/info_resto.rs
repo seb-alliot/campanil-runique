@@ -16,7 +16,8 @@ model! {
         google_maps:       url [max_length: 500],
         description:       text,
         ville:             text [max_length: 100],
-        prix_livraison:    decimal [default: 5.00],
+        prix_livraison:         decimal [default: 0.59],
+        prix_livraison_minimal: decimal [default: 5.00],
         latitude:          decimal,
         longitude:         decimal,
     }

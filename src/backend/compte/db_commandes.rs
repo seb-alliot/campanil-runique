@@ -6,7 +6,7 @@ use crate::entities::{
     supplement,
 };
 use runique::prelude::*;
-use sea_orm::{ColumnTrait, Condition};
+use sea_orm::ColumnTrait;
 use std::collections::HashMap;
 
 const PAGE_SIZE: u64 = 10;
@@ -25,23 +25,18 @@ fn statut_label(s: &str) -> &'static str {
     }
 }
 
-fn statut_condition(filtre: &str) -> Option<Condition> {
+fn statuts_pour_filtre(filtre: &str) -> Vec<StatutCommande> {
     match filtre {
-        "en_cours" => Some(
-            Condition::any()
-                .add(commande::Column::Statut.eq(StatutCommande::EnAttente))
-                .add(commande::Column::Statut.eq(StatutCommande::Accepte))
-                .add(commande::Column::Statut.eq(StatutCommande::EnPreparation))
-                .add(commande::Column::Statut.eq(StatutCommande::Pret))
-                .add(commande::Column::Statut.eq(StatutCommande::EnCoursLivraison)),
-        ),
-        "termine" => Some(
-            Condition::any()
-                .add(commande::Column::Statut.eq(StatutCommande::Livre))
-                .add(commande::Column::Statut.eq(StatutCommande::Termine)),
-        ),
-        "annule" => Some(Condition::any().add(commande::Column::Statut.eq(StatutCommande::Annule))),
-        _ => None,
+        "en_cours" => vec![
+            StatutCommande::EnAttente,
+            StatutCommande::Accepte,
+            StatutCommande::EnPreparation,
+            StatutCommande::Pret,
+            StatutCommande::EnCoursLivraison,
+        ],
+        "termine" => vec![StatutCommande::Livre, StatutCommande::Termine],
+        "annule" => vec![StatutCommande::Annule],
+        _ => vec![],
     }
 }
 
@@ -53,11 +48,9 @@ pub async fn get_commandes_user(
     service: &str,
 ) -> (Vec<CommandeResume>, u64, u64) {
     let page = page.max(1);
+    let statuts = statuts_pour_filtre(filtre);
 
-    let mut base_count = search!(commande::Entity => UserId eq user_id,);
-    if let Some(cond) = statut_condition(filtre) {
-        base_count = base_count.filter(cond);
-    }
+    let mut base_count = search!(commande::Entity => UserId eq user_id, ?Statut in (statuts),);
     if service == "midi" {
         base_count = base_count.filter(commande::Column::Numero.like("%M-%"));
     } else if service == "soir" {
@@ -66,10 +59,8 @@ pub async fn get_commandes_user(
     let total: u64 = base_count.count(db).await.unwrap_or(0);
     let total_pages = total.div_ceil(PAGE_SIZE);
 
-    let mut base_query = search!(commande::Entity => UserId eq user_id, desc Id,);
-    if let Some(cond) = statut_condition(filtre) {
-        base_query = base_query.filter(cond);
-    }
+    let mut base_query =
+        search!(commande::Entity => UserId eq user_id, ?Statut in (statuts), desc Id,);
     if service == "midi" {
         base_query = base_query.filter(commande::Column::Numero.like("%M-%"));
     } else if service == "soir" {

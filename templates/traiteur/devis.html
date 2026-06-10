@@ -22,6 +22,11 @@
     <div class="devis-form-wrapper">
         <p class="devis-intro">Remplissez ce formulaire pour nous soumettre votre demande. Nous vous répondrons par email dans les meilleurs délais.</p>
 
+        <div class="form-group" style="margin-bottom:1.2rem;">
+            <label class="form-label">Compte associé</label>
+            <input type="text" class="form-control" value="{{ user.username }}" readonly disabled>
+        </div>
+
         <form method="post" action="/traiteur/devis{% if menu is defined and menu %}?menu_id={{ menu.id }}{% endif %}" class="form-contact">
             {% form.devis_form %}
             <div class="form-actions">
