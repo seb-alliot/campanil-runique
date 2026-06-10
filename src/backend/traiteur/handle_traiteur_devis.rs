@@ -55,19 +55,42 @@ pub async fn handle_devis_traiteur(
             .cleaned_naive_date("date_evenement")
             .unwrap_or_default();
         let nb_personnes = form.cleaned_i32("nb_personnes").unwrap_or(0);
+
+        if let Some(menu) = &menu_model
+            && nb_personnes < menu.nb_personnes_min
+        {
+            if let Some(f) = form.get_form_mut().fields.get_mut("nb_personnes") {
+                f.set_error(format!(
+                    "Ce menu nécessite au moins {} personnes.",
+                    menu.nb_personnes_min
+                ));
+            }
+            context_update!(request => {
+                "title"      => "Demande de devis — U Campanile",
+                "devis_form" => &*form,
+                "menu"       => &menu_model,
+            });
+            return request.render(template);
+        }
         let message = form.cleaned_string("message").unwrap_or_default();
 
-        let prix_total = menu_model.as_ref().map(|menu| {
-            let base = menu.prix_par_personne * Decimal::from(nb_personnes);
-            if let Some(remise) = menu.remise_groupe
-                && remise > Decimal::ZERO
-                && nb_personnes >= menu.nb_personnes_min + 5
-            {
-                base * (Decimal::ONE - remise / Decimal::from(100))
-            } else {
-                base
-            }
-        });
+        let (prix_total, remise_appliquee) = menu_model
+            .as_ref()
+            .map(|menu| {
+                let base = menu.prix_par_personne * Decimal::from(nb_personnes);
+                if let Some(remise) = menu.remise_groupe
+                    && remise > Decimal::ZERO
+                    && nb_personnes >= menu.remise_groupe_min.unwrap_or(0)
+                {
+                    (
+                        Some(base * (Decimal::ONE - remise / Decimal::from(100))),
+                        Some(remise),
+                    )
+                } else {
+                    (Some(base), None)
+                }
+            })
+            .unwrap_or((None, None));
 
         let model = devis_traiteur::ActiveModel {
             user_id: Set(current_user.id),
@@ -78,6 +101,7 @@ pub async fn handle_devis_traiteur(
             nb_personnes: Set(nb_personnes),
             message: Set(message.clone()),
             prix_total: Set(prix_total),
+            remise_appliquee: Set(remise_appliquee),
             menu_id: Set(menu_id),
             statut: Set(devis_traiteur::StatutDevis::EnAttente),
             ..Default::default()

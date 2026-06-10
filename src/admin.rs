@@ -1,5 +1,4 @@
 use crate::entities::*;
-
 use runique::admin;
 
 admin! {
@@ -172,8 +171,8 @@ admin! {
             ["regime", "Régime"],
             ["prix_par_personne", "Prix / pers."],
             ["nb_personnes_min", "Personnes min"],
-            ["remise_groupe", "Remise groupe"],
-            ["remise_groupe_min", "Remise dès"],
+            ["remise_groupe", "Remise groupe (%)"],
+            ["remise_groupe_min", "Remise à partir de (pers.)"],
             ["stock", "Stock"],
             ["actif", "Actif"],
         ],
@@ -203,12 +202,14 @@ admin! {
     }
     commandes: commande::Model => commande::AdminForm {
         title: "Commandes",
+        edit_form: crate::formulaire::CommandeAdminEditForm,
         template_detail: "admin/commande_detail.html",
         list_display: [
             ["numero", "N°"],
             ["user_id", "Client", "eihwaz_users.username"],
             ["type_retrait", "Type"],
             ["statut", "Statut"],
+            ["pret_materiel", "Matériel rendu"],
             ["mode_paiement", "Paiement"],
             ["prix_total", "Total"],
             ["created_at", "Date"],
@@ -254,6 +255,7 @@ admin! {
             ["adresse", "Adresse"],
             ["telephone", "Téléphone"],
             ["email", "Email"],
+            ["penalite_materiel", "Pénalité matériel (€)"],
             ["latitude", "Latitude"],
             ["longitude", "Longitude"],
         ],

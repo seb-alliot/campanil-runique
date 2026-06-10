@@ -12,11 +12,46 @@
     {% if menu is defined and menu %}
     <div class="devis-menu-recap">
         <h2>{{ menu.titre }}</h2>
-        <p class="devis-menu-prix">{{ menu.prix_par_personne }} €</p>
+        <p class="devis-menu-prix">{{ menu.prix_par_personne }} € / personne</p>
         {% if menu.description %}
         <p class="devis-menu-desc">{{ menu.description }}</p>
         {% endif %}
+        <div id="devis-prix-recap" class="devis-prix-recap" style="display:none;margin-top:1rem;padding:0.8rem;background:var(--color-surface);border-radius:6px;">
+            <div id="recap-base"></div>
+            <div id="recap-remise" style="display:none;color:var(--color-success)"></div>
+            <div id="recap-total" style="font-weight:bold;margin-top:0.3rem;"></div>
+        </div>
     </div>
+    <script>
+    (function() {
+        const prixUnit = {{ menu.prix_par_personne }};
+        const remisePct = {{ menu.remise_groupe | default(value=0) }};
+        const remiseMin = {{ menu.remise_groupe_min | default(value=0) }};
+        function update() {
+            const nb = parseInt(document.querySelector('input[name="nb_personnes"]')?.value, 10);
+            if (!nb || nb < 1) { document.getElementById('devis-prix-recap').style.display = 'none'; return; }
+            const base = prixUnit * nb;
+            const recap = document.getElementById('devis-prix-recap');
+            recap.style.display = 'block';
+            document.getElementById('recap-base').textContent = 'Base : ' + base.toFixed(2).replace('.', ',') + ' €';
+            const remiseEl = document.getElementById('recap-remise');
+            let total = base;
+            if (remisePct > 0 && nb >= remiseMin) {
+                const montantRemise = base * remisePct / 100;
+                total = base - montantRemise;
+                remiseEl.style.display = 'block';
+                remiseEl.textContent = 'Remise ' + remisePct + '% : −' + montantRemise.toFixed(2).replace('.', ',') + ' €';
+            } else {
+                remiseEl.style.display = 'none';
+            }
+            document.getElementById('recap-total').textContent = 'Estimation : ' + total.toFixed(2).replace('.', ',') + ' €';
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const input = document.querySelector('input[name="nb_personnes"]');
+            if (input) { input.addEventListener('input', update); update(); }
+        });
+    })();
+    </script>
     {% endif %}
 
     <div class="devis-form-wrapper">

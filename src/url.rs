@@ -1,5 +1,5 @@
 use crate::views::*;
-use runique::axum::routing::post as post_route;
+use runique::axum::routing::{get as get_route, post as post_route};
 use runique::prelude::*;
 
 pub fn routes() -> Router {
@@ -41,6 +41,9 @@ pub fn routes() -> Router {
         "/mentions-legales"                     => view!{ mentions_legales },       name = "mentions_legales",
         "/sitemap.xml"                          => view!{ sitemap_xml },            name = "sitemap_xml",
         "/llms.txt"                             => view!{ llms_txt },               name = "llms_txt",
+        "/api/admin/materiel-count"             => get_route(admin_materiel_count),  name = "admin_materiel_count",
+        "/api/admin/commandes/{id}/marquer-rendu"    => post_route(admin_marquer_rendu),    name = "admin_marquer_rendu",
+        "/api/admin/commandes/{id}/appliquer-penalite" => post_route(admin_appliquer_penalite), name = "admin_appliquer_penalite",
     }
     // 10 req / 5 min — brute force login (toutes méthodes)
     .rate_limit_many(10, 300, vec![], vec![

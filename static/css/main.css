@@ -1361,6 +1361,16 @@ textarea.form-control { min-height: 120px; resize: vertical; }
 
 .commande-total { font-size: 1rem; color: var(--color-dark); }
 
+.commande-penalite {
+    padding: .65rem 1rem;
+    background: #fff3cd;
+    border-left: 4px solid #e6a817;
+    color: #7a4f00;
+    font-size: .875rem;
+    line-height: 1.5;
+}
+.commande-penalite-icone { margin-right: .4rem; }
+
 .compte-empty {
     text-align: center;
     padding: 3rem 1rem;

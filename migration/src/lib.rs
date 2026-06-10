@@ -10,6 +10,8 @@ mod m20260609_010000_alter_menus_traiteur_add_remise;
 mod m20260609_020000_alter_devis_traiteur_add_prix_total;
 mod m20260610_000000_alter_menus_traiteur_add_remise_min;
 mod m20260610_010000_alter_devis_traiteur_add_remise_appliquee;
+mod m20260610_020000_alter_commandes_add_materiel;
+mod m20260610_030000_alter_info_resto_add_penalite;
 mod m20260526_221257_alter_devis_traiteur_table;
 mod m20260526_221257_alter_commandes_table;
 mod m20260526_221257_alter_commande_menu_choix_table;
@@ -158,6 +160,8 @@ impl MigratorTrait for Migrator {
             Box::new(m20260609_020000_alter_devis_traiteur_add_prix_total::Migration),
             Box::new(m20260610_000000_alter_menus_traiteur_add_remise_min::Migration),
             Box::new(m20260610_010000_alter_devis_traiteur_add_remise_appliquee::Migration),
+            Box::new(m20260610_020000_alter_commandes_add_materiel::Migration),
+            Box::new(m20260610_030000_alter_info_resto_add_penalite::Migration),
         ]
     }
 }

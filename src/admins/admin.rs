@@ -328,6 +328,28 @@ impl DynForm for CommandeAdminFormDynWrapper {
     }
 }
 
+// ── DynForm edit wrapper for crate::formulaire::CommandeAdminEditForm ──
+struct CommandeEditFormDynWrapper(pub crate::formulaire::CommandeAdminEditForm);
+
+#[async_trait]
+impl DynForm for CommandeEditFormDynWrapper {
+    async fn is_valid(&mut self) -> bool {
+        self.0.is_valid().await
+    }
+
+    async fn save(&mut self, _db: &DatabaseConnection) -> Result<(), DbErr> {
+        Ok(()) // update_fn handles persistence
+    }
+
+    fn get_form(&self) -> &Forms {
+        self.0.get_form()
+    }
+
+    fn get_form_mut(&mut self) -> &mut Forms {
+        self.0.get_form_mut()
+    }
+}
+
 // ── DynForm wrapper for avis::AdminForm ──
 struct AvisAdminFormDynWrapper(pub avis::AdminForm);
 
@@ -3939,8 +3961,8 @@ pub fn admin_register() -> AdminRegistry {
                 ("regime", "Régime"),
                 ("prix_par_personne", "Prix / pers."),
                 ("nb_personnes_min", "Personnes min"),
-                ("remise_groupe", "Remise groupe"),
-                ("remise_groupe_min", "Remise dès"),
+                ("remise_groupe", "Remise groupe (%)"),
+                ("remise_groupe_min", "Remise à partir de (pers.)"),
                 ("stock", "Stock"),
                 ("actif", "Actif"),
             ])
@@ -4446,6 +4468,7 @@ pub fn admin_register() -> AdminRegistry {
                 "user_id",
                 "type_retrait",
                 "statut",
+                "pret_materiel",
                 "mode_paiement",
                 "prix_total",
                 "created_at",
@@ -4472,7 +4495,7 @@ pub fn admin_register() -> AdminRegistry {
                 );
             }
             if let Some(ref search_str) = params.search {
-                let search_cond = search_cond!(commande::Entity => or("numero" icontains search_str, "type_retrait" icontains search_str, "statut" icontains search_str, "mode_paiement" icontains search_str, "prix_total" icontains search_str, "created_at" icontains search_str));
+                let search_cond = search_cond!(commande::Entity => or("numero" icontains search_str, "type_retrait" icontains search_str, "statut" icontains search_str, "pret_materiel" icontains search_str, "mode_paiement" icontains search_str, "prix_total" icontains search_str, "created_at" icontains search_str));
                 query = query.filter(search_cond);
             }
             let db_rows = query
@@ -4545,7 +4568,7 @@ pub fn admin_register() -> AdminRegistry {
             use sea_orm::QueryFilter;
             let mut query = commande::Entity::find();
             if let Some(ref search_str) = _search {
-                let search_cond = search_cond!(commande::Entity => or("numero" icontains search_str, "type_retrait" icontains search_str, "statut" icontains search_str, "mode_paiement" icontains search_str, "prix_total" icontains search_str, "created_at" icontains search_str));
+                let search_cond = search_cond!(commande::Entity => or("numero" icontains search_str, "type_retrait" icontains search_str, "statut" icontains search_str, "pret_materiel" icontains search_str, "mode_paiement" icontains search_str, "prix_total" icontains search_str, "created_at" icontains search_str));
                 query = query.filter(search_cond);
             }
             query.count(&*db).await
@@ -4635,6 +4658,23 @@ pub fn admin_register() -> AdminRegistry {
         })
     });
 
+    let edit_form_builder: FormBuilder = Arc::new(
+        |_db: ADb,
+         _vec: Vec<std::string::String>,
+         data: StrMap,
+         tera: ATera,
+         csrf: String,
+         method: Method| {
+            Box::pin(async move {
+                let form = crate::formulaire::CommandeAdminEditForm::build_with_data(
+                    &data, tera, &csrf, method,
+                )
+                .await;
+                Box::new(CommandeEditFormDynWrapper(form)) as Box<dyn DynForm>
+            })
+        },
+    );
+
     let meta = meta.display(
         DisplayConfig::new()
             .columns_include(vec![
@@ -4642,6 +4682,7 @@ pub fn admin_register() -> AdminRegistry {
                 ("user_id", "Client"),
                 ("type_retrait", "Type"),
                 ("statut", "Statut"),
+                ("pret_materiel", "Matériel rendu"),
                 ("mode_paiement", "Paiement"),
                 ("prix_total", "Total"),
                 ("created_at", "Date"),
@@ -4811,6 +4852,7 @@ pub fn admin_register() -> AdminRegistry {
 
     registry.register(
         ResourceEntry::new(meta, form_builder)
+            .with_edit_form_builder(edit_form_builder)
             .with_list_fn(list_fn)
             .with_get_fn(get_fn)
             .with_delete_fn(delete_fn)
@@ -5498,6 +5540,7 @@ pub fn admin_register() -> AdminRegistry {
                 "adresse",
                 "telephone",
                 "email",
+                "penalite_materiel",
                 "latitude",
                 "longitude",
             ];
@@ -5523,7 +5566,7 @@ pub fn admin_register() -> AdminRegistry {
                 );
             }
             if let Some(ref search_str) = params.search {
-                let search_cond = search_cond!(info_resto::Entity => or("nom" icontains search_str, "adresse" icontains search_str, "telephone" icontains search_str, "email" icontains search_str, "latitude" icontains search_str, "longitude" icontains search_str));
+                let search_cond = search_cond!(info_resto::Entity => or("nom" icontains search_str, "adresse" icontains search_str, "telephone" icontains search_str, "email" icontains search_str, "penalite_materiel" icontains search_str, "latitude" icontains search_str, "longitude" icontains search_str));
                 query = query.filter(search_cond);
             }
             let db_rows = query
@@ -5544,7 +5587,7 @@ pub fn admin_register() -> AdminRegistry {
             use sea_orm::QueryFilter;
             let mut query = info_resto::Entity::find();
             if let Some(ref search_str) = _search {
-                let search_cond = search_cond!(info_resto::Entity => or("nom" icontains search_str, "adresse" icontains search_str, "telephone" icontains search_str, "email" icontains search_str, "latitude" icontains search_str, "longitude" icontains search_str));
+                let search_cond = search_cond!(info_resto::Entity => or("nom" icontains search_str, "adresse" icontains search_str, "telephone" icontains search_str, "email" icontains search_str, "penalite_materiel" icontains search_str, "latitude" icontains search_str, "longitude" icontains search_str));
                 query = query.filter(search_cond);
             }
             query.count(&*db).await
@@ -5611,6 +5654,7 @@ pub fn admin_register() -> AdminRegistry {
         ("adresse", "Adresse"),
         ("telephone", "Téléphone"),
         ("email", "Email"),
+        ("penalite_materiel", "Pénalité matériel (€)"),
         ("latitude", "Latitude"),
         ("longitude", "Longitude"),
     ]));

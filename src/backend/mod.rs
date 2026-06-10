@@ -8,6 +8,7 @@ pub mod menus;
 pub mod panier;
 pub mod service;
 pub mod stats;
+pub mod tache_cron;
 pub mod traiteur;
 pub mod user;
 pub mod utils;
@@ -15,7 +16,10 @@ pub mod utils;
 pub use admin_menu_resto::handle_menu_resto_composition;
 pub use avis::{get_avis_valides, handle_avis, handle_avis_supprimer};
 pub use carte::{ajax_avis_plat, vue_boissons_type, vue_carte};
-pub use commande::handle_admin_commande_detail;
+pub use commande::{
+    handle_admin_commande_detail, handle_appliquer_penalite, handle_marquer_rendu,
+    handle_materiel_count,
+};
 pub use compte::{
     compte_commandes_ajax, handle_avis_article, handle_avis_article_supprimer, handle_avis_plat,
     handle_avis_plat_supprimer, handle_commande_annuler, handle_compte, handle_modifier_ligne,

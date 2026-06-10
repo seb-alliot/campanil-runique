@@ -53,6 +53,7 @@ pub struct CommandeResume {
     pub avis_commentaire: Option<String>,
     pub lignes: Vec<LigneResume>,
     pub statuts: Vec<StatutHistorique>,
+    pub penalite_envoyee: bool,
 }
 
 #[derive(Serialize)]

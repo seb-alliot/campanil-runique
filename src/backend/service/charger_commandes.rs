@@ -52,7 +52,7 @@ pub(super) fn grouper_par_service(
     list.into_iter().partition(|c| c.service == "midi")
 }
 
-pub(super) fn garde_acces(request: &Request) -> bool {
+pub fn garde_acces(request: &Request) -> bool {
     request
         .user
         .as_ref()

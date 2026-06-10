@@ -183,6 +183,18 @@ pub async fn devis_confirmation(mut request: Request) -> AppResult<Response> {
     handle_devis_confirmation(&mut request).await
 }
 
+pub async fn admin_materiel_count(request: Request) -> AppResult<Response> {
+    handle_materiel_count(&request).await
+}
+
+pub async fn admin_marquer_rendu(mut request: Request) -> AppResult<Response> {
+    handle_marquer_rendu(&mut request).await
+}
+
+pub async fn admin_appliquer_penalite(mut request: Request) -> AppResult<Response> {
+    handle_appliquer_penalite(&mut request).await
+}
+
 pub async fn mentions_legales(mut request: Request) -> AppResult<Response> {
     inject_auth(&mut request).await;
     context_update!(request => { "title" => "Mentions légales — U Campanile" });

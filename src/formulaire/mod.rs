@@ -8,6 +8,7 @@ pub mod profil;
 pub mod register;
 
 pub use avis::AvisForm;
+pub use commande::CommandeAdminEditForm;
 pub use commande::CommandeForm;
 pub use contact::ContactForm;
 pub use devis_traiteur::DevisTraiteurForm;

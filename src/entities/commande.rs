@@ -40,6 +40,8 @@ model! {
         prix_livraison:    decimal [default: 0],
 
         modifiable:               bool     [required, default: true, skip],
+        pret_materiel:            bool     [required, default: false, skip],
+        penalite_envoyee:         bool     [required, default: false, skip],
         stripe_payment_intent_id: text     [max_length: 255, skip],
         motif_annulation:         textarea [skip],
         mode_contact_annulation:  text     [max_length: 100, skip],

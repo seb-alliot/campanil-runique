@@ -344,6 +344,7 @@ pub async fn get_commandes_user(
             avis_commentaire,
             lignes,
             statuts,
+            penalite_envoyee: c.penalite_envoyee,
         });
     }
     (result, page_courante, total_pages)

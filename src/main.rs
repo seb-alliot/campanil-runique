@@ -24,7 +24,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     )
     .await?;
 
-    builder::new(config)
+    let app = builder::new(config)
         .routes(url::routes())
         .with_database(db)
         .with_custom_db(mongo)
@@ -80,9 +80,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         })
         .build()
         .await
-        .map_err(|e| -> Box<dyn std::error::Error> { Box::new(e) })?
-        .run()
-        .await?;
+        .map_err(|e| -> Box<dyn std::error::Error> { Box::new(e) })?;
+
+    crate::backend::tache_cron::spawn_penalites(app.engine.clone());
+
+    app.run().await?;
 
     Ok(())
 }

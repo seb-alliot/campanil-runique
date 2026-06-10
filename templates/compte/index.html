@@ -129,6 +129,14 @@
                         {% endif %}
                     </div>
 
+                    {% if c.penalite_envoyee %}
+                    <div class="commande-penalite">
+                        <span class="commande-penalite-icone">&#9888;</span>
+                        Un supplément de <strong>600,00 €</strong> a été appliqué pour non-retour du matériel.
+                        Contactez-nous pour toute question.
+                    </div>
+                    {% endif %}
+
                     {% if c.statuts %}
                     <details class="statuts-historique">
                         <summary>Historique</summary>
@@ -373,9 +381,9 @@
 {% endblock %}
 
 {% block extra_js %}
-    <script src="{% static "js/compte-filtre.js" %}" {% csp %}></script>
-    <script src="{% static "js/compte-commandes.js" %}" {% csp %}></script>
-    <script src="{% static "js/compte-tabs.js" %}" {% csp %}></script>
-    <script src="{% static "js/modal-avis.js" %}" {% csp %}></script>
-    <script src="{% static "js/modal-compte.js" %}" {% csp %}></script>
+    <script src="{% static "js/compte/filtre.js" %}" {% csp %}></script>
+    <script src="{% static "js/compte/commandes.js" %}" {% csp %}></script>
+    <script src="{% static "js/compte/tabs.js" %}" {% csp %}></script>
+    <script src="{% static "js/compte/modal-avis.js" %}" {% csp %}></script>
+    <script src="{% static "js/compte/modal-compte.js" %}" {% csp %}></script>
 {% endblock %}
