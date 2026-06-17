@@ -86,6 +86,7 @@ impl MigratorTrait for Migrator {
             Box::new(migrations_table::EihwazUsersMigration),
             Box::new(migrations_table::EihwazSessionsMigration),
             Box::new(migrations_table::AdminTableMigration),
+            Box::new(migrations_table::EihwazResetTokensMigration),
             Box::new(m20260516_004730_create_garnitures_table::Migration),
             Box::new(m20260516_004730_create_menu_enfants_table::Migration),
             Box::new(m20260516_004730_create_menu_resto_plat_table::Migration),
