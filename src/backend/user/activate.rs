@@ -6,7 +6,7 @@ pub async fn handle_activate(
     token: String,
     encrypted_email: String,
 ) -> AppResult<Response> {
-    if !reset_token::peek(&token) {
+    if !reset_token::peek(&request.engine.db, &token).await {
         warning!(request.notices => "Lien d'activation invalide ou expiré.");
         return Ok(Redirect::to("/login").into_response());
     }
@@ -16,7 +16,7 @@ pub async fn handle_activate(
         return Ok(Redirect::to("/login").into_response());
     };
 
-    reset_token::consume(&token);
+    let _ = reset_token::consume(&request.engine.db, &token).await;
 
     let db = request.engine.db.clone();
 

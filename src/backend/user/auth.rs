@@ -81,7 +81,13 @@ pub async fn handle_inscription(
     if request.is_post() && form.is_valid().await {
         match register_user(form, &request.engine.db).await {
             Ok(user) => {
-                let token = reset_token::generate(&user.email);
+                let token = reset_token::generate(
+                    &request.engine.db,
+                    user.id,
+                    std::time::Duration::from_secs(86_400),
+                )
+                .await
+                .unwrap_or_default();
                 let encrypted = reset_token::encrypt_email(&token, &user.email);
                 let base_url = headers
                     .get("host")
