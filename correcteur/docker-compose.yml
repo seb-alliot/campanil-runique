@@ -1,0 +1,59 @@
+# Environnement complet et autonome pour la correction / prise en main.
+#   cd correcteur && cp .env.example .env && docker compose up --build
+#
+# Lance l'app Campanile + PostgreSQL + MongoDB sans rien installer d'autre.
+# Isolé de la racine exprès : la production (VPS) utilise son propre compose
+# (network_mode host + bases mutualisées sur l'hôte pour le multi-projet).
+
+services:
+  app:
+    build:
+      context: ..            # le Dockerfile et le code sont à la racine du projet
+      dockerfile: Dockerfile
+    env_file: .env
+    restart: unless-stopped
+    volumes:
+      - ../media:/app/media
+    # Réseau bridge : on vise les noms de service, pas localhost.
+    environment:
+      DB_HOST: db
+      DB_PORT: "5432"
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+      MONGO_URI: mongodb://mongo:27017
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data:
+  mongo_data:
