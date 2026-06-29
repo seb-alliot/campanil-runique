@@ -44,21 +44,17 @@ pub async fn handle_admin_commande_detail(
     let numero = cmd.numero.clone();
 
     if request.is_post() {
-        let new_statut_str = request
-            .prisme
-            .data
-            .get("statut")
-            .cloned()
-            .unwrap_or_default();
-        let motif = request
-            .prisme
-            .data
+        let Some(data) = request.prisme.checked_data() else {
+            return Ok(
+                Redirect::to(&format!("{}/commandes/list", admin.config.prefix)).into_response(),
+            );
+        };
+        let new_statut_str = data.get("statut").cloned().unwrap_or_default();
+        let motif = data
             .get("motif_annulation")
             .cloned()
             .filter(|v| !v.trim().is_empty());
-        let mode_contact = request
-            .prisme
-            .data
+        let mode_contact = data
             .get("mode_contact_annulation")
             .cloned()
             .filter(|v| !v.trim().is_empty());

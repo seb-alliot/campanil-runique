@@ -55,8 +55,8 @@ pub async fn handle_avis(request: Request) -> AppResult<Response> {
 
     let note: i32 = request
         .prisme
-        .data
-        .get("note")
+        .checked_data()
+        .and_then(|d| d.get("note"))
         .and_then(|v| v.parse().ok())
         .unwrap_or(0);
 

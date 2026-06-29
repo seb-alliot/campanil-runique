@@ -40,21 +40,15 @@ pub async fn handle_modifier_ligne(mut request: Request) -> AppResult<Response> 
         return Ok(Redirect::to("/compte").into_response());
     };
 
-    let note = request
-        .prisme
-        .data
-        .get("note")
-        .cloned()
-        .filter(|s| !s.is_empty());
-    let sans_sel = request
-        .prisme
-        .data
+    let Some(data) = request.prisme.checked_data() else {
+        return Ok(Redirect::to("/compte").into_response());
+    };
+    let note = data.get("note").cloned().filter(|s| !s.is_empty());
+    let sans_sel = data
         .get("sans_sel")
         .map(|v| v == "on" || v == "1")
         .unwrap_or(false);
-    let cuisson = request
-        .prisme
-        .data
+    let cuisson = data
         .get("cuisson")
         .cloned()
         .filter(|s| !s.is_empty())

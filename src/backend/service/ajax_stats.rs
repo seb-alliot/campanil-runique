@@ -1,5 +1,6 @@
 use crate::backend::load_stats;
 use crate::backend::service::charger_commandes::garde_acces;
+use runique::axum::http::{HeaderValue, header::CACHE_CONTROL};
 use runique::prelude::*;
 
 pub async fn ajax_stats(request: &Request) -> AppResult<Response> {
@@ -16,5 +17,9 @@ pub async fn ajax_stats(request: &Request) -> AppResult<Response> {
         .unwrap_or(7)
         .clamp(1, 365);
     let stats = load_stats(request, periode).await;
-    Ok(Json(stats).into_response())
+    let mut response = Json(stats).into_response();
+    response
+        .headers_mut()
+        .insert(CACHE_CONTROL, HeaderValue::from_static("no-store"));
+    Ok(response)
 }

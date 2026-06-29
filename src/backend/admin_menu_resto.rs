@@ -39,27 +39,15 @@ pub async fn handle_menu_resto_composition(
     };
 
     if request.is_post() {
-        let entree_ids = parse_ids(request.prisme.data.get("entree_ids").map(String::as_str));
-        let plat_ids = parse_ids(request.prisme.data.get("plat_ids").map(String::as_str));
-        let dessert_ids = parse_ids(request.prisme.data.get("dessert_ids").map(String::as_str));
-        let entree_libre_txt = request
-            .prisme
-            .data
-            .get("entree_libre")
-            .cloned()
-            .unwrap_or_default();
-        let plat_libre_txt = request
-            .prisme
-            .data
-            .get("plat_libre")
-            .cloned()
-            .unwrap_or_default();
-        let dessert_libre_txt = request
-            .prisme
-            .data
-            .get("dessert_libre")
-            .cloned()
-            .unwrap_or_default();
+        let Some(data) = request.prisme.checked_data() else {
+            return Ok(StatusCode::FORBIDDEN.into_response());
+        };
+        let entree_ids = parse_ids(data.get("entree_ids").map(String::as_str));
+        let plat_ids = parse_ids(data.get("plat_ids").map(String::as_str));
+        let dessert_ids = parse_ids(data.get("dessert_ids").map(String::as_str));
+        let entree_libre_txt = data.get("entree_libre").cloned().unwrap_or_default();
+        let plat_libre_txt = data.get("plat_libre").cloned().unwrap_or_default();
+        let dessert_libre_txt = data.get("dessert_libre").cloned().unwrap_or_default();
 
         menu_entree::Entity::delete_many()
             .filter(menu_entree::Column::MenuId.eq(id as i32))

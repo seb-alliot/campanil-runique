@@ -54,11 +54,14 @@ pub async fn ajax_stock_update(request: &mut Request) -> AppResult<Response> {
         return Ok(Json(serde_json::json!({ "ok": false })).into_response());
     };
 
-    let new_stock = if let Some(delta_str) = request.prisme.data.get("delta")
+    let Some(data) = request.prisme.checked_data() else {
+        return Ok(Json(serde_json::json!({ "ok": false })).into_response());
+    };
+    let new_stock = if let Some(delta_str) = data.get("delta")
         && let Ok(delta) = delta_str.parse::<i32>()
     {
         (menu.stock + delta).max(0)
-    } else if let Some(stock_str) = request.prisme.data.get("stock")
+    } else if let Some(stock_str) = data.get("stock")
         && let Ok(val) = stock_str.parse::<i32>()
     {
         val.max(0)

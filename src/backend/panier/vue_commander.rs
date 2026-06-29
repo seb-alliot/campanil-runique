@@ -22,7 +22,10 @@ pub async fn vue_panier_commander(request: &mut Request) -> AppResult<Response> 
         return Ok(Redirect::to("/panier").into_response());
     }
 
-    let form = commander_form_from_body(&request.prisme.data.clone());
+    let Some(data) = request.prisme.checked_data() else {
+        return Ok(Redirect::to("/panier").into_response());
+    };
+    let form = commander_form_from_body(data);
     let tz_str = request.engine.config.timezone.clone();
     match panier_valider(
         &request.session,

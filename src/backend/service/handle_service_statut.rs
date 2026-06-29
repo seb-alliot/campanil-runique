@@ -25,8 +25,8 @@ pub async fn handle_service_statut(request: &mut Request) -> AppResult<Response>
     let numero = request.get_path("numero").unwrap_or("").to_string();
     let nouveau_statut = request
         .prisme
-        .data
-        .get("statut")
+        .checked_data()
+        .and_then(|d| d.get("statut"))
         .cloned()
         .unwrap_or_default();
 
@@ -119,14 +119,14 @@ pub async fn handle_service_statut(request: &mut Request) -> AppResult<Response>
         } else if statut_str == "annule" {
             let motif_str = request
                 .prisme
-                .data
-                .get("motif_annulation")
+                .checked_data()
+                .and_then(|d| d.get("motif_annulation"))
                 .map(|s| s.as_str())
                 .unwrap_or("Non disponible");
             let mode_contact_str = request
                 .prisme
-                .data
-                .get("mode_contact_annulation")
+                .checked_data()
+                .and_then(|d| d.get("mode_contact_annulation"))
                 .map(|s| s.as_str())
                 .unwrap_or("Non disponible");
             let ctx = context! {
