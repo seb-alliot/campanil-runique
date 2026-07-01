@@ -475,6 +475,15 @@ pub fn admin_register() -> AdminRegistry {
                         .eq(val.clone()),
                 );
             }
+            if let Some((col, val)) = &params.scope
+                && col.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_')
+            {
+                query = query.filter(
+                    Expr::col(Alias::new(col.as_str()))
+                        .cast_as(Alias::new("TEXT"))
+                        .eq(val.clone()),
+                );
+            }
             if let Some(ref search_str) = params.search {
                 let search_cond =
                     search_cond!(allergene::Entity => or("libelle" icontains search_str));
@@ -493,18 +502,32 @@ pub fn admin_register() -> AdminRegistry {
         })
     });
 
-    let count_fn: CountFn = Arc::new(|db: ADb, _search: Option<String>| {
-        Box::pin(async move {
-            use sea_orm::QueryFilter;
-            let mut query = allergene::Entity::find();
-            if let Some(ref search_str) = _search {
-                let search_cond =
-                    search_cond!(allergene::Entity => or("libelle" icontains search_str));
-                query = query.filter(search_cond);
-            }
-            query.count(&*db).await
-        })
-    });
+    let count_fn: CountFn = Arc::new(
+        |db: ADb, _search: Option<String>, scope: Option<(String, String)>| {
+            Box::pin(async move {
+                use sea_orm::{
+                    QueryFilter,
+                    sea_query::{Alias, Expr, ExprTrait},
+                };
+                let mut query = allergene::Entity::find();
+                if let Some(ref search_str) = _search {
+                    let search_cond =
+                        search_cond!(allergene::Entity => or("libelle" icontains search_str));
+                    query = query.filter(search_cond);
+                }
+                if let Some((col, val)) = &scope
+                    && col.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_')
+                {
+                    query = query.filter(
+                        Expr::col(Alias::new(col.as_str()))
+                            .cast_as(Alias::new("TEXT"))
+                            .eq(val.clone()),
+                    );
+                }
+                query.count(&*db).await
+            })
+        },
+    );
 
     let get_fn: GetFn = Arc::new(|db: ADb, id: String| {
         Box::pin(async move {
@@ -566,6 +589,7 @@ pub fn admin_register() -> AdminRegistry {
         ResourceEntry::new(meta, form_builder)
             .with_list_fn(list_fn)
             .with_get_fn(get_fn)
+            .with_enum_label_fn(allergene::apply_enum_labels)
             .with_delete_fn(delete_fn)
             .with_create_fn(create_fn)
             .with_update_fn(update_fn)
@@ -637,6 +661,15 @@ pub fn admin_register() -> AdminRegistry {
                         .eq(val.clone()),
                 );
             }
+            if let Some((col, val)) = &params.scope
+                && col.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_')
+            {
+                query = query.filter(
+                    Expr::col(Alias::new(col.as_str()))
+                        .cast_as(Alias::new("TEXT"))
+                        .eq(val.clone()),
+                );
+            }
             if let Some(ref search_str) = params.search {
                 let search_cond = search_cond!(horaire::Entity => or("jour" icontains search_str, "ouverture_midi" icontains search_str, "fermeture_midi" icontains search_str, "ouverture_soir" icontains search_str, "fermeture_soir" icontains search_str, "ferme" icontains search_str));
                 query = query.filter(search_cond);
@@ -654,17 +687,31 @@ pub fn admin_register() -> AdminRegistry {
         })
     });
 
-    let count_fn: CountFn = Arc::new(|db: ADb, _search: Option<String>| {
-        Box::pin(async move {
-            use sea_orm::QueryFilter;
-            let mut query = horaire::Entity::find();
-            if let Some(ref search_str) = _search {
-                let search_cond = search_cond!(horaire::Entity => or("jour" icontains search_str, "ouverture_midi" icontains search_str, "fermeture_midi" icontains search_str, "ouverture_soir" icontains search_str, "fermeture_soir" icontains search_str, "ferme" icontains search_str));
-                query = query.filter(search_cond);
-            }
-            query.count(&*db).await
-        })
-    });
+    let count_fn: CountFn = Arc::new(
+        |db: ADb, _search: Option<String>, scope: Option<(String, String)>| {
+            Box::pin(async move {
+                use sea_orm::{
+                    QueryFilter,
+                    sea_query::{Alias, Expr, ExprTrait},
+                };
+                let mut query = horaire::Entity::find();
+                if let Some(ref search_str) = _search {
+                    let search_cond = search_cond!(horaire::Entity => or("jour" icontains search_str, "ouverture_midi" icontains search_str, "fermeture_midi" icontains search_str, "ouverture_soir" icontains search_str, "fermeture_soir" icontains search_str, "ferme" icontains search_str));
+                    query = query.filter(search_cond);
+                }
+                if let Some((col, val)) = &scope
+                    && col.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_')
+                {
+                    query = query.filter(
+                        Expr::col(Alias::new(col.as_str()))
+                            .cast_as(Alias::new("TEXT"))
+                            .eq(val.clone()),
+                    );
+                }
+                query.count(&*db).await
+            })
+        },
+    );
 
     let get_fn: GetFn = Arc::new(|db: ADb, id: String| {
         Box::pin(async move {
@@ -839,6 +886,7 @@ pub fn admin_register() -> AdminRegistry {
             .with_edit_form_builder(edit_form_builder)
             .with_list_fn(list_fn)
             .with_get_fn(get_fn)
+            .with_enum_label_fn(horaire::apply_enum_labels)
             .with_delete_fn(delete_fn)
             .with_create_fn(create_fn)
             .with_update_fn(update_fn)
@@ -911,6 +959,15 @@ pub fn admin_register() -> AdminRegistry {
                         .eq(val.clone()),
                 );
             }
+            if let Some((col, val)) = &params.scope
+                && col.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_')
+            {
+                query = query.filter(
+                    Expr::col(Alias::new(col.as_str()))
+                        .cast_as(Alias::new("TEXT"))
+                        .eq(val.clone()),
+                );
+            }
             if let Some(ref search_str) = params.search {
                 let search_cond = search_cond!(devis_traiteur::Entity => or("nom" icontains search_str, "email" icontains search_str, "date_evenement" icontains search_str, "nb_personnes" icontains search_str, "prix_total" icontains search_str, "remise_appliquee" icontains search_str, "statut" icontains search_str, "created_at" icontains search_str));
                 query = query.filter(search_cond);
@@ -928,17 +985,31 @@ pub fn admin_register() -> AdminRegistry {
         })
     });
 
-    let count_fn: CountFn = Arc::new(|db: ADb, _search: Option<String>| {
-        Box::pin(async move {
-            use sea_orm::QueryFilter;
-            let mut query = devis_traiteur::Entity::find();
-            if let Some(ref search_str) = _search {
-                let search_cond = search_cond!(devis_traiteur::Entity => or("nom" icontains search_str, "email" icontains search_str, "date_evenement" icontains search_str, "nb_personnes" icontains search_str, "prix_total" icontains search_str, "remise_appliquee" icontains search_str, "statut" icontains search_str, "created_at" icontains search_str));
-                query = query.filter(search_cond);
-            }
-            query.count(&*db).await
-        })
-    });
+    let count_fn: CountFn = Arc::new(
+        |db: ADb, _search: Option<String>, scope: Option<(String, String)>| {
+            Box::pin(async move {
+                use sea_orm::{
+                    QueryFilter,
+                    sea_query::{Alias, Expr, ExprTrait},
+                };
+                let mut query = devis_traiteur::Entity::find();
+                if let Some(ref search_str) = _search {
+                    let search_cond = search_cond!(devis_traiteur::Entity => or("nom" icontains search_str, "email" icontains search_str, "date_evenement" icontains search_str, "nb_personnes" icontains search_str, "prix_total" icontains search_str, "remise_appliquee" icontains search_str, "statut" icontains search_str, "created_at" icontains search_str));
+                    query = query.filter(search_cond);
+                }
+                if let Some((col, val)) = &scope
+                    && col.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_')
+                {
+                    query = query.filter(
+                        Expr::col(Alias::new(col.as_str()))
+                            .cast_as(Alias::new("TEXT"))
+                            .eq(val.clone()),
+                    );
+                }
+                query.count(&*db).await
+            })
+        },
+    );
 
     let get_fn: GetFn = Arc::new(|db: ADb, id: String| {
         Box::pin(async move {
@@ -1070,6 +1141,7 @@ pub fn admin_register() -> AdminRegistry {
         ResourceEntry::new(meta, form_builder)
             .with_list_fn(list_fn)
             .with_get_fn(get_fn)
+            .with_enum_label_fn(devis_traiteur::apply_enum_labels)
             .with_delete_fn(delete_fn)
             .with_create_fn(create_fn)
             .with_update_fn(update_fn)
@@ -1131,6 +1203,15 @@ pub fn admin_register() -> AdminRegistry {
                         .eq(val.clone()),
                 );
             }
+            if let Some((col, val)) = &params.scope
+                && col.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_')
+            {
+                query = query.filter(
+                    Expr::col(Alias::new(col.as_str()))
+                        .cast_as(Alias::new("TEXT"))
+                        .eq(val.clone()),
+                );
+            }
             if let Some(ref search_str) = params.search {
                 let search_cond = search_cond!(contact::Entity => or("raison" icontains search_str, "titre" icontains search_str, "email" icontains search_str, "created_at" icontains search_str));
                 query = query.filter(search_cond);
@@ -1148,17 +1229,31 @@ pub fn admin_register() -> AdminRegistry {
         })
     });
 
-    let count_fn: CountFn = Arc::new(|db: ADb, _search: Option<String>| {
-        Box::pin(async move {
-            use sea_orm::QueryFilter;
-            let mut query = contact::Entity::find();
-            if let Some(ref search_str) = _search {
-                let search_cond = search_cond!(contact::Entity => or("raison" icontains search_str, "titre" icontains search_str, "email" icontains search_str, "created_at" icontains search_str));
-                query = query.filter(search_cond);
-            }
-            query.count(&*db).await
-        })
-    });
+    let count_fn: CountFn = Arc::new(
+        |db: ADb, _search: Option<String>, scope: Option<(String, String)>| {
+            Box::pin(async move {
+                use sea_orm::{
+                    QueryFilter,
+                    sea_query::{Alias, Expr, ExprTrait},
+                };
+                let mut query = contact::Entity::find();
+                if let Some(ref search_str) = _search {
+                    let search_cond = search_cond!(contact::Entity => or("raison" icontains search_str, "titre" icontains search_str, "email" icontains search_str, "created_at" icontains search_str));
+                    query = query.filter(search_cond);
+                }
+                if let Some((col, val)) = &scope
+                    && col.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_')
+                {
+                    query = query.filter(
+                        Expr::col(Alias::new(col.as_str()))
+                            .cast_as(Alias::new("TEXT"))
+                            .eq(val.clone()),
+                    );
+                }
+                query.count(&*db).await
+            })
+        },
+    );
 
     let get_fn: GetFn = Arc::new(|db: ADb, id: String| {
         Box::pin(async move {
@@ -1286,6 +1381,7 @@ pub fn admin_register() -> AdminRegistry {
         ResourceEntry::new(meta, form_builder)
             .with_list_fn(list_fn)
             .with_get_fn(get_fn)
+            .with_enum_label_fn(contact::apply_enum_labels)
             .with_delete_fn(delete_fn)
             .with_create_fn(create_fn)
             .with_update_fn(update_fn)
@@ -1346,6 +1442,15 @@ pub fn admin_register() -> AdminRegistry {
                         .eq(val.clone()),
                 );
             }
+            if let Some((col, val)) = &params.scope
+                && col.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_')
+            {
+                query = query.filter(
+                    Expr::col(Alias::new(col.as_str()))
+                        .cast_as(Alias::new("TEXT"))
+                        .eq(val.clone()),
+                );
+            }
             if let Some(ref search_str) = params.search {
                 let search_cond = search_cond!(garniture::Entity => or("libelle" icontains search_str, "type_garniture" icontains search_str, "disponible" icontains search_str));
                 query = query.filter(search_cond);
@@ -1363,17 +1468,31 @@ pub fn admin_register() -> AdminRegistry {
         })
     });
 
-    let count_fn: CountFn = Arc::new(|db: ADb, _search: Option<String>| {
-        Box::pin(async move {
-            use sea_orm::QueryFilter;
-            let mut query = garniture::Entity::find();
-            if let Some(ref search_str) = _search {
-                let search_cond = search_cond!(garniture::Entity => or("libelle" icontains search_str, "type_garniture" icontains search_str, "disponible" icontains search_str));
-                query = query.filter(search_cond);
-            }
-            query.count(&*db).await
-        })
-    });
+    let count_fn: CountFn = Arc::new(
+        |db: ADb, _search: Option<String>, scope: Option<(String, String)>| {
+            Box::pin(async move {
+                use sea_orm::{
+                    QueryFilter,
+                    sea_query::{Alias, Expr, ExprTrait},
+                };
+                let mut query = garniture::Entity::find();
+                if let Some(ref search_str) = _search {
+                    let search_cond = search_cond!(garniture::Entity => or("libelle" icontains search_str, "type_garniture" icontains search_str, "disponible" icontains search_str));
+                    query = query.filter(search_cond);
+                }
+                if let Some((col, val)) = &scope
+                    && col.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_')
+                {
+                    query = query.filter(
+                        Expr::col(Alias::new(col.as_str()))
+                            .cast_as(Alias::new("TEXT"))
+                            .eq(val.clone()),
+                    );
+                }
+                query.count(&*db).await
+            })
+        },
+    );
 
     let get_fn: GetFn = Arc::new(|db: ADb, id: String| {
         Box::pin(async move {
@@ -1556,6 +1675,7 @@ pub fn admin_register() -> AdminRegistry {
         ResourceEntry::new(meta, form_builder)
             .with_list_fn(list_fn)
             .with_get_fn(get_fn)
+            .with_enum_label_fn(garniture::apply_enum_labels)
             .with_delete_fn(delete_fn)
             .with_create_fn(create_fn)
             .with_update_fn(update_fn)
@@ -1642,6 +1762,15 @@ pub fn admin_register() -> AdminRegistry {
                         .eq(val.clone()),
                 );
             }
+            if let Some((col, val)) = &params.scope
+                && col.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_')
+            {
+                query = query.filter(
+                    Expr::col(Alias::new(col.as_str()))
+                        .cast_as(Alias::new("TEXT"))
+                        .eq(val.clone()),
+                );
+            }
             if let Some(ref search_str) = params.search {
                 let search_cond = search_cond!(supplement::Entity => or("titre" icontains search_str, "prix" icontains search_str, "disponible" icontains search_str));
                 query = query.filter(search_cond);
@@ -1651,77 +1780,39 @@ pub fn admin_register() -> AdminRegistry {
                 .limit(params.limit)
                 .all(&*db)
                 .await?;
-            let mut rows: Vec<serde_json::Value> = db_rows
+            let rows: Vec<serde_json::Value> = db_rows
                 .into_iter()
                 .map(|r| serde_json::to_value(r).unwrap_or(serde_json::Value::Null))
                 .collect();
-            {
-                use sea_orm::ConnectionTrait;
-                let fk_ids: Vec<String> = rows
-                    .iter()
-                    .filter_map(|r| {
-                        r.get("garniture_id").and_then(|v| {
-                            v.as_i64()
-                                .map(|n| n.to_string())
-                                .or_else(|| v.as_str().map(str::to_string))
-                        })
-                    })
-                    .collect::<std::collections::HashSet<String>>()
-                    .into_iter()
-                    .collect();
-                if !fk_ids.is_empty() {
-                    let ids_csv = fk_ids
-                        .iter()
-                        .map(|s| format!("'{}'", s.replace('\'', "''")))
-                        .collect::<Vec<_>>()
-                        .join(",");
-                    let _fk_stmt_garniture_id = sea_orm::sea_query::Query::select()
-                        .expr(sea_orm::sea_query::Expr::cust("CAST(id AS TEXT)"))
-                        .expr(sea_orm::sea_query::Expr::cust("libelle"))
-                        .from(sea_orm::sea_query::Alias::new("garnitures"))
-                        .and_where(sea_orm::sea_query::Expr::cust(format!(
-                            "CAST(id AS TEXT) IN ({})",
-                            ids_csv
-                        )))
-                        .to_owned();
-                    let label_map_garniture_id: std::collections::HashMap<String, String> = db
-                        .query_all(&_fk_stmt_garniture_id)
-                        .await
-                        .unwrap_or_default()
-                        .iter()
-                        .filter_map(|row| {
-                            let id = row.try_get_by_index::<String>(0).ok()?;
-                            let label = row.try_get_by_index::<String>(1).ok()?;
-                            Some((id, label))
-                        })
-                        .collect();
-                    for row in &mut rows {
-                        if let Some(key) = row.get("garniture_id").and_then(|v| {
-                            v.as_i64()
-                                .map(|n| n.to_string())
-                                .or_else(|| v.as_str().map(str::to_string))
-                        }) && let Some(label) = label_map_garniture_id.get(&key)
-                        {
-                            row["garniture_id"] = serde_json::Value::String(label.clone());
-                        }
-                    }
-                }
-            }
             Ok(rows)
         })
     });
 
-    let count_fn: CountFn = Arc::new(|db: ADb, _search: Option<String>| {
-        Box::pin(async move {
-            use sea_orm::QueryFilter;
-            let mut query = supplement::Entity::find();
-            if let Some(ref search_str) = _search {
-                let search_cond = search_cond!(supplement::Entity => or("titre" icontains search_str, "prix" icontains search_str, "disponible" icontains search_str));
-                query = query.filter(search_cond);
-            }
-            query.count(&*db).await
-        })
-    });
+    let count_fn: CountFn = Arc::new(
+        |db: ADb, _search: Option<String>, scope: Option<(String, String)>| {
+            Box::pin(async move {
+                use sea_orm::{
+                    QueryFilter,
+                    sea_query::{Alias, Expr, ExprTrait},
+                };
+                let mut query = supplement::Entity::find();
+                if let Some(ref search_str) = _search {
+                    let search_cond = search_cond!(supplement::Entity => or("titre" icontains search_str, "prix" icontains search_str, "disponible" icontains search_str));
+                    query = query.filter(search_cond);
+                }
+                if let Some((col, val)) = &scope
+                    && col.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_')
+                {
+                    query = query.filter(
+                        Expr::col(Alias::new(col.as_str()))
+                            .cast_as(Alias::new("TEXT"))
+                            .eq(val.clone()),
+                    );
+                }
+                query.count(&*db).await
+            })
+        },
+    );
 
     let get_fn: GetFn = Arc::new(|db: ADb, id: String| {
         Box::pin(async move {
@@ -1729,35 +1820,7 @@ pub fn admin_register() -> AdminRegistry {
                 .parse::<Pk>()
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
             let row = supplement::Entity::find_by_id(id).one(&*db).await?;
-            let Some(model) = row else {
-                return Ok(None);
-            };
-            let mut row = serde_json::to_value(model).unwrap_or(serde_json::Value::Null);
-            {
-                use sea_orm::ConnectionTrait;
-                if let Some(fk_key) = row.get("garniture_id").and_then(|v| {
-                    v.as_i64()
-                        .map(|n| n.to_string())
-                        .or_else(|| v.as_str().map(str::to_string))
-                }) {
-                    let ids_csv = format!("'{}'", fk_key.replace('\'', "''"));
-                    let _fk_stmt_garniture_id = sea_orm::sea_query::Query::select()
-                        .expr(sea_orm::sea_query::Expr::cust("CAST(id AS TEXT)"))
-                        .expr(sea_orm::sea_query::Expr::cust("libelle"))
-                        .from(sea_orm::sea_query::Alias::new("garnitures"))
-                        .and_where(sea_orm::sea_query::Expr::cust(format!(
-                            "CAST(id AS TEXT) IN ({})",
-                            ids_csv
-                        )))
-                        .to_owned();
-                    if let Some(fk_row) = db.query_one(&_fk_stmt_garniture_id).await.ok().flatten()
-                        && let Ok(label) = fk_row.try_get_by_index::<String>(1)
-                    {
-                        row["garniture_id"] = serde_json::Value::String(label);
-                    }
-                }
-            }
-            Ok(Some(row))
+            Ok(row.map(|r| serde_json::to_value(r).unwrap_or(serde_json::Value::Null)))
         })
     });
 
@@ -1816,6 +1879,11 @@ pub fn admin_register() -> AdminRegistry {
             ])
             .list_filter(vec![("disponible", "Disponible", 10u64)]),
     );
+    let meta = meta.fk_display(vec![(
+        "garniture_id".to_string(),
+        "garnitures".to_string(),
+        "libelle".to_string(),
+    )]);
     let filter_fn: FilterFn = Arc::new(|db: ADb, pages: std::collections::HashMap<String, u64>| {
         Box::pin(async move {
             use sea_orm::sea_query::{Alias, Expr, Query};
@@ -1880,6 +1948,7 @@ pub fn admin_register() -> AdminRegistry {
         ResourceEntry::new(meta, form_builder)
             .with_list_fn(list_fn)
             .with_get_fn(get_fn)
+            .with_enum_label_fn(supplement::apply_enum_labels)
             .with_delete_fn(delete_fn)
             .with_create_fn(create_fn)
             .with_update_fn(update_fn)
@@ -1941,6 +2010,15 @@ pub fn admin_register() -> AdminRegistry {
                         .eq(val.clone()),
                 );
             }
+            if let Some((col, val)) = &params.scope
+                && col.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_')
+            {
+                query = query.filter(
+                    Expr::col(Alias::new(col.as_str()))
+                        .cast_as(Alias::new("TEXT"))
+                        .eq(val.clone()),
+                );
+            }
             if let Some(ref search_str) = params.search {
                 let search_cond = search_cond!(entree::Entity => or("titre" icontains search_str, "usage" icontains search_str, "prix" icontains search_str, "disponible" icontains search_str));
                 query = query.filter(search_cond);
@@ -1958,17 +2036,31 @@ pub fn admin_register() -> AdminRegistry {
         })
     });
 
-    let count_fn: CountFn = Arc::new(|db: ADb, _search: Option<String>| {
-        Box::pin(async move {
-            use sea_orm::QueryFilter;
-            let mut query = entree::Entity::find();
-            if let Some(ref search_str) = _search {
-                let search_cond = search_cond!(entree::Entity => or("titre" icontains search_str, "usage" icontains search_str, "prix" icontains search_str, "disponible" icontains search_str));
-                query = query.filter(search_cond);
-            }
-            query.count(&*db).await
-        })
-    });
+    let count_fn: CountFn = Arc::new(
+        |db: ADb, _search: Option<String>, scope: Option<(String, String)>| {
+            Box::pin(async move {
+                use sea_orm::{
+                    QueryFilter,
+                    sea_query::{Alias, Expr, ExprTrait},
+                };
+                let mut query = entree::Entity::find();
+                if let Some(ref search_str) = _search {
+                    let search_cond = search_cond!(entree::Entity => or("titre" icontains search_str, "usage" icontains search_str, "prix" icontains search_str, "disponible" icontains search_str));
+                    query = query.filter(search_cond);
+                }
+                if let Some((col, val)) = &scope
+                    && col.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_')
+                {
+                    query = query.filter(
+                        Expr::col(Alias::new(col.as_str()))
+                            .cast_as(Alias::new("TEXT"))
+                            .eq(val.clone()),
+                    );
+                }
+                query.count(&*db).await
+            })
+        },
+    );
 
     let get_fn: GetFn = Arc::new(|db: ADb, id: String| {
         Box::pin(async move {
@@ -2241,6 +2333,7 @@ pub fn admin_register() -> AdminRegistry {
         ResourceEntry::new(meta, form_builder)
             .with_list_fn(list_fn)
             .with_get_fn(get_fn)
+            .with_enum_label_fn(entree::apply_enum_labels)
             .with_delete_fn(delete_fn)
             .with_create_fn(create_fn)
             .with_update_fn(update_fn)
@@ -2303,6 +2396,15 @@ pub fn admin_register() -> AdminRegistry {
                         .eq(val.clone()),
                 );
             }
+            if let Some((col, val)) = &params.scope
+                && col.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_')
+            {
+                query = query.filter(
+                    Expr::col(Alias::new(col.as_str()))
+                        .cast_as(Alias::new("TEXT"))
+                        .eq(val.clone()),
+                );
+            }
             if let Some(ref search_str) = params.search {
                 let search_cond = search_cond!(dessert::Entity => or("titre" icontains search_str, "usage" icontains search_str, "prix" icontains search_str, "disponible" icontains search_str));
                 query = query.filter(search_cond);
@@ -2320,17 +2422,31 @@ pub fn admin_register() -> AdminRegistry {
         })
     });
 
-    let count_fn: CountFn = Arc::new(|db: ADb, _search: Option<String>| {
-        Box::pin(async move {
-            use sea_orm::QueryFilter;
-            let mut query = dessert::Entity::find();
-            if let Some(ref search_str) = _search {
-                let search_cond = search_cond!(dessert::Entity => or("titre" icontains search_str, "usage" icontains search_str, "prix" icontains search_str, "disponible" icontains search_str));
-                query = query.filter(search_cond);
-            }
-            query.count(&*db).await
-        })
-    });
+    let count_fn: CountFn = Arc::new(
+        |db: ADb, _search: Option<String>, scope: Option<(String, String)>| {
+            Box::pin(async move {
+                use sea_orm::{
+                    QueryFilter,
+                    sea_query::{Alias, Expr, ExprTrait},
+                };
+                let mut query = dessert::Entity::find();
+                if let Some(ref search_str) = _search {
+                    let search_cond = search_cond!(dessert::Entity => or("titre" icontains search_str, "usage" icontains search_str, "prix" icontains search_str, "disponible" icontains search_str));
+                    query = query.filter(search_cond);
+                }
+                if let Some((col, val)) = &scope
+                    && col.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_')
+                {
+                    query = query.filter(
+                        Expr::col(Alias::new(col.as_str()))
+                            .cast_as(Alias::new("TEXT"))
+                            .eq(val.clone()),
+                    );
+                }
+                query.count(&*db).await
+            })
+        },
+    );
 
     let get_fn: GetFn = Arc::new(|db: ADb, id: String| {
         Box::pin(async move {
@@ -2603,6 +2719,7 @@ pub fn admin_register() -> AdminRegistry {
         ResourceEntry::new(meta, form_builder)
             .with_list_fn(list_fn)
             .with_get_fn(get_fn)
+            .with_enum_label_fn(dessert::apply_enum_labels)
             .with_delete_fn(delete_fn)
             .with_create_fn(create_fn)
             .with_update_fn(update_fn)
@@ -2673,6 +2790,15 @@ pub fn admin_register() -> AdminRegistry {
                         .eq(val.clone()),
                 );
             }
+            if let Some((col, val)) = &params.scope
+                && col.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_')
+            {
+                query = query.filter(
+                    Expr::col(Alias::new(col.as_str()))
+                        .cast_as(Alias::new("TEXT"))
+                        .eq(val.clone()),
+                );
+            }
             if let Some(ref search_str) = params.search {
                 let search_cond = search_cond!(plat::Entity => or("titre" icontains search_str, "type_plat" icontains search_str, "usage" icontains search_str, "prix" icontains search_str, "disponible" icontains search_str, "est_viande" icontains search_str));
                 query = query.filter(search_cond);
@@ -2690,17 +2816,31 @@ pub fn admin_register() -> AdminRegistry {
         })
     });
 
-    let count_fn: CountFn = Arc::new(|db: ADb, _search: Option<String>| {
-        Box::pin(async move {
-            use sea_orm::QueryFilter;
-            let mut query = plat::Entity::find();
-            if let Some(ref search_str) = _search {
-                let search_cond = search_cond!(plat::Entity => or("titre" icontains search_str, "type_plat" icontains search_str, "usage" icontains search_str, "prix" icontains search_str, "disponible" icontains search_str, "est_viande" icontains search_str));
-                query = query.filter(search_cond);
-            }
-            query.count(&*db).await
-        })
-    });
+    let count_fn: CountFn = Arc::new(
+        |db: ADb, _search: Option<String>, scope: Option<(String, String)>| {
+            Box::pin(async move {
+                use sea_orm::{
+                    QueryFilter,
+                    sea_query::{Alias, Expr, ExprTrait},
+                };
+                let mut query = plat::Entity::find();
+                if let Some(ref search_str) = _search {
+                    let search_cond = search_cond!(plat::Entity => or("titre" icontains search_str, "type_plat" icontains search_str, "usage" icontains search_str, "prix" icontains search_str, "disponible" icontains search_str, "est_viande" icontains search_str));
+                    query = query.filter(search_cond);
+                }
+                if let Some((col, val)) = &scope
+                    && col.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_')
+                {
+                    query = query.filter(
+                        Expr::col(Alias::new(col.as_str()))
+                            .cast_as(Alias::new("TEXT"))
+                            .eq(val.clone()),
+                    );
+                }
+                query.count(&*db).await
+            })
+        },
+    );
 
     let get_fn: GetFn = Arc::new(|db: ADb, id: String| {
         Box::pin(async move {
@@ -3233,6 +3373,7 @@ pub fn admin_register() -> AdminRegistry {
         ResourceEntry::new(meta, form_builder)
             .with_list_fn(list_fn)
             .with_get_fn(get_fn)
+            .with_enum_label_fn(plat::apply_enum_labels)
             .with_delete_fn(delete_fn)
             .with_create_fn(create_fn)
             .with_update_fn(update_fn)
@@ -3296,6 +3437,15 @@ pub fn admin_register() -> AdminRegistry {
                         .eq(val.clone()),
                 );
             }
+            if let Some((col, val)) = &params.scope
+                && col.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_')
+            {
+                query = query.filter(
+                    Expr::col(Alias::new(col.as_str()))
+                        .cast_as(Alias::new("TEXT"))
+                        .eq(val.clone()),
+                );
+            }
             if let Some(ref search_str) = params.search {
                 let search_cond = search_cond!(menu::Entity => or("nom" icontains search_str, "type_menu" icontains search_str, "prix" icontains search_str, "ordre" icontains search_str));
                 query = query.filter(search_cond);
@@ -3313,17 +3463,31 @@ pub fn admin_register() -> AdminRegistry {
         })
     });
 
-    let count_fn: CountFn = Arc::new(|db: ADb, _search: Option<String>| {
-        Box::pin(async move {
-            use sea_orm::QueryFilter;
-            let mut query = menu::Entity::find();
-            if let Some(ref search_str) = _search {
-                let search_cond = search_cond!(menu::Entity => or("nom" icontains search_str, "type_menu" icontains search_str, "prix" icontains search_str, "ordre" icontains search_str));
-                query = query.filter(search_cond);
-            }
-            query.count(&*db).await
-        })
-    });
+    let count_fn: CountFn = Arc::new(
+        |db: ADb, _search: Option<String>, scope: Option<(String, String)>| {
+            Box::pin(async move {
+                use sea_orm::{
+                    QueryFilter,
+                    sea_query::{Alias, Expr, ExprTrait},
+                };
+                let mut query = menu::Entity::find();
+                if let Some(ref search_str) = _search {
+                    let search_cond = search_cond!(menu::Entity => or("nom" icontains search_str, "type_menu" icontains search_str, "prix" icontains search_str, "ordre" icontains search_str));
+                    query = query.filter(search_cond);
+                }
+                if let Some((col, val)) = &scope
+                    && col.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_')
+                {
+                    query = query.filter(
+                        Expr::col(Alias::new(col.as_str()))
+                            .cast_as(Alias::new("TEXT"))
+                            .eq(val.clone()),
+                    );
+                }
+                query.count(&*db).await
+            })
+        },
+    );
 
     let get_fn: GetFn = Arc::new(|db: ADb, id: String| {
         Box::pin(async move {
@@ -3702,6 +3866,7 @@ pub fn admin_register() -> AdminRegistry {
         ResourceEntry::new(meta, form_builder)
             .with_list_fn(list_fn)
             .with_get_fn(get_fn)
+            .with_enum_label_fn(menu::apply_enum_labels)
             .with_delete_fn(delete_fn)
             .with_create_fn(create_fn)
             .with_update_fn(update_fn)
@@ -3775,6 +3940,15 @@ pub fn admin_register() -> AdminRegistry {
                         .eq(val.clone()),
                 );
             }
+            if let Some((col, val)) = &params.scope
+                && col.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_')
+            {
+                query = query.filter(
+                    Expr::col(Alias::new(col.as_str()))
+                        .cast_as(Alias::new("TEXT"))
+                        .eq(val.clone()),
+                );
+            }
             if let Some(ref search_str) = params.search {
                 let search_cond = search_cond!(menu_traiteur::Entity => or("titre" icontains search_str, "theme" icontains search_str, "regime" icontains search_str, "prix_par_personne" icontains search_str, "nb_personnes_min" icontains search_str, "remise_groupe" icontains search_str, "remise_groupe_min" icontains search_str, "stock" icontains search_str, "actif" icontains search_str));
                 query = query.filter(search_cond);
@@ -3792,17 +3966,31 @@ pub fn admin_register() -> AdminRegistry {
         })
     });
 
-    let count_fn: CountFn = Arc::new(|db: ADb, _search: Option<String>| {
-        Box::pin(async move {
-            use sea_orm::QueryFilter;
-            let mut query = menu_traiteur::Entity::find();
-            if let Some(ref search_str) = _search {
-                let search_cond = search_cond!(menu_traiteur::Entity => or("titre" icontains search_str, "theme" icontains search_str, "regime" icontains search_str, "prix_par_personne" icontains search_str, "nb_personnes_min" icontains search_str, "remise_groupe" icontains search_str, "remise_groupe_min" icontains search_str, "stock" icontains search_str, "actif" icontains search_str));
-                query = query.filter(search_cond);
-            }
-            query.count(&*db).await
-        })
-    });
+    let count_fn: CountFn = Arc::new(
+        |db: ADb, _search: Option<String>, scope: Option<(String, String)>| {
+            Box::pin(async move {
+                use sea_orm::{
+                    QueryFilter,
+                    sea_query::{Alias, Expr, ExprTrait},
+                };
+                let mut query = menu_traiteur::Entity::find();
+                if let Some(ref search_str) = _search {
+                    let search_cond = search_cond!(menu_traiteur::Entity => or("titre" icontains search_str, "theme" icontains search_str, "regime" icontains search_str, "prix_par_personne" icontains search_str, "nb_personnes_min" icontains search_str, "remise_groupe" icontains search_str, "remise_groupe_min" icontains search_str, "stock" icontains search_str, "actif" icontains search_str));
+                    query = query.filter(search_cond);
+                }
+                if let Some((col, val)) = &scope
+                    && col.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_')
+                {
+                    query = query.filter(
+                        Expr::col(Alias::new(col.as_str()))
+                            .cast_as(Alias::new("TEXT"))
+                            .eq(val.clone()),
+                    );
+                }
+                query.count(&*db).await
+            })
+        },
+    );
 
     let get_fn: GetFn = Arc::new(|db: ADb, id: String| {
         Box::pin(async move {
@@ -4127,6 +4315,7 @@ pub fn admin_register() -> AdminRegistry {
         ResourceEntry::new(meta, form_builder)
             .with_list_fn(list_fn)
             .with_get_fn(get_fn)
+            .with_enum_label_fn(menu_traiteur::apply_enum_labels)
             .with_delete_fn(delete_fn)
             .with_create_fn(create_fn)
             .with_update_fn(update_fn)
@@ -4189,6 +4378,15 @@ pub fn admin_register() -> AdminRegistry {
                         .eq(val.clone()),
                 );
             }
+            if let Some((col, val)) = &params.scope
+                && col.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_')
+            {
+                query = query.filter(
+                    Expr::col(Alias::new(col.as_str()))
+                        .cast_as(Alias::new("TEXT"))
+                        .eq(val.clone()),
+                );
+            }
             if let Some(ref search_str) = params.search {
                 let search_cond = search_cond!(boisson::Entity => or("titre" icontains search_str, "type_boisson" icontains search_str, "prix" icontains search_str, "disponible" icontains search_str));
                 query = query.filter(search_cond);
@@ -4206,17 +4404,31 @@ pub fn admin_register() -> AdminRegistry {
         })
     });
 
-    let count_fn: CountFn = Arc::new(|db: ADb, _search: Option<String>| {
-        Box::pin(async move {
-            use sea_orm::QueryFilter;
-            let mut query = boisson::Entity::find();
-            if let Some(ref search_str) = _search {
-                let search_cond = search_cond!(boisson::Entity => or("titre" icontains search_str, "type_boisson" icontains search_str, "prix" icontains search_str, "disponible" icontains search_str));
-                query = query.filter(search_cond);
-            }
-            query.count(&*db).await
-        })
-    });
+    let count_fn: CountFn = Arc::new(
+        |db: ADb, _search: Option<String>, scope: Option<(String, String)>| {
+            Box::pin(async move {
+                use sea_orm::{
+                    QueryFilter,
+                    sea_query::{Alias, Expr, ExprTrait},
+                };
+                let mut query = boisson::Entity::find();
+                if let Some(ref search_str) = _search {
+                    let search_cond = search_cond!(boisson::Entity => or("titre" icontains search_str, "type_boisson" icontains search_str, "prix" icontains search_str, "disponible" icontains search_str));
+                    query = query.filter(search_cond);
+                }
+                if let Some((col, val)) = &scope
+                    && col.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_')
+                {
+                    query = query.filter(
+                        Expr::col(Alias::new(col.as_str()))
+                            .cast_as(Alias::new("TEXT"))
+                            .eq(val.clone()),
+                    );
+                }
+                query.count(&*db).await
+            })
+        },
+    );
 
     let get_fn: GetFn = Arc::new(|db: ADb, id: String| {
         Box::pin(async move {
@@ -4400,6 +4612,7 @@ pub fn admin_register() -> AdminRegistry {
         ResourceEntry::new(meta, form_builder)
             .with_list_fn(list_fn)
             .with_get_fn(get_fn)
+            .with_enum_label_fn(boisson::apply_enum_labels)
             .with_delete_fn(delete_fn)
             .with_create_fn(create_fn)
             .with_update_fn(update_fn)
@@ -4494,6 +4707,15 @@ pub fn admin_register() -> AdminRegistry {
                         .eq(val.clone()),
                 );
             }
+            if let Some((col, val)) = &params.scope
+                && col.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_')
+            {
+                query = query.filter(
+                    Expr::col(Alias::new(col.as_str()))
+                        .cast_as(Alias::new("TEXT"))
+                        .eq(val.clone()),
+                );
+            }
             if let Some(ref search_str) = params.search {
                 let search_cond = search_cond!(commande::Entity => or("numero" icontains search_str, "type_retrait" icontains search_str, "statut" icontains search_str, "pret_materiel" icontains search_str, "mode_paiement" icontains search_str, "prix_total" icontains search_str, "created_at" icontains search_str));
                 query = query.filter(search_cond);
@@ -4503,77 +4725,39 @@ pub fn admin_register() -> AdminRegistry {
                 .limit(params.limit)
                 .all(&*db)
                 .await?;
-            let mut rows: Vec<serde_json::Value> = db_rows
+            let rows: Vec<serde_json::Value> = db_rows
                 .into_iter()
                 .map(|r| serde_json::to_value(r).unwrap_or(serde_json::Value::Null))
                 .collect();
-            {
-                use sea_orm::ConnectionTrait;
-                let fk_ids: Vec<String> = rows
-                    .iter()
-                    .filter_map(|r| {
-                        r.get("user_id").and_then(|v| {
-                            v.as_i64()
-                                .map(|n| n.to_string())
-                                .or_else(|| v.as_str().map(str::to_string))
-                        })
-                    })
-                    .collect::<std::collections::HashSet<String>>()
-                    .into_iter()
-                    .collect();
-                if !fk_ids.is_empty() {
-                    let ids_csv = fk_ids
-                        .iter()
-                        .map(|s| format!("'{}'", s.replace('\'', "''")))
-                        .collect::<Vec<_>>()
-                        .join(",");
-                    let _fk_stmt_user_id = sea_orm::sea_query::Query::select()
-                        .expr(sea_orm::sea_query::Expr::cust("CAST(id AS TEXT)"))
-                        .expr(sea_orm::sea_query::Expr::cust("username"))
-                        .from(sea_orm::sea_query::Alias::new("eihwaz_users"))
-                        .and_where(sea_orm::sea_query::Expr::cust(format!(
-                            "CAST(id AS TEXT) IN ({})",
-                            ids_csv
-                        )))
-                        .to_owned();
-                    let label_map_user_id: std::collections::HashMap<String, String> = db
-                        .query_all(&_fk_stmt_user_id)
-                        .await
-                        .unwrap_or_default()
-                        .iter()
-                        .filter_map(|row| {
-                            let id = row.try_get_by_index::<String>(0).ok()?;
-                            let label = row.try_get_by_index::<String>(1).ok()?;
-                            Some((id, label))
-                        })
-                        .collect();
-                    for row in &mut rows {
-                        if let Some(key) = row.get("user_id").and_then(|v| {
-                            v.as_i64()
-                                .map(|n| n.to_string())
-                                .or_else(|| v.as_str().map(str::to_string))
-                        }) && let Some(label) = label_map_user_id.get(&key)
-                        {
-                            row["user_id"] = serde_json::Value::String(label.clone());
-                        }
-                    }
-                }
-            }
             Ok(rows)
         })
     });
 
-    let count_fn: CountFn = Arc::new(|db: ADb, _search: Option<String>| {
-        Box::pin(async move {
-            use sea_orm::QueryFilter;
-            let mut query = commande::Entity::find();
-            if let Some(ref search_str) = _search {
-                let search_cond = search_cond!(commande::Entity => or("numero" icontains search_str, "type_retrait" icontains search_str, "statut" icontains search_str, "pret_materiel" icontains search_str, "mode_paiement" icontains search_str, "prix_total" icontains search_str, "created_at" icontains search_str));
-                query = query.filter(search_cond);
-            }
-            query.count(&*db).await
-        })
-    });
+    let count_fn: CountFn = Arc::new(
+        |db: ADb, _search: Option<String>, scope: Option<(String, String)>| {
+            Box::pin(async move {
+                use sea_orm::{
+                    QueryFilter,
+                    sea_query::{Alias, Expr, ExprTrait},
+                };
+                let mut query = commande::Entity::find();
+                if let Some(ref search_str) = _search {
+                    let search_cond = search_cond!(commande::Entity => or("numero" icontains search_str, "type_retrait" icontains search_str, "statut" icontains search_str, "pret_materiel" icontains search_str, "mode_paiement" icontains search_str, "prix_total" icontains search_str, "created_at" icontains search_str));
+                    query = query.filter(search_cond);
+                }
+                if let Some((col, val)) = &scope
+                    && col.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_')
+                {
+                    query = query.filter(
+                        Expr::col(Alias::new(col.as_str()))
+                            .cast_as(Alias::new("TEXT"))
+                            .eq(val.clone()),
+                    );
+                }
+                query.count(&*db).await
+            })
+        },
+    );
 
     let get_fn: GetFn = Arc::new(|db: ADb, id: String| {
         Box::pin(async move {
@@ -4581,35 +4765,7 @@ pub fn admin_register() -> AdminRegistry {
                 .parse::<Pk>()
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
             let row = commande::Entity::find_by_id(id).one(&*db).await?;
-            let Some(model) = row else {
-                return Ok(None);
-            };
-            let mut row = serde_json::to_value(model).unwrap_or(serde_json::Value::Null);
-            {
-                use sea_orm::ConnectionTrait;
-                if let Some(fk_key) = row.get("user_id").and_then(|v| {
-                    v.as_i64()
-                        .map(|n| n.to_string())
-                        .or_else(|| v.as_str().map(str::to_string))
-                }) {
-                    let ids_csv = format!("'{}'", fk_key.replace('\'', "''"));
-                    let _fk_stmt_user_id = sea_orm::sea_query::Query::select()
-                        .expr(sea_orm::sea_query::Expr::cust("CAST(id AS TEXT)"))
-                        .expr(sea_orm::sea_query::Expr::cust("username"))
-                        .from(sea_orm::sea_query::Alias::new("eihwaz_users"))
-                        .and_where(sea_orm::sea_query::Expr::cust(format!(
-                            "CAST(id AS TEXT) IN ({})",
-                            ids_csv
-                        )))
-                        .to_owned();
-                    if let Some(fk_row) = db.query_one(&_fk_stmt_user_id).await.ok().flatten()
-                        && let Ok(label) = fk_row.try_get_by_index::<String>(1)
-                    {
-                        row["user_id"] = serde_json::Value::String(label);
-                    }
-                }
-            }
-            Ok(Some(row))
+            Ok(row.map(|r| serde_json::to_value(r).unwrap_or(serde_json::Value::Null)))
         })
     });
 
@@ -4693,6 +4849,11 @@ pub fn admin_register() -> AdminRegistry {
                 ("mode_paiement", "Paiement", 10u64),
             ]),
     );
+    let meta = meta.fk_display(vec![(
+        "user_id".to_string(),
+        "eihwaz_users".to_string(),
+        "username".to_string(),
+    )]);
     let filter_fn: FilterFn = Arc::new(|db: ADb, pages: std::collections::HashMap<String, u64>| {
         Box::pin(async move {
             use sea_orm::sea_query::{Alias, Expr, Query};
@@ -4855,6 +5016,7 @@ pub fn admin_register() -> AdminRegistry {
             .with_edit_form_builder(edit_form_builder)
             .with_list_fn(list_fn)
             .with_get_fn(get_fn)
+            .with_enum_label_fn(commande::apply_enum_labels)
             .with_delete_fn(delete_fn)
             .with_create_fn(create_fn)
             .with_update_fn(update_fn)
@@ -4939,6 +5101,15 @@ pub fn admin_register() -> AdminRegistry {
                         .eq(val.clone()),
                 );
             }
+            if let Some((col, val)) = &params.scope
+                && col.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_')
+            {
+                query = query.filter(
+                    Expr::col(Alias::new(col.as_str()))
+                        .cast_as(Alias::new("TEXT"))
+                        .eq(val.clone()),
+                );
+            }
             if let Some(ref search_str) = params.search {
                 let search_cond = search_cond!(avis::Entity => or("note" icontains search_str, "statut" icontains search_str, "created_at" icontains search_str));
                 query = query.filter(search_cond);
@@ -4948,77 +5119,39 @@ pub fn admin_register() -> AdminRegistry {
                 .limit(params.limit)
                 .all(&*db)
                 .await?;
-            let mut rows: Vec<serde_json::Value> = db_rows
+            let rows: Vec<serde_json::Value> = db_rows
                 .into_iter()
                 .map(|r| serde_json::to_value(r).unwrap_or(serde_json::Value::Null))
                 .collect();
-            {
-                use sea_orm::ConnectionTrait;
-                let fk_ids: Vec<String> = rows
-                    .iter()
-                    .filter_map(|r| {
-                        r.get("commande_id").and_then(|v| {
-                            v.as_i64()
-                                .map(|n| n.to_string())
-                                .or_else(|| v.as_str().map(str::to_string))
-                        })
-                    })
-                    .collect::<std::collections::HashSet<String>>()
-                    .into_iter()
-                    .collect();
-                if !fk_ids.is_empty() {
-                    let ids_csv = fk_ids
-                        .iter()
-                        .map(|s| format!("'{}'", s.replace('\'', "''")))
-                        .collect::<Vec<_>>()
-                        .join(",");
-                    let _fk_stmt_commande_id = sea_orm::sea_query::Query::select()
-                        .expr(sea_orm::sea_query::Expr::cust("CAST(id AS TEXT)"))
-                        .expr(sea_orm::sea_query::Expr::cust("numero"))
-                        .from(sea_orm::sea_query::Alias::new("commandes"))
-                        .and_where(sea_orm::sea_query::Expr::cust(format!(
-                            "CAST(id AS TEXT) IN ({})",
-                            ids_csv
-                        )))
-                        .to_owned();
-                    let label_map_commande_id: std::collections::HashMap<String, String> = db
-                        .query_all(&_fk_stmt_commande_id)
-                        .await
-                        .unwrap_or_default()
-                        .iter()
-                        .filter_map(|row| {
-                            let id = row.try_get_by_index::<String>(0).ok()?;
-                            let label = row.try_get_by_index::<String>(1).ok()?;
-                            Some((id, label))
-                        })
-                        .collect();
-                    for row in &mut rows {
-                        if let Some(key) = row.get("commande_id").and_then(|v| {
-                            v.as_i64()
-                                .map(|n| n.to_string())
-                                .or_else(|| v.as_str().map(str::to_string))
-                        }) && let Some(label) = label_map_commande_id.get(&key)
-                        {
-                            row["commande_id"] = serde_json::Value::String(label.clone());
-                        }
-                    }
-                }
-            }
             Ok(rows)
         })
     });
 
-    let count_fn: CountFn = Arc::new(|db: ADb, _search: Option<String>| {
-        Box::pin(async move {
-            use sea_orm::QueryFilter;
-            let mut query = avis::Entity::find();
-            if let Some(ref search_str) = _search {
-                let search_cond = search_cond!(avis::Entity => or("note" icontains search_str, "statut" icontains search_str, "created_at" icontains search_str));
-                query = query.filter(search_cond);
-            }
-            query.count(&*db).await
-        })
-    });
+    let count_fn: CountFn = Arc::new(
+        |db: ADb, _search: Option<String>, scope: Option<(String, String)>| {
+            Box::pin(async move {
+                use sea_orm::{
+                    QueryFilter,
+                    sea_query::{Alias, Expr, ExprTrait},
+                };
+                let mut query = avis::Entity::find();
+                if let Some(ref search_str) = _search {
+                    let search_cond = search_cond!(avis::Entity => or("note" icontains search_str, "statut" icontains search_str, "created_at" icontains search_str));
+                    query = query.filter(search_cond);
+                }
+                if let Some((col, val)) = &scope
+                    && col.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_')
+                {
+                    query = query.filter(
+                        Expr::col(Alias::new(col.as_str()))
+                            .cast_as(Alias::new("TEXT"))
+                            .eq(val.clone()),
+                    );
+                }
+                query.count(&*db).await
+            })
+        },
+    );
 
     let get_fn: GetFn = Arc::new(|db: ADb, id: String| {
         Box::pin(async move {
@@ -5026,35 +5159,7 @@ pub fn admin_register() -> AdminRegistry {
                 .parse::<Pk>()
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
             let row = avis::Entity::find_by_id(id).one(&*db).await?;
-            let Some(model) = row else {
-                return Ok(None);
-            };
-            let mut row = serde_json::to_value(model).unwrap_or(serde_json::Value::Null);
-            {
-                use sea_orm::ConnectionTrait;
-                if let Some(fk_key) = row.get("commande_id").and_then(|v| {
-                    v.as_i64()
-                        .map(|n| n.to_string())
-                        .or_else(|| v.as_str().map(str::to_string))
-                }) {
-                    let ids_csv = format!("'{}'", fk_key.replace('\'', "''"));
-                    let _fk_stmt_commande_id = sea_orm::sea_query::Query::select()
-                        .expr(sea_orm::sea_query::Expr::cust("CAST(id AS TEXT)"))
-                        .expr(sea_orm::sea_query::Expr::cust("numero"))
-                        .from(sea_orm::sea_query::Alias::new("commandes"))
-                        .and_where(sea_orm::sea_query::Expr::cust(format!(
-                            "CAST(id AS TEXT) IN ({})",
-                            ids_csv
-                        )))
-                        .to_owned();
-                    if let Some(fk_row) = db.query_one(&_fk_stmt_commande_id).await.ok().flatten()
-                        && let Ok(label) = fk_row.try_get_by_index::<String>(1)
-                    {
-                        row["commande_id"] = serde_json::Value::String(label);
-                    }
-                }
-            }
-            Ok(Some(row))
+            Ok(row.map(|r| serde_json::to_value(r).unwrap_or(serde_json::Value::Null)))
         })
     });
 
@@ -5110,6 +5215,11 @@ pub fn admin_register() -> AdminRegistry {
             ])
             .list_filter(vec![("statut", "Statut", 10u64)]),
     );
+    let meta = meta.fk_display(vec![(
+        "commande_id".to_string(),
+        "commandes".to_string(),
+        "numero".to_string(),
+    )]);
     let filter_fn: FilterFn = Arc::new(|db: ADb, pages: std::collections::HashMap<String, u64>| {
         Box::pin(async move {
             use sea_orm::sea_query::{Alias, Expr, Query};
@@ -5171,6 +5281,7 @@ pub fn admin_register() -> AdminRegistry {
         ResourceEntry::new(meta, form_builder)
             .with_list_fn(list_fn)
             .with_get_fn(get_fn)
+            .with_enum_label_fn(avis::apply_enum_labels)
             .with_delete_fn(delete_fn)
             .with_create_fn(create_fn)
             .with_update_fn(update_fn)
@@ -5257,6 +5368,15 @@ pub fn admin_register() -> AdminRegistry {
                         .eq(val.clone()),
                 );
             }
+            if let Some((col, val)) = &params.scope
+                && col.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_')
+            {
+                query = query.filter(
+                    Expr::col(Alias::new(col.as_str()))
+                        .cast_as(Alias::new("TEXT"))
+                        .eq(val.clone()),
+                );
+            }
             if let Some(ref search_str) = params.search {
                 let search_cond = search_cond!(avis_plat::Entity => or("note" icontains search_str, "statut" icontains search_str, "created_at" icontains search_str));
                 query = query.filter(search_cond);
@@ -5266,77 +5386,39 @@ pub fn admin_register() -> AdminRegistry {
                 .limit(params.limit)
                 .all(&*db)
                 .await?;
-            let mut rows: Vec<serde_json::Value> = db_rows
+            let rows: Vec<serde_json::Value> = db_rows
                 .into_iter()
                 .map(|r| serde_json::to_value(r).unwrap_or(serde_json::Value::Null))
                 .collect();
-            {
-                use sea_orm::ConnectionTrait;
-                let fk_ids: Vec<String> = rows
-                    .iter()
-                    .filter_map(|r| {
-                        r.get("plat_id").and_then(|v| {
-                            v.as_i64()
-                                .map(|n| n.to_string())
-                                .or_else(|| v.as_str().map(str::to_string))
-                        })
-                    })
-                    .collect::<std::collections::HashSet<String>>()
-                    .into_iter()
-                    .collect();
-                if !fk_ids.is_empty() {
-                    let ids_csv = fk_ids
-                        .iter()
-                        .map(|s| format!("'{}'", s.replace('\'', "''")))
-                        .collect::<Vec<_>>()
-                        .join(",");
-                    let _fk_stmt_plat_id = sea_orm::sea_query::Query::select()
-                        .expr(sea_orm::sea_query::Expr::cust("CAST(id AS TEXT)"))
-                        .expr(sea_orm::sea_query::Expr::cust("titre"))
-                        .from(sea_orm::sea_query::Alias::new("plats"))
-                        .and_where(sea_orm::sea_query::Expr::cust(format!(
-                            "CAST(id AS TEXT) IN ({})",
-                            ids_csv
-                        )))
-                        .to_owned();
-                    let label_map_plat_id: std::collections::HashMap<String, String> = db
-                        .query_all(&_fk_stmt_plat_id)
-                        .await
-                        .unwrap_or_default()
-                        .iter()
-                        .filter_map(|row| {
-                            let id = row.try_get_by_index::<String>(0).ok()?;
-                            let label = row.try_get_by_index::<String>(1).ok()?;
-                            Some((id, label))
-                        })
-                        .collect();
-                    for row in &mut rows {
-                        if let Some(key) = row.get("plat_id").and_then(|v| {
-                            v.as_i64()
-                                .map(|n| n.to_string())
-                                .or_else(|| v.as_str().map(str::to_string))
-                        }) && let Some(label) = label_map_plat_id.get(&key)
-                        {
-                            row["plat_id"] = serde_json::Value::String(label.clone());
-                        }
-                    }
-                }
-            }
             Ok(rows)
         })
     });
 
-    let count_fn: CountFn = Arc::new(|db: ADb, _search: Option<String>| {
-        Box::pin(async move {
-            use sea_orm::QueryFilter;
-            let mut query = avis_plat::Entity::find();
-            if let Some(ref search_str) = _search {
-                let search_cond = search_cond!(avis_plat::Entity => or("note" icontains search_str, "statut" icontains search_str, "created_at" icontains search_str));
-                query = query.filter(search_cond);
-            }
-            query.count(&*db).await
-        })
-    });
+    let count_fn: CountFn = Arc::new(
+        |db: ADb, _search: Option<String>, scope: Option<(String, String)>| {
+            Box::pin(async move {
+                use sea_orm::{
+                    QueryFilter,
+                    sea_query::{Alias, Expr, ExprTrait},
+                };
+                let mut query = avis_plat::Entity::find();
+                if let Some(ref search_str) = _search {
+                    let search_cond = search_cond!(avis_plat::Entity => or("note" icontains search_str, "statut" icontains search_str, "created_at" icontains search_str));
+                    query = query.filter(search_cond);
+                }
+                if let Some((col, val)) = &scope
+                    && col.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_')
+                {
+                    query = query.filter(
+                        Expr::col(Alias::new(col.as_str()))
+                            .cast_as(Alias::new("TEXT"))
+                            .eq(val.clone()),
+                    );
+                }
+                query.count(&*db).await
+            })
+        },
+    );
 
     let get_fn: GetFn = Arc::new(|db: ADb, id: String| {
         Box::pin(async move {
@@ -5344,35 +5426,7 @@ pub fn admin_register() -> AdminRegistry {
                 .parse::<Pk>()
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
             let row = avis_plat::Entity::find_by_id(id).one(&*db).await?;
-            let Some(model) = row else {
-                return Ok(None);
-            };
-            let mut row = serde_json::to_value(model).unwrap_or(serde_json::Value::Null);
-            {
-                use sea_orm::ConnectionTrait;
-                if let Some(fk_key) = row.get("plat_id").and_then(|v| {
-                    v.as_i64()
-                        .map(|n| n.to_string())
-                        .or_else(|| v.as_str().map(str::to_string))
-                }) {
-                    let ids_csv = format!("'{}'", fk_key.replace('\'', "''"));
-                    let _fk_stmt_plat_id = sea_orm::sea_query::Query::select()
-                        .expr(sea_orm::sea_query::Expr::cust("CAST(id AS TEXT)"))
-                        .expr(sea_orm::sea_query::Expr::cust("titre"))
-                        .from(sea_orm::sea_query::Alias::new("plats"))
-                        .and_where(sea_orm::sea_query::Expr::cust(format!(
-                            "CAST(id AS TEXT) IN ({})",
-                            ids_csv
-                        )))
-                        .to_owned();
-                    if let Some(fk_row) = db.query_one(&_fk_stmt_plat_id).await.ok().flatten()
-                        && let Ok(label) = fk_row.try_get_by_index::<String>(1)
-                    {
-                        row["plat_id"] = serde_json::Value::String(label);
-                    }
-                }
-            }
-            Ok(Some(row))
+            Ok(row.map(|r| serde_json::to_value(r).unwrap_or(serde_json::Value::Null)))
         })
     });
 
@@ -5431,6 +5485,11 @@ pub fn admin_register() -> AdminRegistry {
             ])
             .list_filter(vec![("statut", "Statut", 10u64)]),
     );
+    let meta = meta.fk_display(vec![(
+        "plat_id".to_string(),
+        "plats".to_string(),
+        "titre".to_string(),
+    )]);
     let filter_fn: FilterFn = Arc::new(|db: ADb, pages: std::collections::HashMap<String, u64>| {
         Box::pin(async move {
             use sea_orm::sea_query::{Alias, Expr, Query};
@@ -5492,6 +5551,7 @@ pub fn admin_register() -> AdminRegistry {
         ResourceEntry::new(meta, form_builder)
             .with_list_fn(list_fn)
             .with_get_fn(get_fn)
+            .with_enum_label_fn(avis_plat::apply_enum_labels)
             .with_delete_fn(delete_fn)
             .with_create_fn(create_fn)
             .with_update_fn(update_fn)
@@ -5565,6 +5625,15 @@ pub fn admin_register() -> AdminRegistry {
                         .eq(val.clone()),
                 );
             }
+            if let Some((col, val)) = &params.scope
+                && col.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_')
+            {
+                query = query.filter(
+                    Expr::col(Alias::new(col.as_str()))
+                        .cast_as(Alias::new("TEXT"))
+                        .eq(val.clone()),
+                );
+            }
             if let Some(ref search_str) = params.search {
                 let search_cond = search_cond!(info_resto::Entity => or("nom" icontains search_str, "adresse" icontains search_str, "telephone" icontains search_str, "email" icontains search_str, "penalite_materiel" icontains search_str, "latitude" icontains search_str, "longitude" icontains search_str));
                 query = query.filter(search_cond);
@@ -5582,17 +5651,31 @@ pub fn admin_register() -> AdminRegistry {
         })
     });
 
-    let count_fn: CountFn = Arc::new(|db: ADb, _search: Option<String>| {
-        Box::pin(async move {
-            use sea_orm::QueryFilter;
-            let mut query = info_resto::Entity::find();
-            if let Some(ref search_str) = _search {
-                let search_cond = search_cond!(info_resto::Entity => or("nom" icontains search_str, "adresse" icontains search_str, "telephone" icontains search_str, "email" icontains search_str, "penalite_materiel" icontains search_str, "latitude" icontains search_str, "longitude" icontains search_str));
-                query = query.filter(search_cond);
-            }
-            query.count(&*db).await
-        })
-    });
+    let count_fn: CountFn = Arc::new(
+        |db: ADb, _search: Option<String>, scope: Option<(String, String)>| {
+            Box::pin(async move {
+                use sea_orm::{
+                    QueryFilter,
+                    sea_query::{Alias, Expr, ExprTrait},
+                };
+                let mut query = info_resto::Entity::find();
+                if let Some(ref search_str) = _search {
+                    let search_cond = search_cond!(info_resto::Entity => or("nom" icontains search_str, "adresse" icontains search_str, "telephone" icontains search_str, "email" icontains search_str, "penalite_materiel" icontains search_str, "latitude" icontains search_str, "longitude" icontains search_str));
+                    query = query.filter(search_cond);
+                }
+                if let Some((col, val)) = &scope
+                    && col.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_')
+                {
+                    query = query.filter(
+                        Expr::col(Alias::new(col.as_str()))
+                            .cast_as(Alias::new("TEXT"))
+                            .eq(val.clone()),
+                    );
+                }
+                query.count(&*db).await
+            })
+        },
+    );
 
     let get_fn: GetFn = Arc::new(|db: ADb, id: String| {
         Box::pin(async move {
@@ -5662,6 +5745,7 @@ pub fn admin_register() -> AdminRegistry {
         ResourceEntry::new(meta, form_builder)
             .with_list_fn(list_fn)
             .with_get_fn(get_fn)
+            .with_enum_label_fn(info_resto::apply_enum_labels)
             .with_delete_fn(delete_fn)
             .with_create_fn(create_fn)
             .with_update_fn(update_fn)
@@ -5697,6 +5781,17 @@ pub fn routes(prefix: &str) -> runique::admin::AdminRoutes {
         .route(
             &format!("{}/{{resource}}/{{id}}/{{action}}", p),
             get(admin_get_id).post(admin_post_id),
+        )
+        .route(
+            &format!("{}/{{parent}}/{{parent_id}}/{{resource}}/{{action}}", p),
+            get(admin_nested_get).post(admin_nested_post),
+        )
+        .route(
+            &format!(
+                "{}/{{parent}}/{{parent_id}}/{{resource}}/{{id}}/{{action}}",
+                p
+            ),
+            get(admin_nested_get_id).post(admin_nested_post_id),
         );
     runique::admin::AdminRoutes::new(p, router)
 }
