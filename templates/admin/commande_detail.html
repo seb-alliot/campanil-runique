@@ -63,7 +63,7 @@
                 <div class="statut-form-row">
                     <select name="statut" class="form-control statut" id="select-statut">
                         {% for s in statuts %}
-                        <option value="{{ s.0 }}"{% if s.0 == detail.statut_valeur %} selected{% endif %}>{{ s.1 }}</option>
+                        <option value="{{ s[0] }}"{% if s[0] == detail.statut_valeur %} selected{% endif %}>{{ s[1] }}</option>
                         {% endfor %}
                     </select>
                     <button type="submit" class="btn btn-primary btn-detail">Mettre à jour</button>

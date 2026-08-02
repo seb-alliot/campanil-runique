@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git ls-tree *)",
+      "WebFetch(domain:test-itsuki.fr)",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\allio\\\\Desktop\\\\campanile\\\\templates\" -Recurse -File)",
+      "PowerShell(Rename-Item \"C:\\\\Users\\\\allio\\\\Desktop\\\\papier campanile\\\\document\\\\a refaire\\\\Capture d'�cran 2026-06-10 220444.png\" \"menus-liste-filtres.png\")",
+      "PowerShell(Rename-Item \"C:\\\\Users\\\\allio\\\\Desktop\\\\papier campanile\\\\document\\\\a refaire\\\\Capture d'�cran 2026-06-10 220506.png\" \"menus-liste-filtres-mobile.png\")",
+      "PowerShell(Rename-Item \"C:\\\\Users\\\\allio\\\\Desktop\\\\papier campanile\\\\document\\\\a refaire\\\\Capture d'�cran 2026-06-10 220513.png\" \"menus-filtres-mobile.png\")",
+      "PowerShell(Rename-Item \"C:\\\\Users\\\\allio\\\\Desktop\\\\papier campanile\\\\document\\\\a refaire\\\\Capture d'�cran 2026-06-10 220838.png\" \"compte-commandes.png\")",
+      "PowerShell(Rename-Item \"C:\\\\Users\\\\allio\\\\Desktop\\\\papier campanile\\\\document\\\\a refaire\\\\Capture d'�cran 2026-06-10 220850.png\" \"compte-commandes-mobile.png\")",
+      "PowerShell(Rename-Item \"C:\\\\Users\\\\allio\\\\Desktop\\\\papier campanile\\\\document\\\\a refaire\\\\Capture d'�cran 2026-06-10 220938.png\" \"service-commandes.png\")",
+      "PowerShell(Rename-Item \"C:\\\\Users\\\\allio\\\\Desktop\\\\papier campanile\\\\document\\\\a refaire\\\\Capture d'�cran 2026-06-10 220949.png\" \"service-commandes-mobile.png\")",
+      "PowerShell(Rename-Item \"C:\\\\Users\\\\allio\\\\Desktop\\\\papier campanile\\\\document\\\\a refaire\\\\Capture d'�cran 2026-06-10 221039.png\" \"service-stats.png\")",
+      "PowerShell(Rename-Item \"C:\\\\Users\\\\allio\\\\Desktop\\\\papier campanile\\\\document\\\\a refaire\\\\Capture d'�cran 2026-06-10 221101.png\" \"service-stats-mobile.png\")",
+      "PowerShell(Rename-Item \"C:\\\\Users\\\\allio\\\\Desktop\\\\papier campanile\\\\document\\\\a refaire\\\\Capture d'�cran 2026-06-10 221235.png\" \"service-filtres-stats.png\")",
+      "PowerShell(Rename-Item \"C:\\\\Users\\\\allio\\\\Desktop\\\\papier campanile\\\\document\\\\a refaire\\\\Capture d'�cran 2026-06-10 221251.png\" \"service-filtres-stats-mobile.png\")",
+      "PowerShell(Rename-Item \"C:\\\\Users\\\\allio\\\\Desktop\\\\papier campanile\\\\document\\\\a refaire\\\\Capture d'�cran 2026-06-10 221352.png\" \"admin-panel.png\")",
+      "PowerShell(Rename-Item \"C:\\\\Users\\\\allio\\\\Desktop\\\\papier campanile\\\\document\\\\a refaire\\\\Capture d'�cran 2026-06-10 221402.png\" \"admin-panel-mobile.png\")"
+    ]
+  }
+}

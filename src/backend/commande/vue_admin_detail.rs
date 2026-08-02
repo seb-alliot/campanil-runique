@@ -59,6 +59,18 @@ pub async fn handle_admin_commande_detail(
             .cloned()
             .filter(|v| !v.trim().is_empty());
 
+        if new_statut_str == "annule" && (motif.is_none() || mode_contact.is_none()) {
+            request
+                .notices
+                .error("Aucun motif soumis à l'annulation.".to_string())
+                .await;
+            return Ok(Redirect::to(&format!(
+                "{}/commandes/{}/detail",
+                admin.config.prefix, numero
+            ))
+            .into_response());
+        }
+
         if let Some(statut) = parse_statut(&new_statut_str) {
             let active = commande::ActiveModel {
                 id: Set(cmd.id),

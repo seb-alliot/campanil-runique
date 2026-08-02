@@ -43,7 +43,7 @@
               {% elif value == false %}
                 <span class="badge badge-neutral">Non</span>
               {% elif value %}
-                {% if value is string %}{{ value | escape }}{% else %}{{ value }}{% endif %}
+                {% if value is string %}{{ value | escape_html }}{% else %}{{ value }}{% endif %}
               {% else %}
                 <span class="text-muted">—</span>
               {% endif %}

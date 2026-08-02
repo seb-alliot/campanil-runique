@@ -88,8 +88,8 @@
             </div>
             <div class="footer-section">
                 <h3>Horaires</h3>
-                {% set jours_ouverts = horaires | default(value=[]) | filter(attribute="ferme", value=false) %}
-                {% set jours_fermes  = horaires | default(value=[]) | filter(attribute="ferme", value=true) %}
+                {% set jours_ouverts = [j for j in horaires | default(value=[]) if not j.ferme] %}
+                {% set jours_fermes  = [j for j in horaires | default(value=[]) if j.ferme] %}
                 {% if jours_ouverts | length > 0 %}
                 {% set h = jours_ouverts | first %}
                 <p>

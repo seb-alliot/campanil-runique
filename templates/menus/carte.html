@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}{{ title }}{% endblock %}
 
-{% macro plat_actions(plat, type_article) %}
+{% component plat_actions(plat, type_article) %}
 {% if plat.disponible %}
   <input type="text" class="plat-note-input" data-plat-id="{{ plat.id }}" placeholder="Note (optionnelle)" maxlength="200" autocomplete="off">
   <div class="plat-actions-row">
@@ -76,7 +76,7 @@
   </div>
   {% endif %}
 {% endif %}
-{% endmacro plat_actions %}
+{% endcomponent plat_actions %}
 
 {% block style %}
 <link rel="stylesheet" href="{% static "css/main.css" %}">
@@ -145,7 +145,7 @@
                 {% if plat.allergenes %}
                 <p class="livre-plat-allergenes">Allergène{% if plat.allergenes | length > 1 %}s{% endif %} : {{ plat.allergenes | join(sep=", ") }}</p>
                 {% endif %}
-                {{ self::plat_actions(plat=plat, type_article="entree") }}
+                {{<plat_actions plat={plat} type_article="entree" />}}
               </div>
             </li>
             {% endfor %}
@@ -182,7 +182,7 @@
                 {% if plat.allergenes %}
                 <p class="livre-plat-allergenes">Allergène{% if plat.allergenes | length > 1 %}s{% endif %} : {{ plat.allergenes | join(sep=", ") }}</p>
                 {% endif %}
-                {{ self::plat_actions(plat=plat, type_article="plat") }}
+                {{<plat_actions plat={plat} type_article="plat" />}}
               </div>
             </li>
             {% endfor %}
@@ -210,7 +210,7 @@
                 {% if plat.allergenes %}
                 <p class="livre-plat-allergenes">Allergène{% if plat.allergenes | length > 1 %}s{% endif %} : {{ plat.allergenes | join(sep=", ") }}</p>
                 {% endif %}
-                {{ self::plat_actions(plat=plat, type_article="plat") }}
+                {{<plat_actions plat={plat} type_article="plat" />}}
               </div>
             </li>
             {% endfor %}
@@ -238,7 +238,7 @@
                 {% if plat.allergenes %}
                 <p class="livre-plat-allergenes">Allergène{% if plat.allergenes | length > 1 %}s{% endif %} : {{ plat.allergenes | join(sep=", ") }}</p>
                 {% endif %}
-                {{ self::plat_actions(plat=plat, type_article="plat") }}
+                {{<plat_actions plat={plat} type_article="plat" />}}
               </div>
             </li>
             {% endfor %}
@@ -269,7 +269,7 @@
                 {% if plat.allergenes %}
                 <p class="livre-plat-allergenes">Allergène{% if plat.allergenes | length > 1 %}s{% endif %} : {{ plat.allergenes | join(sep=", ") }}</p>
                 {% endif %}
-                {{ self::plat_actions(plat=plat, type_article="dessert") }}
+                {{<plat_actions plat={plat} type_article="dessert" />}}
               </div>
             </li>
             {% endfor %}

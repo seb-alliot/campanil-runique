@@ -96,7 +96,7 @@
                                 <button type="button" class="btn btn-sm btn-danger js-supprimer-ligne"
                                     data-numero="{{ c.numero }}"
                                     data-ligne-id="{{ l.id }}"
-                                    data-titre="{{ l.titre | escape }}">
+                                    data-titre="{{ l.titre | escape_html }}">
                                     Supprimer cet article
                                 </button>
                             </details>

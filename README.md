@@ -92,28 +92,27 @@ MONGO_URI=mongodb://localhost:27017
 
 ### 3. Créer la base de données
 
-Plusieurs solution possible , soit utiliser l'orm soit creer les tables manuellement.
-La solution la plus propre est l'orm pour le suivis de l'historique, pour la maitrise du sql c'est la version manuellement.
-Le fichier schema.sql creer les tables via du sql pur, tendis que runique migration up wrap la cli de sea-orm pour appliqué les migrations automatiquement.
-Ensuite le seed peuple la base de données pour l'exemple.
+Deux méthodes possibles pour construire le schéma — **à ne pas cumuler**, elles créent les mêmes tables et se marchent dessus si les deux sont appliquées.
 
-```bash
-psql -U postgres -d campanile -f schema.sql
-```
-
-### 4. Appliquer les migrations
+**Option recommandée — via l'ORM (suivi d'historique, toujours à jour avec la version de Runique installée) :**
 
 ```bash
 runique migration up
 ```
 
-### 5. Créer un compte administrateur
+**Option alternative — SQL brut (`schema.sql`), utile pour la maîtrise du SQL, mais à régénérer manuellement à chaque montée de version de Runique (peut être en retard, ex. colonnes ajoutées côté framework) :**
+
+```bash
+psql -U postgres -d campanile -f schema.sql
+```
+
+### 4. Créer un compte administrateur
 
 ```bash
 runique create-superuser
 ```
 
-### 6. Injecter les données de démonstration
+### 5. Injecter les données de démonstration
 
 ```bash
 psql -U postgres -d campanile -f seed.sql

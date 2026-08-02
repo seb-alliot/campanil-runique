@@ -302,24 +302,15 @@
     }
 
     // --- Actions commandes ---
-    document.addEventListener('click', function (e) {
-        var btn = e.target.closest('.svc-btn[data-next]');
-        if (!btn) return;
-
-        var actions = btn.closest('.svc-actions');
-        if (!actions) return;
-        var numero = actions.dataset.numero;
-        var next = btn.dataset.next;
-
-        btn.disabled = true;
-        var label = btn.textContent;
-        btn.textContent = '…';
-
+    function postStatut(numero, next, extra, onError) {
         var body = new URLSearchParams();
         body.append('statut', next);
         body.append('csrf_token', csrf());
+        if (extra) {
+            Object.keys(extra).forEach(function (k) { body.append(k, extra[k]); });
+        }
 
-        fetch('/service/commandes/' + numero + '/statut', {
+        return fetch('/service/commandes/' + numero + '/statut', {
             method: 'POST',
             credentials: 'same-origin',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -330,14 +321,79 @@
                 if (data.ok) {
                     poll();
                 } else {
-                    btn.textContent = label;
-                    btn.disabled = false;
+                    onError(data.error || 'Erreur inconnue.');
                 }
             })
             .catch(function () {
-                btn.textContent = label;
-                btn.disabled = false;
+                onError('Erreur réseau.');
             });
+    }
+
+    // --- Modal annulation (mode de contact + motif requis) ---
+    var modalAnnuler = document.getElementById('svc-modal-annuler');
+    var formAnnuler = document.getElementById('svc-form-annuler');
+    var champNumero = document.getElementById('svc-annuler-numero');
+    var champErreur = document.getElementById('svc-annuler-erreur');
+    var currentAnnulerBtn = null;
+
+    document.getElementById('svc-annuler-fermer').addEventListener('click', function () {
+        modalAnnuler.close();
+    });
+
+    formAnnuler.addEventListener('submit', function (e) {
+        e.preventDefault();
+        champErreur.hidden = true;
+        var submitBtn = formAnnuler.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+
+        postStatut(champNumero.value, 'annule', {
+            mode_contact_annulation: document.getElementById('svc-annuler-contact').value,
+            motif_annulation: document.getElementById('svc-annuler-motif').value,
+        }, function (message) {
+            champErreur.textContent = message;
+            champErreur.hidden = false;
+            submitBtn.disabled = false;
+        }).then(function () {
+            if (!champErreur.hidden) return;
+            submitBtn.disabled = false;
+            formAnnuler.reset();
+            modalAnnuler.close();
+            if (currentAnnulerBtn) {
+                currentAnnulerBtn.textContent = currentAnnulerBtn.dataset.label;
+                currentAnnulerBtn.disabled = false;
+                currentAnnulerBtn = null;
+            }
+        });
+    });
+
+    document.addEventListener('click', function (e) {
+        var btn = e.target.closest('.svc-btn[data-next]');
+        if (!btn) return;
+
+        var actions = btn.closest('.svc-actions');
+        if (!actions) return;
+        var numero = actions.dataset.numero;
+        var next = btn.dataset.next;
+
+        if (next === 'annule') {
+            btn.dataset.label = btn.textContent;
+            currentAnnulerBtn = btn;
+            champNumero.value = numero;
+            champErreur.hidden = true;
+            formAnnuler.reset();
+            modalAnnuler.showModal();
+            return;
+        }
+
+        btn.disabled = true;
+        var label = btn.textContent;
+        btn.textContent = '…';
+
+        postStatut(numero, next, null, function (message) {
+            alert(message);
+            btn.textContent = label;
+            btn.disabled = false;
+        });
     });
 
 })();

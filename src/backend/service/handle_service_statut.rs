@@ -38,6 +38,26 @@ pub async fn handle_service_statut(request: &mut Request) -> AppResult<Response>
             .into_response());
     };
 
+    if nouveau_statut == "annule" {
+        let data = request.prisme.checked_data();
+        let motif_present = data
+            .as_ref()
+            .and_then(|d| d.get("motif_annulation"))
+            .map(|s| !s.trim().is_empty())
+            .unwrap_or(false);
+        let mode_contact_present = data
+            .as_ref()
+            .and_then(|d| d.get("mode_contact_annulation"))
+            .map(|s| !s.trim().is_empty())
+            .unwrap_or(false);
+        if !motif_present || !mode_contact_present {
+            return Ok(Json(
+                serde_json::json!({"ok": false, "error": "Aucun motif soumis à l'annulation."}),
+            )
+            .into_response());
+        }
+    }
+
     let db = request.db();
 
     let Some(cmd) = search!(commande::Entity => Numero eq &numero,)

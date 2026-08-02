@@ -181,6 +181,46 @@ body {
 .svc-btn--terminer   { background: var(--c-termine);  color: #fff; }
 .svc-btn--annuler    { background: transparent; color: var(--c-annule); border: 1px solid var(--c-annule); }
 
+/* ── Modal annulation ── */
+.svc-modal {
+    border: none;
+    border-radius: 12px;
+    padding: 0;
+    box-shadow: 0 8px 32px rgba(0,0,0,.4);
+    max-width: 420px;
+    width: calc(100% - 2rem);
+    margin: auto;
+    background: var(--surface);
+    color: var(--text);
+}
+.svc-modal::backdrop { background: rgba(0,0,0,.55); }
+.svc-modal-body { padding: 1.5rem; display: flex; flex-direction: column; gap: .75rem; }
+.svc-modal-body h3 { margin: 0; color: var(--c-annule); font-size: 1.1rem; }
+.svc-modal-body p { margin: 0; color: var(--muted); font-size: .85rem; line-height: 1.5; }
+.svc-modal-label { font-size: .75rem; font-weight: 600; color: var(--text); }
+.svc-modal-field {
+    width: 100%;
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: .5rem .6rem;
+    font-size: .85rem;
+    font-family: inherit;
+}
+.svc-modal-error { color: var(--c-annule); font-size: .8rem; margin: 0; }
+.svc-modal-actions { display: flex; gap: .6rem; flex-wrap: wrap; margin-top: .25rem; }
+.svc-modal-fermer {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: .35rem .8rem;
+    font-size: .8rem;
+    cursor: pointer;
+}
+.svc-modal-fermer:hover { background: var(--border); }
+
 @media (max-width: 600px) {
     .svc-header { flex-direction: column; align-items: flex-start; gap: .4rem; }
     .svc-heure  { font-size: 1.2rem; }
