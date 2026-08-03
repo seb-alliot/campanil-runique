@@ -1,3 +1,4 @@
+use crate::backend::stats::{MenuEventParams, get_menu_event};
 use crate::backend::utils::inject_auth;
 use crate::entities::{devis_traiteur, info_resto, menu_traiteur};
 use crate::formulaire::DevisTraiteurForm;
@@ -109,6 +110,21 @@ pub async fn handle_devis_traiteur(
 
         match model.insert(request.db()).await {
             Ok(_) => {
+                if let Some(menu) = &menu_model
+                    && let Err(e) = get_menu_event(
+                        request,
+                        MenuEventParams {
+                            menu_id: menu.id,
+                            titre: menu.titre.clone(),
+                            source: "traiteur".to_string(),
+                            ca: prix_total.unwrap_or(Decimal::ZERO),
+                        },
+                    )
+                    .await
+                {
+                    tracing::error!("Analytics Mongo error (menu event, devis): {}", e);
+                }
+
                 if let Some(resto) = search!(info_resto::Entity)
                     .first(request.db())
                     .await

@@ -2,7 +2,9 @@ use crate::backend::commande::generer_numero;
 use crate::backend::panier::{
     get_prix_livraison, panier_get, panier_vider, prix_livraison_distance,
 };
-use crate::backend::stats::{CommandeEventParams, get_commande_event};
+use crate::backend::stats::{
+    CommandeEventParams, MenuEventParams, get_commande_event, get_menu_event,
+};
 use crate::entities::{
     commande,
     commande::{ModePaiement, StatutCommande, TypeRetrait},
@@ -165,6 +167,7 @@ pub async fn panier_valider(
         result?
     };
     let numero = commande_model.numero.clone();
+    let mut menu_lignes: Vec<(Pk, String, Decimal)> = Vec::new();
 
     for ligne in &panier.lignes {
         let prix_unitaire = Decimal::from_str(&ligne.prix_unitaire).unwrap_or(Decimal::ZERO);
@@ -287,6 +290,14 @@ pub async fn panier_valider(
         };
         let cl = ligne_active.insert(db).await.map_err(|e| e.to_string())?;
 
+        if let Some(mid) = menu_id {
+            menu_lignes.push((
+                mid,
+                ligne.titre.clone(),
+                prix_unitaire * Decimal::from(ligne.quantite),
+            ));
+        }
+
         for gid in &ligne.garniture_ids {
             commande_ligne_garniture::ActiveModel {
                 commande_ligne_id: Set(cl.id),
@@ -350,7 +361,23 @@ pub async fn panier_valider(
         )
         .await
         {
-            eprintln!("Analytics Mongo error (commande event): {}", e);
+            tracing::error!("Analytics Mongo error (commande event): {}", e);
+        }
+
+        for (menu_id, titre, ca) in menu_lignes {
+            if let Err(e) = get_menu_event(
+                &request,
+                MenuEventParams {
+                    menu_id,
+                    titre,
+                    source: "carte".to_string(),
+                    ca,
+                },
+            )
+            .await
+            {
+                tracing::error!("Analytics Mongo error (menu event): {}", e);
+            }
         }
     });
     Ok(numero)

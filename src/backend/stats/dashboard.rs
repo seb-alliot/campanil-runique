@@ -12,6 +12,15 @@ pub struct StatsDashboard {
     pub jours: Vec<JourCA>,
     pub top_plats: Vec<PlatViewStat>,
     pub top_filtres: Vec<FilterStat>,
+    pub par_menu: Vec<MenuStat>,
+}
+
+#[derive(Serialize)]
+pub struct MenuStat {
+    pub titre: String,
+    pub source: String,
+    pub nb: i64,
+    pub ca: f64,
 }
 
 #[derive(Serialize)]
@@ -171,6 +180,36 @@ pub async fn load_stats(request: &Request, periode_jours: u32) -> StatsDashboard
                     filtre: bson_str(&doc, "filtre"),
                     valeur: bson_str(&doc, "valeur"),
                     count: bson_i64(&doc, "count"),
+                });
+            }
+        }
+    }
+
+    let pipeline_menus = vec![
+        doc! { "$match": { "created_at": { "$gte": cutoff_bson } } },
+        doc! { "$group": {
+            "_id": { "menu_id": "$menu_id", "source": "$source" },
+            "titre": { "$first": "$titre" },
+            "nb": { "$sum": 1 },
+            "ca": { "$sum": { "$toDouble": "$ca" } },
+        }},
+        doc! { "$sort": { "ca": -1 } },
+        doc! { "$limit": 20 },
+    ];
+    if let Ok(mut cur) = db
+        .collection::<Document>("menu_events")
+        .aggregate(pipeline_menus)
+        .await
+    {
+        while cur.advance().await.unwrap_or(false) {
+            if let Ok(doc) = cur.deserialize_current()
+                && let Some(Bson::Document(id)) = doc.get("_id")
+            {
+                stats.par_menu.push(MenuStat {
+                    titre: bson_str(&doc, "titre"),
+                    source: bson_str(id, "source"),
+                    nb: bson_i64(&doc, "nb"),
+                    ca: bson_f64(&doc, "ca"),
                 });
             }
         }

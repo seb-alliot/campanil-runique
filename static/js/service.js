@@ -402,6 +402,7 @@
 (function () {
     var chartJours = null;
     var chartTypes = null;
+    var chartMenus = null;
 
     var periodeSelect = document.getElementById('periodeSelect');
     if (periodeSelect) {
@@ -465,6 +466,42 @@
                     plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8' } } },
                 },
             });
+        }
+
+        var menusEl = document.getElementById('chartMenus');
+        if (menusEl) {
+            if (chartMenus) { chartMenus.destroy(); }
+            chartMenus = new Chart(menusEl, {
+                type: 'bar',
+                data: {
+                    labels: d.par_menu.map(function (m) { return m.titre; }),
+                    datasets: [{
+                        label: 'CA (€)',
+                        data: d.par_menu.map(function (m) { return m.ca; }),
+                        backgroundColor: d.par_menu.map(function (m) {
+                            return m.source === 'traiteur' ? 'rgba(245,158,11,.7)' : 'rgba(59,130,246,.7)';
+                        }),
+                    }],
+                },
+                options: {
+                    responsive: true,
+                    indexAxis: 'y',
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' }, title: { display: true, text: 'CA €', color: '#94a3b8' } },
+                        y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } },
+                    },
+                },
+            });
+        }
+
+        var tbodyMenus = document.getElementById('tbodyMenus');
+        if (tbodyMenus) {
+            tbodyMenus.innerHTML = d.par_menu.length
+                ? d.par_menu.map(function (m) {
+                    return '<tr><td>' + esc(m.titre) + '</td><td>' + esc(m.source) + '</td><td>' + m.nb + '</td><td>' + m.ca.toFixed(2) + ' €</td></tr>';
+                }).join('')
+                : '<tr><td colspan="4" class="s-muted">Aucune donnée.</td></tr>';
         }
 
         var tbodyPlats = document.getElementById('tbodyPlats');
