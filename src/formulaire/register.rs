@@ -33,12 +33,13 @@ impl RuniqueForm for RegisterForm {
                 "Le mot de passe doit contenir au moins 10 caractères.".to_string(),
             );
         } else if !password.chars().any(|c| c.is_uppercase())
+            || !password.chars().any(|c| c.is_lowercase())
             || !password.chars().any(|c| c.is_ascii_digit())
             || !password.chars().any(|c| SPECIAL.contains(c))
         {
             errors.insert(
                 "password".to_string(),
-                "Le mot de passe doit contenir au moins une majuscule, un chiffre et un caractère spécial (!@#$%...).".to_string(),
+                "Le mot de passe doit contenir au moins une majuscule, une minuscule, un chiffre et un caractère spécial (!@#$%...).".to_string(),
             );
         }
 
