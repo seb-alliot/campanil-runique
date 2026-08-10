@@ -12,9 +12,9 @@
 - [Trello](https://trello.com/b/7rohcKGQ/campanile)
 - [Base de donnée : Postgres(relationnel)](https://www.postgresql.org/)
 - [Base de donnée non relationnel : Mongo db](https://www.mongodb.com/)
-- [Rust](https://rustup.rs/) 1.88+installer en local pour les performances
-- [Runique (rust 1.88)](https://img.shields.io/badge/Runique-brightgreen)
-- [crate.io](https://runique.io)
+- [Rust](https://rustup.rs/) 1.94 +installer en local pour les performances
+- [Runique (rust 1.94)](https://img.shields.io/badge/Runique-brightgreen)
+- [crate.io](https://crates.io/crates/runique)
 
 runique utilise toutes les techno si dessous
 
@@ -28,7 +28,7 @@ Application web de commande en ligne pour le restaurant U Campanile, développé
 
 ## Prérequis
 
-- [Rust](https://rustup.rs/) 1.88+
+- [Rust](https://rustup.rs/) 1.94+
 - PostgreSQL 15+
 - MongoDB 7+
 - Cargo (inclus avec Rust)
