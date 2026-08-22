@@ -33,6 +33,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             pr.forgot_template("auth/forgot_password.html")
                 .reset_template("auth/reset_password.html")
                 .email_template("emails/reset_password.html")
+                .extra_context(Arc::new(|req: &mut Request| {
+                    Box::pin(backend::utils::inject_auth(req))
+                }))
         })
         .statics()
         .middleware(|m| {

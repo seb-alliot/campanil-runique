@@ -1,404 +1,2275 @@
--- ============================================================================
--- SCHEMA SQL POSTGRESQL — U CAMPANILE
--- ============================================================================
+--
+-- PostgreSQL database dump
+--
 
-CREATE DATABASE IF NOT EXISTS campanile;
-\c campanile
 
+-- Dumped from database version 18.4 (Ubuntu 18.4-0ubuntu0.26.04.1)
+-- Dumped by pg_dump version 18.4 (Ubuntu 18.4-0ubuntu0.26.04.1)
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
 SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
 
--- ============================================================================
--- TYPES ENUM
--- ============================================================================
+--
+-- Name: cuissonviande; Type: TYPE; Schema: public; Owner: -
+--
 
-CREATE TYPE statut_avis AS ENUM ('en_attente', 'valide', 'refuse');
-CREATE TYPE statut_avis_plat AS ENUM ('en_attente', 'valide', 'refuse');
-CREATE TYPE type_boisson AS ENUM ('vin_rouge', 'vin_rose', 'vin_blanc', 'champagne', 'biere', 'aperitif', 'soft', 'eau_bouteille', 'digestif');
-CREATE TYPE type_menu AS ENUM ('menu_resto', 'menu_enfant', 'formule_jour');
-CREATE TYPE type_retrait AS ENUM ('sur_place', 'livraison');
-CREATE TYPE statut_commande AS ENUM ('en_attente', 'accepte', 'en_preparation', 'pret', 'en_cours_livraison', 'livre', 'termine', 'annule');
-CREATE TYPE mode_paiement AS ENUM ('especes', 'carte_bancaire', 'en_ligne');
-CREATE TYPE type_article AS ENUM ('plat', 'entree', 'dessert', 'menu', 'boisson', 'supplement');
-CREATE TYPE cuisson_viande AS ENUM ('bleu', 'saignant', 'a_point', 'bien_cuit');
-CREATE TYPE theme_menu AS ENUM ('mariage', 'bapteme', 'anniversaire', 'autre');
-CREATE TYPE regime_menu AS ENUM ('standard', 'vegetarien', 'sans_gluten', 'halal', 'casher');
-CREATE TYPE statut_devis AS ENUM ('en_attente', 'en_cours', 'accepte', 'refuse');
-CREATE TYPE usage_entree AS ENUM ('carte', 'menu', 'les_deux');
-CREATE TYPE usage_dessert AS ENUM ('carte', 'menu', 'les_deux');
-CREATE TYPE type_plat AS ENUM ('specialite', 'viande', 'poisson', 'plat');
-CREATE TYPE usage_plat AS ENUM ('carte', 'menu', 'les_deux');
-CREATE TYPE type_garniture AS ENUM ('feculent', 'legumes', 'sauce');
-CREATE TYPE raisoncontact AS ENUM ('reservation', 'traiteur', 'commande', 'autre');
-
--- ============================================================================
--- TABLES FRAMEWORK RUNIQUE
--- ============================================================================
-
-CREATE TABLE eihwaz_users (
-    id          SERIAL PRIMARY KEY,
-    username    VARCHAR(150) NOT NULL UNIQUE,
-    email       VARCHAR(255) NOT NULL UNIQUE,
-    password    VARCHAR(255) NOT NULL,
-    is_active   BOOLEAN NOT NULL DEFAULT false,
-    is_staff    BOOLEAN NOT NULL DEFAULT false,
-    is_superuser BOOLEAN NOT NULL DEFAULT false,
-    last_login  TIMESTAMP,
-    created_at  TIMESTAMP,
-    updated_at  TIMESTAMP,
-    -- Extension Campanile (via extend!{})
-    telephone   VARCHAR(20),
-    adresse     VARCHAR(255),
-    ville       VARCHAR(100),
-    code_postal VARCHAR(10)
+CREATE TYPE public.cuissonviande AS ENUM (
+    'bleu',
+    'saignant',
+    'a_point',
+    'bien_cuit'
 );
 
-CREATE TABLE eihwaz_sessions (
-    id          VARCHAR(255) PRIMARY KEY,
-    data        BYTEA NOT NULL,
-    expiry_date TIMESTAMP NOT NULL
+
+--
+-- Name: jour; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.jour AS ENUM (
+    'lundi',
+    'mardi',
+    'mercredi',
+    'jeudi',
+    'vendredi',
+    'samedi',
+    'dimanche'
 );
 
--- ============================================================================
--- TABLES DE RÉFÉRENCE
--- ============================================================================
 
-CREATE TABLE allergenes (
-    id      SERIAL PRIMARY KEY,
-    libelle VARCHAR(100) NOT NULL UNIQUE
+--
+-- Name: modepaiement; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.modepaiement AS ENUM (
+    'especes',
+    'carte_bancaire',
+    'en_ligne'
 );
 
-CREATE TABLE garnitures (
-    id              SERIAL PRIMARY KEY,
-    libelle         VARCHAR(100) NOT NULL,
-    type_garniture  type_garniture NOT NULL,
-    disponible      BOOLEAN NOT NULL DEFAULT true
+
+--
+-- Name: raisoncontact; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.raisoncontact AS ENUM (
+    'reservation',
+    'traiteur',
+    'commande',
+    'autre'
 );
 
-CREATE TABLE horaires (
-    id              SERIAL PRIMARY KEY,
-    jour            VARCHAR(20) NOT NULL UNIQUE,
-    ouverture_midi  TIME,
-    fermeture_midi  TIME,
-    ouverture_soir  TIME,
-    fermeture_soir  TIME,
-    ferme           BOOLEAN NOT NULL DEFAULT false,
-    note            VARCHAR(255)
+
+--
+-- Name: regimemenu; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.regimemenu AS ENUM (
+    'standard',
+    'vegetarien',
+    'sans_gluten',
+    'halal',
+    'casher'
 );
 
-CREATE TABLE info_resto (
-    id                  SERIAL PRIMARY KEY,
-    nom                 VARCHAR(150) NOT NULL,
-    adresse             VARCHAR(200) NOT NULL,
-    telephone           VARCHAR(20) NOT NULL,
-    email               VARCHAR(150),
-    periode_ouverture   VARCHAR(100),
-    facebook            VARCHAR(255),
-    instagram           VARCHAR(255),
-    tripadvisor         VARCHAR(255),
-    google_maps         VARCHAR(500),
-    description         TEXT,
-    ville               VARCHAR(100),
-    prix_livraison      NUMERIC(10,2),
-    latitude            NUMERIC(10,7),
-    longitude           NUMERIC(10,7)
+
+--
+-- Name: statutavis; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.statutavis AS ENUM (
+    'en_attente',
+    'valide',
+    'refuse'
 );
 
--- ============================================================================
--- TABLES DE CATALOGUE
--- ============================================================================
 
-CREATE TABLE entrees (
-    id          SERIAL PRIMARY KEY,
-    titre       VARCHAR(255) NOT NULL,
-    label       VARCHAR(80),
-    description TEXT,
-    image       VARCHAR(255),
-    prix        NUMERIC(10,2) NOT NULL,
-    disponible  BOOLEAN NOT NULL DEFAULT true,
-    usage       usage_entree NOT NULL DEFAULT 'les_deux',
-    ordre       INTEGER NOT NULL DEFAULT 0
+--
+-- Name: statutavisplat; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.statutavisplat AS ENUM (
+    'en_attente',
+    'valide',
+    'refuse'
 );
 
-CREATE TABLE plats (
-    id          SERIAL PRIMARY KEY,
-    titre       VARCHAR(255) NOT NULL,
-    label       VARCHAR(80),
-    type_plat   type_plat NOT NULL,
-    description TEXT,
-    image       VARCHAR(255),
-    prix        NUMERIC(10,2) NOT NULL,
-    disponible  BOOLEAN NOT NULL DEFAULT true,
-    est_viande  BOOLEAN NOT NULL DEFAULT false,
-    usage       usage_plat NOT NULL DEFAULT 'les_deux',
-    ordre       INTEGER NOT NULL DEFAULT 0
+
+--
+-- Name: statutcommande; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.statutcommande AS ENUM (
+    'en_attente',
+    'accepte',
+    'en_preparation',
+    'pret',
+    'en_cours_livraison',
+    'livre',
+    'termine',
+    'annule'
 );
 
-CREATE TABLE desserts (
-    id          SERIAL PRIMARY KEY,
-    titre       VARCHAR(255) NOT NULL,
-    label       VARCHAR(80),
-    description TEXT,
-    image       VARCHAR(255),
-    prix        NUMERIC(10,2) NOT NULL,
-    disponible  BOOLEAN NOT NULL DEFAULT true,
-    usage       usage_dessert NOT NULL DEFAULT 'les_deux',
-    ordre       INTEGER NOT NULL DEFAULT 0
+
+--
+-- Name: statutdevis; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.statutdevis AS ENUM (
+    'en_attente',
+    'en_cours',
+    'accepte',
+    'refuse'
 );
 
-CREATE TABLE boissons (
-    id           SERIAL PRIMARY KEY,
-    titre        VARCHAR(255) NOT NULL,
-    type_boisson type_boisson NOT NULL,
-    prix         NUMERIC(10,2) NOT NULL,
-    description  TEXT,
-    image        VARCHAR(255),
-    disponible   BOOLEAN NOT NULL DEFAULT true,
-    ordre        INTEGER NOT NULL DEFAULT 0,
-    created_at   TIMESTAMP
+
+--
+-- Name: thememenu; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.thememenu AS ENUM (
+    'mariage',
+    'bapteme',
+    'anniversaire',
+    'autre'
 );
 
-CREATE TABLE supplements (
-    id          SERIAL PRIMARY KEY,
-    garniture_id INTEGER REFERENCES garnitures(id) ON DELETE SET NULL,
-    titre       VARCHAR(255),
-    libelle     VARCHAR(500),
-    prix        NUMERIC(10,2) NOT NULL,
-    disponible  BOOLEAN NOT NULL DEFAULT true,
-    ordre       INTEGER NOT NULL DEFAULT 0
+
+--
+-- Name: typearticle; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.typearticle AS ENUM (
+    'plat',
+    'menu_resto',
+    'formule_jour',
+    'menu_enfant',
+    'boisson',
+    'supplement',
+    'menu',
+    'entree',
+    'dessert'
 );
 
--- ============================================================================
--- RELATIONS CATALOGUE
--- ============================================================================
 
-CREATE TABLE entree_allergene (
-    id          SERIAL PRIMARY KEY,
-    entree_id   INTEGER NOT NULL REFERENCES entrees(id) ON DELETE CASCADE,
-    allergene_id INTEGER NOT NULL REFERENCES allergenes(id) ON DELETE CASCADE
+--
+-- Name: typeboisson; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.typeboisson AS ENUM (
+    'vin_rouge',
+    'vin_rose',
+    'vin_blanc',
+    'champagne',
+    'biere',
+    'aperitif',
+    'soft',
+    'eau_bouteille',
+    'digestif'
 );
 
-CREATE TABLE plat_allergene (
-    id          SERIAL PRIMARY KEY,
-    plat_id     INTEGER NOT NULL REFERENCES plats(id) ON DELETE CASCADE,
-    allergene_id INTEGER NOT NULL REFERENCES allergenes(id) ON DELETE CASCADE
+
+--
+-- Name: typegarniture; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.typegarniture AS ENUM (
+    'feculent',
+    'legumes'
 );
 
-CREATE TABLE dessert_allergene (
-    id          SERIAL PRIMARY KEY,
-    dessert_id  INTEGER NOT NULL REFERENCES desserts(id) ON DELETE CASCADE,
-    allergene_id INTEGER NOT NULL REFERENCES allergenes(id) ON DELETE CASCADE
+
+--
+-- Name: typemenu; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.typemenu AS ENUM (
+    'menu_resto',
+    'menu_enfant',
+    'formule_jour'
 );
 
-CREATE TABLE plat_garnitures (
-    id          SERIAL PRIMARY KEY,
-    plat_id     INTEGER NOT NULL REFERENCES plats(id) ON DELETE CASCADE,
-    garniture_id INTEGER NOT NULL REFERENCES garnitures(id) ON DELETE CASCADE,
-    est_defaut  BOOLEAN NOT NULL DEFAULT false
+
+--
+-- Name: typeplat; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.typeplat AS ENUM (
+    'entree',
+    'specialite',
+    'viande',
+    'poisson',
+    'plat',
+    'dessert'
 );
 
-CREATE TABLE plat_supplements (
-    id           SERIAL PRIMARY KEY,
-    plat_id      INTEGER NOT NULL REFERENCES plats(id) ON DELETE CASCADE,
-    supplement_id INTEGER NOT NULL REFERENCES supplements(id) ON DELETE CASCADE,
-    UNIQUE (plat_id, supplement_id)
+
+--
+-- Name: typeretrait; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.typeretrait AS ENUM (
+    'sur_place',
+    'livraison'
 );
 
--- ============================================================================
--- MENUS RESTAURANT
--- ============================================================================
 
-CREATE TABLE menus (
-    id            SERIAL PRIMARY KEY,
-    type_menu     type_menu NOT NULL DEFAULT 'menu_resto',
-    nom           VARCHAR(255) NOT NULL,
-    description   TEXT,
-    image         VARCHAR(255),
-    prix          NUMERIC(10,2) NOT NULL,
-    ordre         INTEGER NOT NULL DEFAULT 0,
-    entree_libre  VARCHAR(500),
-    plat_libre    VARCHAR(500),
-    dessert_libre VARCHAR(500)
+--
+-- Name: usagedessert; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.usagedessert AS ENUM (
+    'carte',
+    'menu',
+    'les_deux'
 );
 
-CREATE TABLE menu_entrees (
-    id        SERIAL PRIMARY KEY,
-    menu_id   INTEGER NOT NULL REFERENCES menus(id) ON DELETE CASCADE,
-    entree_id INTEGER NOT NULL REFERENCES entrees(id) ON DELETE CASCADE
+
+--
+-- Name: usageentree; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.usageentree AS ENUM (
+    'carte',
+    'menu',
+    'les_deux'
 );
 
-CREATE TABLE menu_plats (
-    id      SERIAL PRIMARY KEY,
-    menu_id INTEGER NOT NULL REFERENCES menus(id) ON DELETE CASCADE,
-    plat_id INTEGER NOT NULL REFERENCES plats(id) ON DELETE CASCADE
+
+--
+-- Name: usageplat; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.usageplat AS ENUM (
+    'carte',
+    'menu',
+    'les_deux'
 );
 
-CREATE TABLE menu_desserts (
-    id         SERIAL PRIMARY KEY,
-    menu_id    INTEGER NOT NULL REFERENCES menus(id) ON DELETE CASCADE,
-    dessert_id INTEGER NOT NULL REFERENCES desserts(id) ON DELETE CASCADE
+
+--
+-- Name: set_updated_at_commandes(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.set_updated_at_commandes() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$ BEGIN NEW.updated_at = NOW(); RETURN NEW; END; $$;
+
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- Name: allergenes; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.allergenes (
+    id integer NOT NULL,
+    libelle character varying NOT NULL
 );
 
--- ============================================================================
--- COMMANDES
--- ============================================================================
 
-CREATE TABLE commandes (
-    id                       SERIAL PRIMARY KEY,
-    numero                   VARCHAR(20) NOT NULL UNIQUE,
-    user_id                  INTEGER NOT NULL REFERENCES eihwaz_users(id) ON DELETE RESTRICT,
-    statut                   statut_commande NOT NULL DEFAULT 'en_attente',
-    mode_paiement            mode_paiement NOT NULL,
-    prix_total               NUMERIC(10,2) NOT NULL,
-    type_retrait             type_retrait NOT NULL,
-    heure_retrait            TIMESTAMP,
-    adresse_livraison        VARCHAR(255),
-    ville_livraison          VARCHAR(100),
-    cp_livraison             VARCHAR(10),
-    prix_livraison           NUMERIC(10,2),
-    modifiable               BOOLEAN NOT NULL DEFAULT true,
-    stripe_payment_intent_id VARCHAR(255),
-    motif_annulation         TEXT,
-    mode_contact_annulation  VARCHAR(100),
-    date_annulation          TIMESTAMP,
-    created_at               TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at               TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+--
+-- Name: allergenes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.allergenes ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.allergenes_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
 );
 
-CREATE TABLE commande_lignes (
-    id            SERIAL PRIMARY KEY,
-    commande_id   INTEGER NOT NULL REFERENCES commandes(id) ON DELETE CASCADE,
-    type_article  type_article NOT NULL,
-    plat_id       INTEGER REFERENCES plats(id) ON DELETE RESTRICT,
-    entree_id     INTEGER REFERENCES entrees(id) ON DELETE RESTRICT,
-    dessert_id    INTEGER REFERENCES desserts(id) ON DELETE RESTRICT,
-    menu_id       INTEGER REFERENCES menus(id) ON DELETE RESTRICT,
-    boisson_id    INTEGER REFERENCES boissons(id) ON DELETE RESTRICT,
-    supplement_id INTEGER REFERENCES supplements(id) ON DELETE RESTRICT,
-    cuisson       cuisson_viande,
-    sans_sel      BOOLEAN NOT NULL DEFAULT false,
-    note          VARCHAR(500),
-    quantite      INTEGER NOT NULL DEFAULT 1,
-    prix_unitaire NUMERIC(10,2) NOT NULL
+
+--
+-- Name: avis; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.avis (
+    id integer NOT NULL,
+    commande_id integer NOT NULL,
+    user_id integer NOT NULL,
+    note integer NOT NULL,
+    commentaire text NOT NULL,
+    statut public.statutavis NOT NULL,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
-CREATE TABLE commande_ligne_garnitures (
-    id                SERIAL PRIMARY KEY,
-    commande_ligne_id INTEGER NOT NULL REFERENCES commande_lignes(id) ON DELETE CASCADE,
-    garniture_id      INTEGER NOT NULL REFERENCES garnitures(id) ON DELETE RESTRICT
+
+--
+-- Name: avis_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.avis ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.avis_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
 );
 
-CREATE TABLE commande_menu_choix (
-    id                SERIAL PRIMARY KEY,
-    commande_ligne_id INTEGER NOT NULL REFERENCES commande_lignes(id) ON DELETE CASCADE,
-    cours             VARCHAR(20) NOT NULL,
-    plat_id           INTEGER REFERENCES plats(id) ON DELETE RESTRICT,
-    entree_id         INTEGER REFERENCES entrees(id) ON DELETE RESTRICT,
-    dessert_id        INTEGER REFERENCES desserts(id) ON DELETE RESTRICT
+
+--
+-- Name: avis_plats; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.avis_plats (
+    id integer NOT NULL,
+    plat_id integer,
+    user_id integer,
+    note integer NOT NULL,
+    commentaire text NOT NULL,
+    statut public.statutavisplat NOT NULL,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    entree_id integer,
+    dessert_id integer
 );
 
-CREATE TABLE commande_statuts (
-    id          SERIAL PRIMARY KEY,
-    commande_id INTEGER NOT NULL REFERENCES commandes(id) ON DELETE CASCADE,
-    statut      VARCHAR(50) NOT NULL,
-    note        TEXT,
-    created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+
+--
+-- Name: avis_plats_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.avis_plats ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.avis_plats_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
 );
 
--- ============================================================================
--- AVIS
--- ============================================================================
 
-CREATE TABLE avis (
-    id          SERIAL PRIMARY KEY,
-    commande_id INTEGER NOT NULL UNIQUE REFERENCES commandes(id) ON DELETE CASCADE,
-    user_id     INTEGER NOT NULL REFERENCES eihwaz_users(id) ON DELETE RESTRICT,
-    note        INTEGER NOT NULL CHECK (note BETWEEN 1 AND 5),
-    commentaire TEXT NOT NULL,
-    statut      statut_avis NOT NULL DEFAULT 'en_attente',
-    created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+--
+-- Name: boissons; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.boissons (
+    id integer NOT NULL,
+    titre character varying NOT NULL,
+    type_boisson public.typeboisson NOT NULL,
+    prix numeric NOT NULL,
+    description text,
+    image character varying,
+    disponible boolean NOT NULL,
+    ordre integer,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
-CREATE TABLE avis_plats (
-    id          SERIAL PRIMARY KEY,
-    plat_id     INTEGER NOT NULL REFERENCES plats(id) ON DELETE CASCADE,
-    user_id     INTEGER REFERENCES eihwaz_users(id) ON DELETE SET NULL,
-    note        INTEGER NOT NULL CHECK (note BETWEEN 1 AND 5),
-    commentaire TEXT NOT NULL,
-    statut      statut_avis_plat NOT NULL DEFAULT 'en_attente',
-    created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+
+--
+-- Name: boissons_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.boissons ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.boissons_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
 );
 
--- ============================================================================
--- TRAITEUR
--- ============================================================================
 
-CREATE TABLE menus_traiteur (
-    id                SERIAL PRIMARY KEY,
-    titre             VARCHAR(255) NOT NULL,
-    description       TEXT NOT NULL,
-    prix_par_personne NUMERIC(10,2) NOT NULL,
-    nb_personnes_min  INTEGER NOT NULL,
-    theme             theme_menu NOT NULL DEFAULT 'autre',
-    regime            regime_menu NOT NULL DEFAULT 'standard',
-    conditions        TEXT,
-    stock             INTEGER NOT NULL DEFAULT 0,
-    actif             BOOLEAN NOT NULL DEFAULT true,
-    created_at        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+--
+-- Name: commande_ligne_garnitures; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.commande_ligne_garnitures (
+    id integer NOT NULL,
+    commande_ligne_id integer NOT NULL,
+    garniture_id integer NOT NULL
 );
 
-CREATE TABLE menu_traiteur_plats (
-    id               SERIAL PRIMARY KEY,
-    menu_traiteur_id INTEGER NOT NULL REFERENCES menus_traiteur(id) ON DELETE CASCADE,
-    plat_id          INTEGER NOT NULL REFERENCES plats(id) ON DELETE CASCADE,
-    UNIQUE (menu_traiteur_id, plat_id)
+
+--
+-- Name: commande_ligne_garnitures_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.commande_ligne_garnitures ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.commande_ligne_garnitures_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
 );
 
-CREATE TABLE devis_traiteur (
-    id               SERIAL PRIMARY KEY,
-    menu_id          INTEGER REFERENCES menus_traiteur(id) ON DELETE SET NULL,
-    nom              VARCHAR(150) NOT NULL,
-    email            VARCHAR(255) NOT NULL,
-    telephone        VARCHAR(30),
-    date_evenement   VARCHAR(10) NOT NULL,
-    nb_personnes     INTEGER NOT NULL,
-    message          TEXT NOT NULL,
-    statut           statut_devis NOT NULL DEFAULT 'en_attente',
-    created_at       TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+
+--
+-- Name: commande_lignes; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.commande_lignes (
+    id integer NOT NULL,
+    commande_id integer NOT NULL,
+    type_article public.typearticle NOT NULL,
+    plat_id integer,
+    boisson_id integer,
+    supplement_id integer,
+    cuisson public.cuissonviande,
+    sans_sel boolean NOT NULL,
+    note character varying,
+    quantite integer NOT NULL,
+    prix_unitaire numeric NOT NULL,
+    menu_id integer,
+    entree_id integer,
+    dessert_id integer
 );
 
--- ============================================================================
--- CONTACTS
--- ============================================================================
 
-CREATE TABLE contacts (
-    id          SERIAL PRIMARY KEY,
-    raison      raisoncontact NOT NULL DEFAULT 'autre',
-    titre       VARCHAR(255) NOT NULL,
-    description TEXT NOT NULL,
-    email       VARCHAR(255) NOT NULL,
-    created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+--
+-- Name: commande_lignes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.commande_lignes ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.commande_lignes_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
 );
 
--- ============================================================================
--- INDEX
--- ============================================================================
 
-CREATE INDEX idx_commandes_user_id        ON commandes(user_id);
-CREATE INDEX idx_commandes_statut         ON commandes(statut);
-CREATE INDEX idx_commandes_created_at     ON commandes(created_at);
-CREATE INDEX idx_commandes_numero         ON commandes(numero);
-CREATE INDEX idx_commande_lignes_cmd      ON commande_lignes(commande_id);
-CREATE INDEX idx_commande_statuts_cmd     ON commande_statuts(commande_id);
-CREATE INDEX idx_avis_commande_id         ON avis(commande_id);
-CREATE INDEX idx_avis_plats_plat_id       ON avis_plats(plat_id);
-CREATE INDEX idx_avis_plats_user_id       ON avis_plats(user_id);
-CREATE INDEX idx_plat_allergene_plat      ON plat_allergene(plat_id);
-CREATE INDEX idx_entree_allergene_entree  ON entree_allergene(entree_id);
-CREATE INDEX idx_dessert_allergene_dessert ON dessert_allergene(dessert_id);
-CREATE INDEX idx_plat_garnitures_plat     ON plat_garnitures(plat_id);
-CREATE INDEX idx_menu_plats_menu          ON menu_plats(menu_id);
-CREATE INDEX idx_menu_entrees_menu        ON menu_entrees(menu_id);
-CREATE INDEX idx_menu_desserts_menu       ON menu_desserts(menu_id);
-CREATE INDEX idx_menu_traiteur_plats_menu ON menu_traiteur_plats(menu_traiteur_id);
-CREATE INDEX idx_devis_traiteur_created   ON devis_traiteur(created_at);
-CREATE INDEX idx_contacts_created         ON contacts(created_at);
+--
+-- Name: commande_menu_choix; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.commande_menu_choix (
+    id integer NOT NULL,
+    commande_ligne_id integer NOT NULL,
+    cours character varying NOT NULL,
+    plat_id integer,
+    entree_id integer,
+    dessert_id integer
+);
+
+
+--
+-- Name: commande_menu_choix_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.commande_menu_choix ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.commande_menu_choix_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: commande_statuts; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.commande_statuts (
+    id integer NOT NULL,
+    commande_id integer NOT NULL,
+    statut character varying NOT NULL,
+    note text,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
+--
+-- Name: commande_statuts_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.commande_statuts ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.commande_statuts_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: commandes; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.commandes (
+    id integer NOT NULL,
+    numero character varying NOT NULL,
+    user_id integer NOT NULL,
+    statut public.statutcommande NOT NULL,
+    mode_paiement public.modepaiement NOT NULL,
+    prix_total numeric NOT NULL,
+    type_retrait public.typeretrait NOT NULL,
+    heure_retrait timestamp without time zone,
+    adresse_livraison character varying,
+    ville_livraison character varying,
+    cp_livraison character varying,
+    prix_livraison numeric,
+    stripe_payment_intent_id character varying,
+    motif_annulation text,
+    mode_contact_annulation character varying,
+    date_annulation timestamp without time zone,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    modifiable boolean DEFAULT true NOT NULL,
+    pret_materiel boolean DEFAULT false NOT NULL,
+    penalite_envoyee boolean DEFAULT false NOT NULL
+);
+
+
+--
+-- Name: commandes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.commandes ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.commandes_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: contacts; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.contacts (
+    id integer NOT NULL,
+    titre character varying NOT NULL,
+    description text NOT NULL,
+    email character varying NOT NULL,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    raison public.raisoncontact DEFAULT 'autre'::public.raisoncontact NOT NULL
+);
+
+
+--
+-- Name: contacts_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.contacts ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.contacts_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: dessert_allergene; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.dessert_allergene (
+    id integer NOT NULL,
+    dessert_id integer NOT NULL,
+    allergene_id integer NOT NULL
+);
+
+
+--
+-- Name: dessert_allergene_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.dessert_allergene_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: dessert_allergene_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.dessert_allergene_id_seq OWNED BY public.dessert_allergene.id;
+
+
+--
+-- Name: dessert_allergenes; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.dessert_allergenes (
+    id integer NOT NULL,
+    dessert_id integer NOT NULL,
+    allergene_id integer NOT NULL
+);
+
+
+--
+-- Name: dessert_allergenes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.dessert_allergenes ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.dessert_allergenes_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: desserts; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.desserts (
+    id integer NOT NULL,
+    titre character varying(255) NOT NULL,
+    label character varying(80),
+    description text,
+    image character varying(500),
+    prix numeric(10,2) NOT NULL,
+    disponible boolean DEFAULT true NOT NULL,
+    usage public.usagedessert DEFAULT 'les_deux'::public.usagedessert NOT NULL,
+    ordre integer DEFAULT 0 NOT NULL
+);
+
+
+--
+-- Name: desserts_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.desserts_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: desserts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.desserts_id_seq OWNED BY public.desserts.id;
+
+
+--
+-- Name: devis_traiteur; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.devis_traiteur (
+    id integer NOT NULL,
+    menu_id integer,
+    nom character varying NOT NULL,
+    email character varying NOT NULL,
+    telephone character varying,
+    date_evenement date NOT NULL,
+    nb_personnes integer NOT NULL,
+    message text NOT NULL,
+    statut public.statutdevis NOT NULL,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    user_id integer DEFAULT 0 NOT NULL,
+    prix_total numeric(10,2),
+    remise_appliquee numeric(5,2)
+);
+
+
+--
+-- Name: devis_traiteur_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.devis_traiteur ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.devis_traiteur_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: eihwaz_groupes; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.eihwaz_groupes (
+    id integer NOT NULL,
+    nom character varying NOT NULL
+);
+
+
+--
+-- Name: eihwaz_groupes_droits; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.eihwaz_groupes_droits (
+    groupe_id integer NOT NULL,
+    resource_key character varying NOT NULL,
+    can_create boolean DEFAULT false NOT NULL,
+    can_read boolean DEFAULT false NOT NULL,
+    can_update boolean DEFAULT false NOT NULL,
+    can_delete boolean DEFAULT false NOT NULL,
+    can_update_own boolean DEFAULT false NOT NULL,
+    can_delete_own boolean DEFAULT false NOT NULL
+);
+
+
+--
+-- Name: eihwaz_groupes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.eihwaz_groupes ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.eihwaz_groupes_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: eihwaz_history; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.eihwaz_history (
+    id bigint NOT NULL,
+    resource_key character varying NOT NULL,
+    object_pk character varying NOT NULL,
+    action character varying NOT NULL,
+    user_id integer NOT NULL,
+    username character varying NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    summary text,
+    batch_id character varying
+);
+
+
+--
+-- Name: eihwaz_history_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.eihwaz_history ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.eihwaz_history_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: eihwaz_reset_tokens; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.eihwaz_reset_tokens (
+    id bigint NOT NULL,
+    token_hash character varying NOT NULL,
+    user_id integer NOT NULL,
+    expires_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: eihwaz_reset_tokens_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.eihwaz_reset_tokens ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.eihwaz_reset_tokens_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: eihwaz_sessions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.eihwaz_sessions (
+    id integer NOT NULL,
+    cookie_id character varying NOT NULL,
+    user_id integer NOT NULL,
+    session_id character varying NOT NULL,
+    session_data text,
+    expires_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: eihwaz_sessions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.eihwaz_sessions ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.eihwaz_sessions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: eihwaz_users; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.eihwaz_users (
+    id integer NOT NULL,
+    username character varying NOT NULL,
+    email character varying NOT NULL,
+    password character varying NOT NULL,
+    is_active boolean DEFAULT false NOT NULL,
+    is_staff boolean DEFAULT false NOT NULL,
+    is_superuser boolean DEFAULT false NOT NULL,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
+    telephone character varying,
+    adresse character varying,
+    ville character varying,
+    code_postal character varying,
+    pays character varying
+);
+
+
+--
+-- Name: eihwaz_users_groupes; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.eihwaz_users_groupes (
+    user_id integer NOT NULL,
+    groupe_id integer NOT NULL
+);
+
+
+--
+-- Name: eihwaz_users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.eihwaz_users ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.eihwaz_users_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: entree_allergene; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.entree_allergene (
+    id integer NOT NULL,
+    entree_id integer NOT NULL,
+    allergene_id integer NOT NULL
+);
+
+
+--
+-- Name: entree_allergene_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.entree_allergene_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: entree_allergene_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.entree_allergene_id_seq OWNED BY public.entree_allergene.id;
+
+
+--
+-- Name: entree_allergenes; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.entree_allergenes (
+    id integer NOT NULL,
+    entree_id integer NOT NULL,
+    allergene_id integer NOT NULL
+);
+
+
+--
+-- Name: entree_allergenes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.entree_allergenes ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.entree_allergenes_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: entrees; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.entrees (
+    id integer NOT NULL,
+    titre character varying(255) NOT NULL,
+    label character varying(80),
+    description text,
+    image character varying(500),
+    prix numeric(10,2) NOT NULL,
+    disponible boolean DEFAULT true NOT NULL,
+    usage public.usageentree DEFAULT 'les_deux'::public.usageentree NOT NULL,
+    ordre integer DEFAULT 0 NOT NULL
+);
+
+
+--
+-- Name: entrees_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.entrees_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: entrees_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.entrees_id_seq OWNED BY public.entrees.id;
+
+
+--
+-- Name: garnitures; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.garnitures (
+    id integer NOT NULL,
+    libelle character varying NOT NULL,
+    type_garniture public.typegarniture NOT NULL,
+    disponible boolean NOT NULL
+);
+
+
+--
+-- Name: garnitures_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.garnitures ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.garnitures_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: horaires; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.horaires (
+    id integer NOT NULL,
+    jour public.jour NOT NULL,
+    ouverture_midi time without time zone,
+    fermeture_midi time without time zone,
+    ouverture_soir time without time zone,
+    fermeture_soir time without time zone,
+    ferme boolean NOT NULL,
+    note character varying
+);
+
+
+--
+-- Name: horaires_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.horaires ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.horaires_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: info_resto; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.info_resto (
+    id integer NOT NULL,
+    nom character varying NOT NULL,
+    adresse character varying NOT NULL,
+    telephone character varying NOT NULL,
+    email character varying,
+    periode_ouverture character varying,
+    facebook character varying,
+    instagram character varying,
+    tripadvisor character varying,
+    google_maps character varying,
+    description character varying,
+    prix_livraison numeric,
+    latitude numeric,
+    longitude numeric,
+    ville character varying(100),
+    prix_livraison_minimal numeric(10,2) DEFAULT 5,
+    penalite_materiel numeric DEFAULT 600 NOT NULL
+);
+
+
+--
+-- Name: info_resto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.info_resto ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.info_resto_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: menu_desserts; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.menu_desserts (
+    id integer NOT NULL,
+    menu_id integer NOT NULL,
+    dessert_id integer CONSTRAINT menu_desserts_plat_id_not_null NOT NULL
+);
+
+
+--
+-- Name: menu_desserts_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.menu_desserts_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: menu_desserts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.menu_desserts_id_seq OWNED BY public.menu_desserts.id;
+
+
+--
+-- Name: menu_entrees; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.menu_entrees (
+    id integer NOT NULL,
+    menu_id integer NOT NULL,
+    entree_id integer CONSTRAINT menu_entrees_plat_id_not_null NOT NULL
+);
+
+
+--
+-- Name: menu_entrees_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.menu_entrees_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: menu_entrees_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.menu_entrees_id_seq OWNED BY public.menu_entrees.id;
+
+
+--
+-- Name: menu_plats; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.menu_plats (
+    id integer NOT NULL,
+    menu_id integer NOT NULL,
+    plat_id integer NOT NULL
+);
+
+
+--
+-- Name: menu_plats_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.menu_plats_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: menu_plats_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.menu_plats_id_seq OWNED BY public.menu_plats.id;
+
+
+--
+-- Name: menus; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.menus (
+    id integer CONSTRAINT menu_resto_id_not_null NOT NULL,
+    nom character varying CONSTRAINT menu_resto_nom_not_null NOT NULL,
+    prix numeric CONSTRAINT menu_resto_prix_not_null NOT NULL,
+    description text,
+    ordre integer,
+    dessert_libre character varying(255),
+    type_menu public.typemenu DEFAULT 'menu_resto'::public.typemenu NOT NULL,
+    entree_libre character varying(500),
+    plat_libre character varying(500),
+    image character varying(500)
+);
+
+
+--
+-- Name: menu_resto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.menus ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.menu_resto_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: menu_traiteur_plats; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.menu_traiteur_plats (
+    id integer NOT NULL,
+    menu_traiteur_id integer NOT NULL,
+    plat_id integer NOT NULL
+);
+
+
+--
+-- Name: menu_traiteur_plats_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.menu_traiteur_plats_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: menu_traiteur_plats_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.menu_traiteur_plats_id_seq OWNED BY public.menu_traiteur_plats.id;
+
+
+--
+-- Name: menus_traiteur; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.menus_traiteur (
+    id integer NOT NULL,
+    titre character varying(255) NOT NULL,
+    description text NOT NULL,
+    prix_par_personne numeric(10,2) NOT NULL,
+    nb_personnes_min integer NOT NULL,
+    theme public.thememenu DEFAULT 'autre'::public.thememenu NOT NULL,
+    regime public.regimemenu DEFAULT 'standard'::public.regimemenu NOT NULL,
+    conditions text,
+    stock integer DEFAULT 0 NOT NULL,
+    actif boolean DEFAULT true NOT NULL,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    remise_groupe numeric(5,2),
+    remise_groupe_min integer
+);
+
+
+--
+-- Name: menus_traiteur_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.menus_traiteur_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: menus_traiteur_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.menus_traiteur_id_seq OWNED BY public.menus_traiteur.id;
+
+
+--
+-- Name: plat_allergene; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.plat_allergene (
+    id integer NOT NULL,
+    plat_id integer NOT NULL,
+    allergene_id integer NOT NULL
+);
+
+
+--
+-- Name: plat_allergene_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.plat_allergene ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.plat_allergene_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: plat_allergenes; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.plat_allergenes (
+    id integer NOT NULL,
+    plat_id integer NOT NULL,
+    allergene_id integer NOT NULL
+);
+
+
+--
+-- Name: plat_allergenes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.plat_allergenes ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.plat_allergenes_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: plat_garnitures; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.plat_garnitures (
+    id integer NOT NULL,
+    plat_id integer NOT NULL,
+    garniture_id integer NOT NULL,
+    est_defaut boolean NOT NULL
+);
+
+
+--
+-- Name: plat_garnitures_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.plat_garnitures ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.plat_garnitures_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: plat_supplements; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.plat_supplements (
+    id integer NOT NULL,
+    plat_id integer NOT NULL,
+    supplement_id integer NOT NULL
+);
+
+
+--
+-- Name: plat_supplements_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.plat_supplements_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: plat_supplements_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.plat_supplements_id_seq OWNED BY public.plat_supplements.id;
+
+
+--
+-- Name: plats; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.plats (
+    id integer NOT NULL,
+    titre character varying NOT NULL,
+    label character varying,
+    type_plat public.typeplat NOT NULL,
+    prix numeric NOT NULL,
+    description text,
+    image character varying,
+    disponible boolean NOT NULL,
+    est_viande boolean NOT NULL,
+    ordre integer,
+    usage public.usageplat DEFAULT 'les_deux'::public.usageplat NOT NULL
+);
+
+
+--
+-- Name: plats_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.plats ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.plats_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: seaql_migrations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.seaql_migrations (
+    version character varying NOT NULL,
+    applied_at bigint NOT NULL
+);
+
+
+--
+-- Name: supplements; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.supplements (
+    id integer NOT NULL,
+    garniture_id integer,
+    titre character varying,
+    libelle character varying,
+    prix numeric NOT NULL,
+    disponible boolean NOT NULL,
+    ordre integer DEFAULT 0 NOT NULL
+);
+
+
+--
+-- Name: supplements_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.supplements ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.supplements_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: dessert_allergene id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dessert_allergene ALTER COLUMN id SET DEFAULT nextval('public.dessert_allergene_id_seq'::regclass);
+
+
+--
+-- Name: desserts id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.desserts ALTER COLUMN id SET DEFAULT nextval('public.desserts_id_seq'::regclass);
+
+
+--
+-- Name: entree_allergene id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.entree_allergene ALTER COLUMN id SET DEFAULT nextval('public.entree_allergene_id_seq'::regclass);
+
+
+--
+-- Name: entrees id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.entrees ALTER COLUMN id SET DEFAULT nextval('public.entrees_id_seq'::regclass);
+
+
+--
+-- Name: menu_desserts id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.menu_desserts ALTER COLUMN id SET DEFAULT nextval('public.menu_desserts_id_seq'::regclass);
+
+
+--
+-- Name: menu_entrees id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.menu_entrees ALTER COLUMN id SET DEFAULT nextval('public.menu_entrees_id_seq'::regclass);
+
+
+--
+-- Name: menu_plats id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.menu_plats ALTER COLUMN id SET DEFAULT nextval('public.menu_plats_id_seq'::regclass);
+
+
+--
+-- Name: menu_traiteur_plats id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.menu_traiteur_plats ALTER COLUMN id SET DEFAULT nextval('public.menu_traiteur_plats_id_seq'::regclass);
+
+
+--
+-- Name: menus_traiteur id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.menus_traiteur ALTER COLUMN id SET DEFAULT nextval('public.menus_traiteur_id_seq'::regclass);
+
+
+--
+-- Name: plat_supplements id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.plat_supplements ALTER COLUMN id SET DEFAULT nextval('public.plat_supplements_id_seq'::regclass);
+
+
+--
+-- Name: allergenes allergenes_libelle_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.allergenes
+    ADD CONSTRAINT allergenes_libelle_key UNIQUE (libelle);
+
+
+--
+-- Name: allergenes allergenes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.allergenes
+    ADD CONSTRAINT allergenes_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: avis avis_commande_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.avis
+    ADD CONSTRAINT avis_commande_id_key UNIQUE (commande_id);
+
+
+--
+-- Name: avis avis_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.avis
+    ADD CONSTRAINT avis_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: avis_plats avis_plats_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.avis_plats
+    ADD CONSTRAINT avis_plats_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: boissons boissons_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.boissons
+    ADD CONSTRAINT boissons_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: commande_ligne_garnitures commande_ligne_garnitures_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.commande_ligne_garnitures
+    ADD CONSTRAINT commande_ligne_garnitures_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: commande_lignes commande_lignes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.commande_lignes
+    ADD CONSTRAINT commande_lignes_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: commande_menu_choix commande_menu_choix_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.commande_menu_choix
+    ADD CONSTRAINT commande_menu_choix_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: commande_statuts commande_statuts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.commande_statuts
+    ADD CONSTRAINT commande_statuts_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: commandes commandes_numero_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.commandes
+    ADD CONSTRAINT commandes_numero_key UNIQUE (numero);
+
+
+--
+-- Name: commandes commandes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.commandes
+    ADD CONSTRAINT commandes_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: contacts contacts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.contacts
+    ADD CONSTRAINT contacts_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dessert_allergene dessert_allergene_dessert_id_allergene_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dessert_allergene
+    ADD CONSTRAINT dessert_allergene_dessert_id_allergene_id_key UNIQUE (dessert_id, allergene_id);
+
+
+--
+-- Name: dessert_allergene dessert_allergene_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dessert_allergene
+    ADD CONSTRAINT dessert_allergene_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dessert_allergenes dessert_allergenes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dessert_allergenes
+    ADD CONSTRAINT dessert_allergenes_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: desserts desserts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.desserts
+    ADD CONSTRAINT desserts_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: devis_traiteur devis_traiteur_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.devis_traiteur
+    ADD CONSTRAINT devis_traiteur_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: eihwaz_groupes eihwaz_groupes_nom_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.eihwaz_groupes
+    ADD CONSTRAINT eihwaz_groupes_nom_key UNIQUE (nom);
+
+
+--
+-- Name: eihwaz_groupes eihwaz_groupes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.eihwaz_groupes
+    ADD CONSTRAINT eihwaz_groupes_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: eihwaz_history eihwaz_history_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.eihwaz_history
+    ADD CONSTRAINT eihwaz_history_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: eihwaz_reset_tokens eihwaz_reset_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.eihwaz_reset_tokens
+    ADD CONSTRAINT eihwaz_reset_tokens_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: eihwaz_reset_tokens eihwaz_reset_tokens_token_hash_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.eihwaz_reset_tokens
+    ADD CONSTRAINT eihwaz_reset_tokens_token_hash_key UNIQUE (token_hash);
+
+
+--
+-- Name: eihwaz_sessions eihwaz_sessions_cookie_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.eihwaz_sessions
+    ADD CONSTRAINT eihwaz_sessions_cookie_id_key UNIQUE (cookie_id);
+
+
+--
+-- Name: eihwaz_sessions eihwaz_sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.eihwaz_sessions
+    ADD CONSTRAINT eihwaz_sessions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: eihwaz_users eihwaz_users_email_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.eihwaz_users
+    ADD CONSTRAINT eihwaz_users_email_key UNIQUE (email);
+
+
+--
+-- Name: eihwaz_users eihwaz_users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.eihwaz_users
+    ADD CONSTRAINT eihwaz_users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: eihwaz_users eihwaz_users_username_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.eihwaz_users
+    ADD CONSTRAINT eihwaz_users_username_key UNIQUE (username);
+
+
+--
+-- Name: entree_allergene entree_allergene_entree_id_allergene_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.entree_allergene
+    ADD CONSTRAINT entree_allergene_entree_id_allergene_id_key UNIQUE (entree_id, allergene_id);
+
+
+--
+-- Name: entree_allergene entree_allergene_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.entree_allergene
+    ADD CONSTRAINT entree_allergene_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: entree_allergenes entree_allergenes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.entree_allergenes
+    ADD CONSTRAINT entree_allergenes_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: entrees entrees_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.entrees
+    ADD CONSTRAINT entrees_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: garnitures garnitures_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.garnitures
+    ADD CONSTRAINT garnitures_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: horaires horaires_jour_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.horaires
+    ADD CONSTRAINT horaires_jour_key UNIQUE (jour);
+
+
+--
+-- Name: horaires horaires_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.horaires
+    ADD CONSTRAINT horaires_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: info_resto info_resto_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.info_resto
+    ADD CONSTRAINT info_resto_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: menu_desserts menu_desserts_menu_id_dessert_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.menu_desserts
+    ADD CONSTRAINT menu_desserts_menu_id_dessert_id_key UNIQUE (menu_id, dessert_id);
+
+
+--
+-- Name: menu_desserts menu_desserts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.menu_desserts
+    ADD CONSTRAINT menu_desserts_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: menu_entrees menu_entrees_menu_id_entree_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.menu_entrees
+    ADD CONSTRAINT menu_entrees_menu_id_entree_id_key UNIQUE (menu_id, entree_id);
+
+
+--
+-- Name: menu_entrees menu_entrees_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.menu_entrees
+    ADD CONSTRAINT menu_entrees_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: menu_plats menu_plats_menu_id_plat_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.menu_plats
+    ADD CONSTRAINT menu_plats_menu_id_plat_id_key UNIQUE (menu_id, plat_id);
+
+
+--
+-- Name: menu_plats menu_plats_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.menu_plats
+    ADD CONSTRAINT menu_plats_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: menus menu_resto_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.menus
+    ADD CONSTRAINT menu_resto_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: menu_traiteur_plats menu_traiteur_plats_menu_traiteur_id_plat_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.menu_traiteur_plats
+    ADD CONSTRAINT menu_traiteur_plats_menu_traiteur_id_plat_id_key UNIQUE (menu_traiteur_id, plat_id);
+
+
+--
+-- Name: menu_traiteur_plats menu_traiteur_plats_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.menu_traiteur_plats
+    ADD CONSTRAINT menu_traiteur_plats_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: menus_traiteur menus_traiteur_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.menus_traiteur
+    ADD CONSTRAINT menus_traiteur_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: eihwaz_groupes_droits pk_eihwaz_groupes_droits; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.eihwaz_groupes_droits
+    ADD CONSTRAINT pk_eihwaz_groupes_droits PRIMARY KEY (groupe_id, resource_key);
+
+
+--
+-- Name: eihwaz_users_groupes pk_eihwaz_users_groupes; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.eihwaz_users_groupes
+    ADD CONSTRAINT pk_eihwaz_users_groupes PRIMARY KEY (user_id, groupe_id);
+
+
+--
+-- Name: plat_allergene plat_allergene_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.plat_allergene
+    ADD CONSTRAINT plat_allergene_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: plat_allergenes plat_allergenes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.plat_allergenes
+    ADD CONSTRAINT plat_allergenes_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: plat_garnitures plat_garnitures_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.plat_garnitures
+    ADD CONSTRAINT plat_garnitures_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: plat_supplements plat_supplements_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.plat_supplements
+    ADD CONSTRAINT plat_supplements_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: plat_supplements plat_supplements_plat_id_supplement_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.plat_supplements
+    ADD CONSTRAINT plat_supplements_plat_id_supplement_id_key UNIQUE (plat_id, supplement_id);
+
+
+--
+-- Name: plats plats_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.plats
+    ADD CONSTRAINT plats_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: seaql_migrations seaql_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.seaql_migrations
+    ADD CONSTRAINT seaql_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: supplements supplements_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.supplements
+    ADD CONSTRAINT supplements_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: menu_traiteur_plats_menu_traiteur_id_plat_id_uniq; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX menu_traiteur_plats_menu_traiteur_id_plat_id_uniq ON public.menu_traiteur_plats USING btree (menu_traiteur_id, plat_id);
+
+
+--
+-- Name: plat_allergene_plat_id_allergene_id_uniq; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX plat_allergene_plat_id_allergene_id_uniq ON public.plat_allergene USING btree (plat_id, allergene_id);
+
+
+--
+-- Name: commandes trg_commandes_updated_at; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER trg_commandes_updated_at BEFORE UPDATE ON public.commandes FOR EACH ROW EXECUTE FUNCTION public.set_updated_at_commandes();
+
+
+--
+-- Name: avis avis_commande_id_commandes_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.avis
+    ADD CONSTRAINT avis_commande_id_commandes_fkey FOREIGN KEY (commande_id) REFERENCES public.commandes(id);
+
+
+--
+-- Name: avis_plats avis_plats_dessert_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.avis_plats
+    ADD CONSTRAINT avis_plats_dessert_id_fkey FOREIGN KEY (dessert_id) REFERENCES public.desserts(id) ON DELETE CASCADE;
+
+
+--
+-- Name: avis_plats avis_plats_entree_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.avis_plats
+    ADD CONSTRAINT avis_plats_entree_id_fkey FOREIGN KEY (entree_id) REFERENCES public.entrees(id) ON DELETE CASCADE;
+
+
+--
+-- Name: avis_plats avis_plats_plat_id_plats_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.avis_plats
+    ADD CONSTRAINT avis_plats_plat_id_plats_fkey FOREIGN KEY (plat_id) REFERENCES public.plats(id);
+
+
+--
+-- Name: commande_lignes commande_lignes_boisson_id_boissons_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.commande_lignes
+    ADD CONSTRAINT commande_lignes_boisson_id_boissons_fkey FOREIGN KEY (boisson_id) REFERENCES public.boissons(id);
+
+
+--
+-- Name: commande_lignes commande_lignes_commande_id_commandes_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.commande_lignes
+    ADD CONSTRAINT commande_lignes_commande_id_commandes_fkey FOREIGN KEY (commande_id) REFERENCES public.commandes(id);
+
+
+--
+-- Name: commande_lignes commande_lignes_dessert_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.commande_lignes
+    ADD CONSTRAINT commande_lignes_dessert_id_fkey FOREIGN KEY (dessert_id) REFERENCES public.desserts(id) ON DELETE RESTRICT;
+
+
+--
+-- Name: commande_lignes commande_lignes_entree_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.commande_lignes
+    ADD CONSTRAINT commande_lignes_entree_id_fkey FOREIGN KEY (entree_id) REFERENCES public.entrees(id) ON DELETE RESTRICT;
+
+
+--
+-- Name: commande_lignes commande_lignes_menu_id_menus_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.commande_lignes
+    ADD CONSTRAINT commande_lignes_menu_id_menus_fkey FOREIGN KEY (menu_id) REFERENCES public.menus(id) ON DELETE RESTRICT;
+
+
+--
+-- Name: commande_lignes commande_lignes_plat_id_plats_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.commande_lignes
+    ADD CONSTRAINT commande_lignes_plat_id_plats_fkey FOREIGN KEY (plat_id) REFERENCES public.plats(id);
+
+
+--
+-- Name: commande_menu_choix commande_menu_choix_dessert_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.commande_menu_choix
+    ADD CONSTRAINT commande_menu_choix_dessert_id_fkey FOREIGN KEY (dessert_id) REFERENCES public.desserts(id) ON DELETE RESTRICT;
+
+
+--
+-- Name: commande_menu_choix commande_menu_choix_entree_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.commande_menu_choix
+    ADD CONSTRAINT commande_menu_choix_entree_id_fkey FOREIGN KEY (entree_id) REFERENCES public.entrees(id) ON DELETE RESTRICT;
+
+
+--
+-- Name: commande_statuts commande_statuts_commande_id_commandes_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.commande_statuts
+    ADD CONSTRAINT commande_statuts_commande_id_commandes_fkey FOREIGN KEY (commande_id) REFERENCES public.commandes(id);
+
+
+--
+-- Name: dessert_allergene dessert_allergene_allergene_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dessert_allergene
+    ADD CONSTRAINT dessert_allergene_allergene_id_fkey FOREIGN KEY (allergene_id) REFERENCES public.allergenes(id) ON DELETE CASCADE;
+
+
+--
+-- Name: dessert_allergene dessert_allergene_dessert_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dessert_allergene
+    ADD CONSTRAINT dessert_allergene_dessert_id_fkey FOREIGN KEY (dessert_id) REFERENCES public.desserts(id) ON DELETE CASCADE;
+
+
+--
+-- Name: devis_traiteur devis_traiteur_menu_id_menus_traiteur_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.devis_traiteur
+    ADD CONSTRAINT devis_traiteur_menu_id_menus_traiteur_fkey FOREIGN KEY (menu_id) REFERENCES public.menus_traiteur(id) ON DELETE SET NULL;
+
+
+--
+-- Name: entree_allergene entree_allergene_allergene_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.entree_allergene
+    ADD CONSTRAINT entree_allergene_allergene_id_fkey FOREIGN KEY (allergene_id) REFERENCES public.allergenes(id) ON DELETE CASCADE;
+
+
+--
+-- Name: entree_allergene entree_allergene_entree_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.entree_allergene
+    ADD CONSTRAINT entree_allergene_entree_id_fkey FOREIGN KEY (entree_id) REFERENCES public.entrees(id) ON DELETE CASCADE;
+
+
+--
+-- Name: devis_traiteur fk_devis_traiteur_user_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.devis_traiteur
+    ADD CONSTRAINT fk_devis_traiteur_user_id FOREIGN KEY (user_id) REFERENCES public.eihwaz_users(id) ON DELETE RESTRICT;
+
+
+--
+-- Name: eihwaz_groupes_droits fk_eihwaz_groupes_droits_groupe_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.eihwaz_groupes_droits
+    ADD CONSTRAINT fk_eihwaz_groupes_droits_groupe_id FOREIGN KEY (groupe_id) REFERENCES public.eihwaz_groupes(id) ON DELETE CASCADE;
+
+
+--
+-- Name: eihwaz_reset_tokens fk_eihwaz_reset_tokens_eihwaz_users_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.eihwaz_reset_tokens
+    ADD CONSTRAINT fk_eihwaz_reset_tokens_eihwaz_users_id FOREIGN KEY (user_id) REFERENCES public.eihwaz_users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: eihwaz_sessions fk_eihwaz_sessions_eihwaz_users_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.eihwaz_sessions
+    ADD CONSTRAINT fk_eihwaz_sessions_eihwaz_users_id FOREIGN KEY (user_id) REFERENCES public.eihwaz_users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: eihwaz_users_groupes fk_eihwaz_users_groupes_eihwaz_users_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.eihwaz_users_groupes
+    ADD CONSTRAINT fk_eihwaz_users_groupes_eihwaz_users_id FOREIGN KEY (user_id) REFERENCES public.eihwaz_users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: eihwaz_users_groupes fk_eihwaz_users_groupes_groupe_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.eihwaz_users_groupes
+    ADD CONSTRAINT fk_eihwaz_users_groupes_groupe_id FOREIGN KEY (groupe_id) REFERENCES public.eihwaz_groupes(id) ON DELETE CASCADE;
+
+
+--
+-- Name: menu_desserts menu_desserts_dessert_id_desserts_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.menu_desserts
+    ADD CONSTRAINT menu_desserts_dessert_id_desserts_fkey FOREIGN KEY (dessert_id) REFERENCES public.desserts(id) ON DELETE CASCADE;
+
+
+--
+-- Name: menu_desserts menu_desserts_menu_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.menu_desserts
+    ADD CONSTRAINT menu_desserts_menu_id_fkey FOREIGN KEY (menu_id) REFERENCES public.menus(id) ON DELETE CASCADE;
+
+
+--
+-- Name: menu_entrees menu_entrees_entree_id_entrees_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.menu_entrees
+    ADD CONSTRAINT menu_entrees_entree_id_entrees_fkey FOREIGN KEY (entree_id) REFERENCES public.entrees(id) ON DELETE CASCADE;
+
+
+--
+-- Name: menu_entrees menu_entrees_menu_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.menu_entrees
+    ADD CONSTRAINT menu_entrees_menu_id_fkey FOREIGN KEY (menu_id) REFERENCES public.menus(id) ON DELETE CASCADE;
+
+
+--
+-- Name: menu_plats menu_plats_menu_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.menu_plats
+    ADD CONSTRAINT menu_plats_menu_id_fkey FOREIGN KEY (menu_id) REFERENCES public.menus(id) ON DELETE CASCADE;
+
+
+--
+-- Name: menu_plats menu_plats_plat_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.menu_plats
+    ADD CONSTRAINT menu_plats_plat_id_fkey FOREIGN KEY (plat_id) REFERENCES public.plats(id) ON DELETE CASCADE;
+
+
+--
+-- Name: menu_traiteur_plats menu_traiteur_plats_menu_traiteur_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.menu_traiteur_plats
+    ADD CONSTRAINT menu_traiteur_plats_menu_traiteur_id_fkey FOREIGN KEY (menu_traiteur_id) REFERENCES public.menus_traiteur(id) ON DELETE CASCADE;
+
+
+--
+-- Name: menu_traiteur_plats menu_traiteur_plats_plat_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.menu_traiteur_plats
+    ADD CONSTRAINT menu_traiteur_plats_plat_id_fkey FOREIGN KEY (plat_id) REFERENCES public.plats(id) ON DELETE CASCADE;
+
+
+--
+-- Name: plat_allergene plat_allergene_allergene_id_allergenes_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.plat_allergene
+    ADD CONSTRAINT plat_allergene_allergene_id_allergenes_fkey FOREIGN KEY (allergene_id) REFERENCES public.allergenes(id);
+
+
+--
+-- Name: plat_allergene plat_allergene_plat_id_plats_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.plat_allergene
+    ADD CONSTRAINT plat_allergene_plat_id_plats_fkey FOREIGN KEY (plat_id) REFERENCES public.plats(id);
+
+
+--
+-- Name: plat_supplements plat_supplements_plat_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.plat_supplements
+    ADD CONSTRAINT plat_supplements_plat_id_fkey FOREIGN KEY (plat_id) REFERENCES public.plats(id) ON DELETE CASCADE;
+
+
+--
+-- Name: plat_supplements plat_supplements_supplement_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.plat_supplements
+    ADD CONSTRAINT plat_supplements_supplement_id_fkey FOREIGN KEY (supplement_id) REFERENCES public.supplements(id) ON DELETE CASCADE;
+
+
+--
+-- Name: supplements supplements_garniture_id_garnitures_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.supplements
+    ADD CONSTRAINT supplements_garniture_id_garnitures_fkey FOREIGN KEY (garniture_id) REFERENCES public.garnitures(id);
+
+
+--
+-- PostgreSQL database dump complete
+--
+
+
