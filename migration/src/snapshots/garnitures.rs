@@ -13,8 +13,8 @@ async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
                     .if_not_exists()
                     .col(ColumnDef::new(Alias::new("id")).integer().not_null().auto_increment().primary_key())
                     .col(ColumnDef::new(Alias::new("libelle")).string().not_null())
-                    .col(ColumnDef::new_with_type(Alias::new("type_garniture"), ColumnType::Enum { name: Alias::new("TypeGarniture").into_iden(), variants: vec![Alias::new("feculent").into_iden(), Alias::new("legumes").into_iden()] }).not_null())
-                    .col(ColumnDef::new(Alias::new("disponible")).boolean().not_null())
+                    .col(ColumnDef::new_with_type(Alias::new("type_garniture"), ColumnType::Enum { name: Alias::new("TypeGarniture").into_iden(), variants: vec![Alias::new("feculent").into_iden(), Alias::new("legumes").into_iden(), Alias::new("sauce").into_iden()] }).not_null())
+                    .col(ColumnDef::new(Alias::new("disponible")).boolean().not_null().default(true))
                     .to_owned()
             )
             .await?;

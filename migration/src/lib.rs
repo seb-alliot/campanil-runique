@@ -1,5 +1,6 @@
 use runique::prelude::migrations_table;
 use sea_orm_migration::prelude::*;
+mod m20260824_215947_alter_garnitures_table;
 mod m20260527_144740_alter_menu_traiteur_plats_table;
 mod m20260528_000000_alter_info_resto_add_ville;
 mod m20260605_000000_alter_avis_plats_entree_dessert;
@@ -163,6 +164,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20260610_010000_alter_devis_traiteur_add_remise_appliquee::Migration),
             Box::new(m20260610_020000_alter_commandes_add_materiel::Migration),
             Box::new(m20260610_030000_alter_info_resto_add_penalite::Migration),
+            Box::new(m20260824_215947_alter_garnitures_table::Migration),
         ]
     }
 }
