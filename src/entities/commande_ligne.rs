@@ -36,7 +36,7 @@ model! {
         prix_unitaire: decimal [required],
     },
     relations: {
-        belongs_to: Commande via commande_id,
+        belongs_to: Commande via commande_id [cascade],
         belongs_to: Plat via plat_id,
         belongs_to: Boisson via boisson_id,
         many_to_many: Garniture through CommandeLigneGarniture via commande_ligne_id,

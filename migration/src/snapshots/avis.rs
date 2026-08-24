@@ -16,7 +16,7 @@ async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
                     .col(ColumnDef::new(Alias::new("user_id")).integer().not_null())
                     .col(ColumnDef::new(Alias::new("note")).integer().not_null())
                     .col(ColumnDef::new(Alias::new("commentaire")).text().not_null())
-                    .col(ColumnDef::new_with_type(Alias::new("statut"), ColumnType::Enum { name: Alias::new("StatutAvis").into_iden(), variants: vec![Alias::new("en_attente").into_iden(), Alias::new("valide").into_iden(), Alias::new("refuse").into_iden()] }).not_null())
+                    .col(ColumnDef::new_with_type(Alias::new("statut"), ColumnType::Enum { name: Alias::new("StatutAvis").into_iden(), variants: vec![Alias::new("en_attente").into_iden(), Alias::new("valide").into_iden(), Alias::new("refuse").into_iden()] }).not_null().default("en_attente"))
                     .col(ColumnDef::new(Alias::new("created_at")).date_time().not_null().default(Expr::current_timestamp()))
                     .to_owned()
             )
@@ -28,7 +28,7 @@ async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
                     .name("avis_commande_id_commandes_fkey")
                     .from(Alias::new("avis"), Alias::new("commande_id"))
                     .to(Alias::new("commandes"), Alias::new("id"))
-                    .on_delete(ForeignKeyAction::NoAction)
+                    .on_delete(ForeignKeyAction::Cascade)
                     .on_update(ForeignKeyAction::NoAction)
                     .to_owned(),
             )

@@ -20,7 +20,7 @@ model! {
         created_at:  datetime [auto_now],
     },
     relations: {
-        belongs_to: Commande via commande_id,
+        belongs_to: Commande via commande_id [cascade],
     },
     meta: {
         ordering: [-created_at],

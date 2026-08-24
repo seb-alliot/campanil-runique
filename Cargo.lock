@@ -1500,7 +1500,7 @@ dependencies = [
 [[package]]
 name = "derive_form"
 version = "2.1.11"
-source = "git+https://github.com/seb-alliot/runique?branch=main#5d82d07429d2219297b9d2300445d113c48a27cb"
+source = "git+https://github.com/seb-alliot/runique?branch=main#3fd763960c9dcd3afbba4d8c142e06e9063eb3be"
 dependencies = [
  "dotenvy",
  "proc-macro2",
@@ -4331,7 +4331,7 @@ dependencies = [
 [[package]]
 name = "runique"
 version = "2.2.0"
-source = "git+https://github.com/seb-alliot/runique?branch=main#5d82d07429d2219297b9d2300445d113c48a27cb"
+source = "git+https://github.com/seb-alliot/runique?branch=main#3fd763960c9dcd3afbba4d8c142e06e9063eb3be"
 dependencies = [
  "ammonia",
  "anyhow",
