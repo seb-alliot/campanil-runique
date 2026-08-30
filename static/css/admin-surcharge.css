@@ -1,6 +1,6 @@
 .commande-detail-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr; /* mobile-first : 2 colonnes via min-width:769px */
     gap: 1.5rem;
     margin-top: 1.5rem;
     align-items: start;
@@ -110,22 +110,22 @@
 .articles-table tbody tr:hover {
     background: rgba(255,255,255,.03);
 }
-@media (max-width: 768px) {
+@media (min-width: 769px) {
     .commande-detail-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
     }
 }
 
 /* ── Composition menus / formules ── */
 .cp-grid-3 {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 1fr; /* mobile-first : 3 colonnes via min-width:901px */
     gap: 1.5rem;
     margin-bottom: 1.5rem;
 }
 .cp-grid-2 {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 1fr; /* mobile-first : 2 colonnes via min-width:901px */
     gap: 1.5rem;
     margin-bottom: 1.5rem;
 }
@@ -177,7 +177,7 @@
     display: flex;
     justify-content: flex-end;
 }
-@media (max-width: 900px) {
-    .cp-grid-3 { grid-template-columns: 1fr; }
-    .cp-grid-2 { grid-template-columns: 1fr; }
+@media (min-width: 901px) {
+    .cp-grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .cp-grid-2 { grid-template-columns: 2fr 1fr; }
 }

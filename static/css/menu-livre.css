@@ -43,8 +43,8 @@
 
 /* ── Couverture ────────────────────────────────────────── */
 .livre-couverture {
-  width: var(--livre-f);
-  height: var(--livre-h);
+  width: min(450px, calc(100vw - 2rem));  /* mobile-first : taille desktop via min-width:861px */
+  height: max(410px, min(500px, 90vw));
   background: var(--livre-couv-bg);
   border-radius: 4px 16px 16px 4px;
   box-shadow:
@@ -157,6 +157,7 @@
 /* ── Spread (double page) ──────────────────────────────── */
 #livreSpread {
   display: flex;
+  width: min(460px, calc(100vw - 2rem));  /* mobile-first : largeur libre en desktop via min-width:861px */
   position: relative;
   overflow: visible;
   border-radius: 6px;
@@ -167,6 +168,7 @@
 #livreSpread::before,
 #livreSpread::after {
   content: '';
+  display: none;  /* mobile-first : visible en desktop via min-width:861px */
   position: absolute;
   top: 4px;
   bottom: 4px;
@@ -218,8 +220,14 @@
 }
 
 .spr-gauche {
+  display: none;  /* mobile-first : visible en desktop via min-width:861px */
   box-shadow: inset -4px 0 16px rgba(0,0,0,.07);
   border-right: 1px solid rgba(201,164,78,.25);
+}
+
+.spr-droite {
+  width: 100%;  /* mobile-first : reprend la largeur .spr-page en desktop via min-width:861px */
+  height: max(65vh, min(560px, 90vw));
 }
 
 /* ── Contenu sections ──────────────────────────────────── */
@@ -368,7 +376,7 @@
 
 .livre-section-titre {
   font-family: var(--font-serif, Georgia, serif);
-  font-size: 1.5rem;
+  font-size: 1.2rem;  /* mobile-first : agrandi en desktop via min-width:481px */
   color: #3a1a08;
   border-bottom: 2px solid var(--livre-gold);
   padding-bottom: .5rem;
@@ -387,7 +395,8 @@
 
 .livre-plat {
   display: flex;
-  gap: .75rem;
+  flex-direction: column;  /* mobile-first : côte à côte en desktop via min-width:481px */
+  gap: 0;
   padding-bottom: 1rem;
   border-bottom: 1px solid #9c9c9c;
 }
@@ -395,10 +404,11 @@
 .livre-plat--indispo   { opacity: .45; }
 
 .livre-plat-img {
-  width: 68px;
-  height: 68px;
+  width: 60%;  /* mobile-first : 68px fixe en desktop via min-width:481px */
+  height: 150px;
   object-fit: cover;
   border-radius: 6px;
+  margin-bottom: .6rem;
   flex-shrink: 0;
 }
 
@@ -510,7 +520,7 @@
   flex-direction: column;
   align-items: center;
   gap: .6rem;
-  width: calc(var(--livre-w) * 2);
+  width: min(460px, calc(100vw - 2rem));  /* mobile-first : largeur double page en desktop via min-width:861px */
   max-width: calc(100vw - 2rem);
 }
 
@@ -578,10 +588,10 @@
   background: antiquewhite;
   border: 1px solid #c9a44e99;
   color: #5a4030;
-  padding: .35rem .9rem;
+  padding: .28rem .6rem;  /* mobile-first : agrandi en desktop via min-width:481px */
   border-radius: 20px;
   cursor: pointer;
-  font-size: .82rem;
+  font-size: .75rem;
   transition: all .2s;
 }
 .livre-tab.active,
@@ -627,52 +637,52 @@
   box-shadow: none;
 }
 
-/* ── Mobile ────────────────────────────────────────────── */
-@media (max-width: 860px) {
+/* ── Desktop (mobile-first : ceci ETAIT le bloc "mobile" en max-width) ── */
+@media (min-width: 861px) {
   .livre-couverture {
-    width: min(450px, calc(100vw - 2rem));
-    height: max(410px, min(500px, 90vw));
+    width: var(--livre-f);
+    height: var(--livre-h);
   }
-  .spr-gauche { display: none; }
+  .spr-gauche { display: block; }
   #livreSpread {
-    width: min(460px, calc(100vw - 2rem));
+    width: auto;
   }
   .spr-droite {
-    width: 100%;
-    height: max(65vh, min(560px, 90vw));
+    width: var(--livre-w);
+    height: var(--livre-h);
   }
   .livre-nav {
-    width: min(460px, calc(100vw - 2rem));
+    width: calc(var(--livre-w) * 2);
   }
   #livreSpread::before,
-  #livreSpread::after { display: none; }
+  #livreSpread::after { display: block; }
 }
 
-@media (max-width: 480px) {
+@media (min-width: 481px) {
   .livre-section-titre {
-    font-size: 1.2rem;
+    font-size: 1.5rem;
   }
 
   .livre-tab {
-    font-size: .75rem;
-    padding: .28rem .6rem;
+    font-size: .82rem;
+    padding: .35rem .9rem;
   }
 
   .plat-note-input {
-    background: #fff;
+    background: rgba(255,255,255,.6);
   }
 
-  /* Photo en haut, pleine largeur */
+  /* Photo à gauche, comme avant */
   .livre-plat {
-    flex-direction: column;
-    gap: 0;
+    flex-direction: row;
+    gap: .75rem;
   }
 
   .livre-plat-img {
-    width: 60%;
-    height: 150px;
+    width: 68px;
+    height: 68px;
     border-radius: 6px;
-    margin-bottom: .6rem;
+    margin-bottom: 0;
     object-fit: cover;
   }
 }
@@ -804,7 +814,7 @@
   font-size: .8rem;
   border: 1px solid rgba(139,106,80,.35);
   border-radius: 6px;
-  background: rgba(255,255,255,.6);
+  background: #fff;  /* mobile-first : translucide en desktop via min-width:481px */
   color: var(--livre-page-text);
   margin-bottom: .35rem;
   box-sizing: border-box;
@@ -890,10 +900,11 @@
   z-index: 1000;
   background: rgba(0,0,0,.85);
   display: flex;
-  align-items: flex-start;
+  flex-direction: column;  /* mobile-first : ligne en desktop via min-width:761px */
+  align-items: center;
   justify-content: center;
   gap: 1rem;
-  padding: 1rem;
+  padding: .75rem .5rem;
   overflow-y: auto;
 }
 .photo-modal[hidden] { display: none; }
@@ -902,9 +913,9 @@
   background: var(--livre-page-bg);
   color: var(--livre-page-text);
   border-radius: 8px;
-  width: 480px;
+  width: 100%;  /* mobile-first : 480px fixe en desktop via min-width:761px */
   max-width: 100%;
-  max-height: 90vh;
+  max-height: 75vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -985,37 +996,37 @@
 /* ── Avis dans le modal photo ───────────────────────────── */
 .photo-modal-avis {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;  /* mobile-first : colonne en desktop via min-width:761px */
+  flex-wrap: wrap;
   gap: .75rem;
-  max-height: 90vh;
-  overflow-y: auto;
+  max-height: none;
+  overflow-y: visible;
   overscroll-behavior: contain;
-  padding: .5rem;
+  padding: .5rem 0;
   align-self: center;
-  max-width: 280px;
+  max-width: 100%;
   width: 100%;
 }
 .photo-modal-avis[hidden] { display: none; }
 
-/* Sur mobile : avis en dessous de l'inner, pleine largeur, flex horizontal */
-@media (max-width: 760px) {
+/* Desktop : avis à côté de l'inner, colonne verticale (mobile-first) */
+@media (min-width: 761px) {
   .photo-modal {
-    flex-direction: column;
-    align-items: center;
-    padding: .75rem .5rem;
+    flex-direction: row;
+    align-items: flex-start;
+    padding: 1rem;
   }
   .photo-modal-inner {
-    width: 100%;
-    max-height: 75vh;
-    align-self: unset;
+    width: 480px;
+    max-height: 90vh;
   }
   .photo-modal-avis {
-    flex-direction: row;
-    flex-wrap: wrap;
-    max-height: none;
-    overflow-y: visible;
-    max-width: 100%;
-    padding: .5rem 0;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    max-height: 90vh;
+    overflow-y: auto;
+    max-width: 280px;
+    padding: .5rem;
   }
 }
 
