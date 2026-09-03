@@ -1,6 +1,6 @@
 use crate::backend::panier::{
     MenuChoixPanier, PanierAjouterParams, panier_ajouter, panier_ajouter_boisson,
-    panier_ajouter_menu, panier_ajouter_supplement, panier_get,
+    panier_ajouter_menu, panier_ajouter_supplement, panier_get, supplements_valides_pour_plat,
 };
 use runique::prelude::*;
 
@@ -146,6 +146,8 @@ pub async fn vue_ajouter_panier(request: Request) -> AppResult<Response> {
             },
         )
         .await;
+        let supplement_ids =
+            supplements_valides_pour_plat(&request.engine.db, plat_id, &supplement_ids).await;
         for sid in supplement_ids {
             let _ = panier_ajouter_supplement(
                 &request.session,

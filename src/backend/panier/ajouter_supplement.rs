@@ -1,6 +1,28 @@
 use crate::backend::panier::{LignePanier, panier_get, panier_save};
-use crate::entities::{garniture, supplement};
+use crate::entities::{garniture, plat_supplement, supplement};
 use runique::prelude::*;
+
+pub async fn supplements_valides_pour_plat(
+    db: &sea_orm::DatabaseConnection,
+    plat_id: Pk,
+    supplement_ids: &[Pk],
+) -> Vec<Pk> {
+    if supplement_ids.is_empty() {
+        return Vec::new();
+    }
+    match plat_supplement::Entity::find()
+        .filter(plat_supplement::Column::PlatId.eq(plat_id))
+        .filter(plat_supplement::Column::SupplementId.is_in(supplement_ids.to_vec()))
+        .all(db)
+        .await
+    {
+        Ok(rows) => rows.into_iter().map(|ps| ps.supplement_id).collect(),
+        Err(e) => {
+            tracing::error!("Erreur vérification suppléments autorisés (plat {plat_id}): {e}");
+            Vec::new()
+        }
+    }
+}
 
 pub async fn panier_ajouter_supplement(
     session: &Session,

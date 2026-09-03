@@ -1,8 +1,30 @@
 use crate::backend::menus::PlatDetail;
 use crate::backend::panier::{LignePanier, panier_get, panier_save};
 use crate::backend::stats::get_plat_views;
-use crate::entities::{dessert, entree, plat};
+use crate::entities::{dessert, entree, plat, plat_garniture};
 use runique::prelude::*;
+
+async fn garnitures_valides_pour_plat(
+    db: &sea_orm::DatabaseConnection,
+    plat_id: Pk,
+    garniture_ids: &[Pk],
+) -> Vec<Pk> {
+    if garniture_ids.is_empty() {
+        return Vec::new();
+    }
+    match plat_garniture::Entity::find()
+        .filter(plat_garniture::Column::PlatId.eq(plat_id))
+        .filter(plat_garniture::Column::GarnitureId.is_in(garniture_ids.to_vec()))
+        .all(db)
+        .await
+    {
+        Ok(rows) => rows.into_iter().map(|pg| pg.garniture_id).collect(),
+        Err(e) => {
+            tracing::error!("Erreur vérification garnitures autorisées (plat {plat_id}): {e}");
+            Vec::new()
+        }
+    }
+}
 
 pub struct PanierAjouterParams {
     pub plat_id: Pk,
@@ -82,6 +104,8 @@ pub async fn panier_ajouter(request: &Request, p: PanierAjouterParams) -> Result
         return Err("Article introuvable ou indisponible");
     };
 
+    let garniture_ids = garnitures_valides_pour_plat(request.db(), p.plat_id, &p.garniture_ids).await;
+
     let mut panier = panier_get(&request.session).await;
     if panier.user_id.is_none() {
         panier.user_id = p.user_id;
@@ -98,7 +122,7 @@ pub async fn panier_ajouter(request: &Request, p: PanierAjouterParams) -> Result
         est_viande: article.est_viande,
         cuisson: p.cuisson,
         note: p.note,
-        garniture_ids: p.garniture_ids,
+        garniture_ids,
         sans_sel: p.sans_sel,
         menu_choix: vec![],
     });

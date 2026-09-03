@@ -668,10 +668,6 @@
     padding: .35rem .9rem;
   }
 
-  .plat-note-input {
-    background: rgba(255,255,255,.6);
-  }
-
   /* Photo à gauche, comme avant */
   .livre-plat {
     flex-direction: row;
@@ -821,6 +817,10 @@
 }
 .plat-note-input::placeholder { color: #9a7a60; }
 .plat-note-input:focus { outline: none; border-color: var(--livre-gold); }
+
+@media (min-width: 481px) {
+  .plat-note-input { background: rgba(255,255,255,.6); }
+}
 
 .plat-actions-row {
   display: flex;

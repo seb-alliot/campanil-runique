@@ -19,7 +19,7 @@ pub mod ajouter_boisson;
 pub use ajouter_boisson::panier_ajouter_boisson;
 
 pub mod ajouter_supplement;
-pub use ajouter_supplement::panier_ajouter_supplement;
+pub use ajouter_supplement::{panier_ajouter_supplement, supplements_valides_pour_plat};
 
 pub mod ajouter_menu;
 pub use ajouter_menu::panier_ajouter_menu;

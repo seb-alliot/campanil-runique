@@ -927,39 +927,15 @@ textarea.form-control { min-height: 120px; resize: vertical; }
     .horaires-cadre { padding: 1.5rem 1.75rem; width: auto; }
     .horaires-table td { padding: .35rem .75rem; }
     .horaire-label { font-size: .85rem; }
-    .carte-page { padding: 2rem 2rem 4rem; }
-    .carte-item { padding: 1.25rem; }
-    .menus-layout { padding: 2rem 2rem 4rem; }
-    .menus-filters { padding: 1.5rem; }
     .contact-layout { padding: 3rem 2rem 4rem; }
-    .menu-detail { padding: 2rem 2rem 4rem; }
-    .menu-prix-large { font-size: 2.5rem; }
     .auth-card { padding: 2.5rem; }
     .compte-section h2 { font-size: 1.25rem; }
-    .devis-layout { padding: 3rem 1.5rem 4rem; }
-    .devis-confirmation { padding: 3rem 1.5rem; }
     .nav { padding: 0 2rem; gap: 2rem; }
     .nav-logo { font-size: 1.4rem; }
     .nav-actions { gap: 1rem; }
     .btn-panier { font-size: .85rem; padding: .65rem 1rem; }
     .container { padding: 0 2rem; }
     h2 { font-size: clamp(2rem, 4vw, 2.8rem); text-align: left; }
-    .panier-layout { padding: 2rem 1.5rem 0; }
-    .panier-checkout { padding: 1.5rem; }
-    .panier-lignes h2,
-    .panier-checkout h2 { font-size: 1.25rem; }
-    .panier-ligne { padding: .85rem 1rem; }
-    .panier-ligne-titre { font-size: .95rem; }
-    .panier-ligne-prix { font-size: .9rem; }
-    .panier-total { font-size: 1.1rem; }
-    .confirmation-card { padding: 2.5rem 2rem; }
-    .confirmation-numero { font-size: 1.2rem; padding: .5rem 1.5rem; letter-spacing: .05em; }
-}
-
-@media (min-width: 481px) {
-    .panier-ligne { flex-direction: row; align-items: center; }
-    .panier-ligne-meta { width: auto; justify-content: flex-start; }
-    .form-grid-2 { grid-template-columns: 1fr 1fr; }
 }
 
 @media (min-width: 901px) {
@@ -976,12 +952,6 @@ textarea.form-control { min-height: 120px; resize: vertical; }
     .page-hero { padding: 7.70rem; }
     .hero-content h1 { letter-spacing: .15em; }
 
-    .mentions-layout { grid-template-columns: 220px 1fr; gap: 3rem; padding: 3rem 2rem 5rem; }
-    .mentions-nav { position: sticky; }
-    .mentions-table { font-size: .88rem; }
-    .mentions-table th,
-    .mentions-table td { padding: .6rem .75rem; }
-
     .section-grid { grid-template-columns: 1fr 1fr; gap: 4rem; }
     .presentation-img { order: 0; max-height: none; overflow: visible; }
     .presentation-img img { height: auto; object-fit: fill; max-height: none; }
@@ -993,15 +963,6 @@ textarea.form-control { min-height: 120px; resize: vertical; }
     .menus-grid { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
 
     .horaires-cadre { padding: 2rem 3rem; }
-
-    #menus-no-results { margin: 3rem auto; padding: 2rem 2.5rem; max-width: 480px; }
-
-    .menus-layout { grid-template-columns: 260px 1fr; }
-    .menus-filters { position: sticky; }
-    .menu-gallery { grid-template-columns: 2fr 1fr; }
-    .gallery-main { height: 400px; }
-    .gallery-thumb { display: block; }
-    .carte-item-img { display: block; }
 }
 
 /* --- BTN BASE + VARIANTES --- */
@@ -1075,13 +1036,13 @@ textarea.form-control { min-height: 120px; resize: vertical; }
 
 /* --- MENUS LAYOUT (sidebar + grille) --- */
 .menus-layout {
-    display: grid;
-    grid-template-columns: 1fr;  /* mobile-first : sidebar + grille en desktop via min-width:769px */
+    display: flex;
+    flex-direction: column;  /* mobile-first : rangée sidebar + grille en desktop via min-width:769px */
     gap: 2.5rem;
     padding: 1.5rem 1rem 3rem;  /* mobile-first : 2rem 2rem 4rem dès min-width:361px */
     max-width: 1200px;
     margin: 0 auto;
-    align-items: start;
+    align-items: stretch;
 }
 
 .menus-filters {
@@ -1122,7 +1083,7 @@ textarea.form-control { min-height: 120px; resize: vertical; }
 .filter-actions { display: flex; flex-direction: column; gap: .5rem; margin-top: 1rem; }
 .filter-actions .btn, .filter-actions .btn-primary, .filter-actions .btn-secondary { width: 100%; text-align: center; }
 
-.menus-grid-section { min-width: 0; }
+.menus-grid-section { min-width: 0; flex: 1; }
 
 .menus-count { font-size: .875rem; color: var(--color-muted); margin-bottom: 1.25rem; }
 
@@ -1513,9 +1474,6 @@ textarea.form-control { min-height: 120px; resize: vertical; }
     .commande-meta { flex-wrap: nowrap; gap: 1.5rem; }
     .commande-date { margin-left: auto; }
     .commande-card-footer { flex-direction: row; align-items: center; }
-    .compte-tabs { flex: 0 1 auto; justify-content: flex-start; }
-    .compte-tab { display: block; }
-    .compte-tabs-wrapper { position: static; display: block; }
 }
 
 @media (min-width: 481px) {
@@ -1528,9 +1486,6 @@ textarea.form-control { min-height: 120px; resize: vertical; }
     .pagination .btn { padding: .65rem 1.6rem; }
     .pagination .btn.disabled, .pagination span.disabled { padding: .4rem 1rem; }
     .pagination-info { font-size: .8rem; }
-    .plat-avis-card { flex-direction: row; }
-    .plat-avis-img,
-    .plat-avis-img-placeholder { width: 72px; height: 72px; }
     .profil-form .form-row { grid-template-columns: 1fr 2fr; }
 }
 
@@ -2207,7 +2162,6 @@ textarea.form-control { min-height: 120px; resize: vertical; }
 .rq-modal-ok:hover { background: #b91c1c; }
 
 /* ── Onglets compte ── */
-@media (min-width: 601px) { .compte-tabs-arrow { display: none; } }
 .compte-section[id^="tab-"] { display: none; }
 .compte-section[id^="tab-"].tab-active { display: block; animation: tab-fadein 0.18s ease; }
 @keyframes tab-fadein {
@@ -2326,5 +2280,63 @@ textarea.form-control { min-height: 120px; resize: vertical; }
 .social-link--ta {
     background: #34e0a1;
     color: #fff;
+}
+
+/* ── RESPONSIVE (regroupé ici, après toutes les règles de base concernées) ──
+   Les surcharges desktop doivent être déclarées APRÈS la règle de base du même
+   sélecteur pour gagner la cascade à spécificité égale : plus haut dans le
+   fichier, plusieurs d'entre elles étaient positionnées avant leur base et se
+   faisaient donc silencieusement écraser, quelle que soit la largeur d'écran. */
+
+@media (min-width: 361px) {
+    .carte-page { padding: 2rem 2rem 4rem; }
+    .carte-item { padding: 1.25rem; }
+    .menus-layout { padding: 2rem 2rem 4rem; }
+    .menus-filters { padding: 1.5rem; }
+    .menu-detail { padding: 2rem 2rem 4rem; }
+    .menu-prix-large { font-size: 2.5rem; }
+    .devis-layout { padding: 3rem 1.5rem 4rem; }
+    .devis-confirmation { padding: 3rem 1.5rem; }
+    .panier-layout { padding: 2rem 1.5rem 0; }
+    .panier-checkout { padding: 1.5rem; }
+    .panier-lignes h2,
+    .panier-checkout h2 { font-size: 1.25rem; }
+    .panier-ligne { padding: .85rem 1rem; }
+    .panier-ligne-titre { font-size: .95rem; }
+    .panier-ligne-prix { font-size: .9rem; }
+    .panier-total { font-size: 1.1rem; }
+    .confirmation-card { padding: 2.5rem 2rem; }
+    .confirmation-numero { font-size: 1.2rem; padding: .5rem 1.5rem; letter-spacing: .05em; }
+}
+
+@media (min-width: 481px) {
+    .panier-ligne { flex-direction: row; align-items: center; }
+    .panier-ligne-meta { width: auto; justify-content: flex-start; }
+    .form-grid-2 { grid-template-columns: 1fr 1fr; }
+    .plat-avis-card { flex-direction: row; }
+    .plat-avis-img,
+    .plat-avis-img-placeholder { width: 72px; height: 72px; }
+}
+
+@media (min-width: 601px) {
+    .compte-tabs { flex: 0 1 auto; justify-content: flex-start; }
+    .compte-tab { display: block; }
+    .compte-tabs-wrapper { position: static; display: block; }
+    .compte-tabs-arrow { display: none; }
+}
+
+@media (min-width: 769px) {
+    .mentions-layout { grid-template-columns: 220px 1fr; gap: 3rem; padding: 3rem 2rem 5rem; }
+    .mentions-nav { position: sticky; }
+    .mentions-table { font-size: .88rem; }
+    .mentions-table th,
+    .mentions-table td { padding: .6rem .75rem; }
+    #menus-no-results { margin: 3rem auto; padding: 2rem 2.5rem; max-width: 480px; }
+    .menus-layout { flex-direction: row; align-items: flex-start; }
+    .menus-filters { position: sticky; flex: 0 0 260px; }
+    .menu-gallery { grid-template-columns: 2fr 1fr; }
+    .gallery-main { height: 400px; }
+    .gallery-thumb { display: block; }
+    .carte-item-img { display: block; }
 }
 

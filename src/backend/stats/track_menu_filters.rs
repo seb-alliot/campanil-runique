@@ -1,4 +1,4 @@
-use crate::backend::menus::MenuFilters;
+use crate::backend::menus::{MenuFilters, get_regimes_static, get_themes_static};
 use crate::backend::stats::get_mongo;
 use mongodb::bson::{DateTime as BsonDateTime, doc};
 use runique::prelude::*;
@@ -25,7 +25,9 @@ pub async fn get_menu_filters(
     let collection = db.collection::<mongodb::bson::Document>("menu_filters");
     let now = BsonDateTime::now();
 
-    if let Some(ref t) = filters.theme {
+    if let Some(ref t) = filters.theme
+        && get_themes_static().iter().any(|(key, _)| key == t)
+    {
         collection
             .update_one(
                 doc! { "filtre": "theme", "valeur": t },
@@ -35,7 +37,9 @@ pub async fn get_menu_filters(
             .await?;
     }
 
-    if let Some(ref r) = filters.regime {
+    if let Some(ref r) = filters.regime
+        && get_regimes_static().iter().any(|(key, _)| key == r)
+    {
         collection
             .update_one(
                 doc! { "filtre": "regime", "valeur": r },
