@@ -966,8 +966,6 @@ textarea.form-control { min-height: 120px; resize: vertical; }
     .page-hero {
         padding: 17.7rem 2rem;
     }
-    .panier-layout { grid-template-columns: 1fr 420px; }
-    .panier-checkout { position: sticky; }
 }
 
 @media (min-width: 769px) {
@@ -1634,6 +1632,11 @@ textarea.form-control { min-height: 120px; resize: vertical; }
     padding: 1rem .75rem;  /* mobile-first : 1.5rem dès min-width:361px */
     position: static;  /* mobile-first : sticky en desktop via min-width:901px */
     top: 1.5rem;
+}
+
+@media (min-width: 901px) {
+    .panier-layout { grid-template-columns: 1fr 420px; }
+    .panier-checkout { position: sticky; }
 }
 
 .radio-group {

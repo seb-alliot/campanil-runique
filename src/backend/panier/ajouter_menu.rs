@@ -131,7 +131,12 @@ pub async fn panier_ajouter_menu(
         })
         .collect();
     if !plats_detail.is_empty() {
-        let _ = get_plat_views(request, &plats_detail).await;
+        let request = request.clone();
+        tokio::spawn(async move {
+            if let Err(e) = get_plat_views(&request, &plats_detail).await {
+                tracing::error!("Analytics Mongo error (plat views): {}", e);
+            }
+        });
     }
 
     Ok(())

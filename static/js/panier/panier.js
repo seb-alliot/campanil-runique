@@ -25,7 +25,7 @@
         const villeEl   = document.getElementById('ville_livraison');
         const update = () => {
             const livr = toggle.checked;
-            livrFields.style.display = livr ? '' : 'none';
+            livrFields.classList.toggle('is-visible', livr);
             if (adresseEl) adresseEl.required = livr;
             if (villeEl)   villeEl.required   = livr;
             if (typeRetrait) typeRetrait.value = livr ? 'livraison' : 'sur_place';

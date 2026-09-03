@@ -119,7 +119,7 @@
                 </label>
             </div>
 
-            <div id="livraison-fields" style="display:none">
+            <div id="livraison-fields" class="panier-livraison-fields">
                 <div class="form-group">
                     <label class="form-label" for="adresse_livraison">Adresse</label>
                     <input type="text" id="adresse_livraison" name="adresse_livraison" class="form-control" maxlength="255" value="{{ profil.adresse | default(value='') }}">
@@ -135,7 +135,7 @@
                     </div>
                 </div>
                 <input type="hidden" name="prix_livraison" id="prix_livraison_hidden" value="{{ prix_livraison }}">
-                <p id="livraison-prix-info" style="font-size:.875rem;color:var(--text-muted);margin-top:.25rem"></p>
+                <p id="livraison-prix-info" class="panier-livraison-prix-info"></p>
             </div>
 
             <div class="form-actions">

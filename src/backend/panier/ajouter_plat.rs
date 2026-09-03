@@ -105,16 +105,19 @@ pub async fn panier_ajouter(request: &Request, p: PanierAjouterParams) -> Result
 
     panier_save(&request.session, &panier).await;
 
-    if p.type_article == "plat" {
-        let plat_detail = PlatDetail {
-            id: p.plat_id,
-            titre: article.titre,
-            description: article.description,
-            image: article.image,
-            est_viande: article.est_viande,
-            allergenes: vec![],
-        };
-        let _ = get_plat_views(request, &[plat_detail]).await;
-    }
+    let plat_detail = PlatDetail {
+        id: p.plat_id,
+        titre: article.titre,
+        description: article.description,
+        image: article.image,
+        est_viande: article.est_viande,
+        allergenes: vec![],
+    };
+    let request = request.clone();
+    tokio::spawn(async move {
+        if let Err(e) = get_plat_views(&request, &[plat_detail]).await {
+            tracing::error!("Analytics Mongo error (plat views): {}", e);
+        }
+    });
     Ok(())
 }
