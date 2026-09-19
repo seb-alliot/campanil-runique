@@ -2,7 +2,7 @@ use crate::backend::utils::inject_auth;
 use crate::entities::user_profil;
 use crate::formulaire::ProfilForm;
 use runique::prelude::*;
-use sea_orm::{ConnectionTrait, DbBackend, Statement};
+use sea_orm::{ActiveModelTrait, Set};
 
 pub async fn load_profil(db: &DatabaseConnection, user_id: Pk) -> Option<user_profil::Model> {
     search!(user_profil::Entity => Id eq user_id,)
@@ -28,23 +28,17 @@ pub async fn handle_profil_post(request: &mut Request) -> AppResult<Response> {
     let ville = form.cleaned_string("ville").unwrap_or_default();
     let code_postal = form.cleaned_string("code_postal").unwrap_or_default();
 
-    request
-        .db()
-        .execute_raw(Statement::from_sql_and_values(
-            DbBackend::Postgres,
-            r#"UPDATE eihwaz_users
-               SET telephone=$1, adresse=$2, ville=$3, code_postal=$4
-               WHERE id=$5"#,
-            [
-                telephone.into(),
-                adresse.into(),
-                ville.into(),
-                code_postal.into(),
-                user.id.into(),
-            ],
-        ))
-        .await
-        .ok();
+    user_profil::ActiveModel {
+        id: Set(user.id),
+        telephone: Set(Some(telephone)),
+        adresse: Set(Some(adresse)),
+        ville: Set(Some(ville)),
+        code_postal: Set(Some(code_postal)),
+        ..Default::default()
+    }
+    .update(request.db())
+    .await
+    .ok();
 
     request.notices.success("Informations mises à jour.").await;
     Ok(Redirect::to("/compte?tab=profil").into_response())

@@ -1,2 +1,2 @@
-<!-- AUTO-admin — DO NOT EDIT MANUALLY
-     admin by `runique start`. Any changes will be overwritten. -->
+<!-- GÉNÉRÉ AUTOMATIQUEMENT — NE PAS MODIFIER MANUELLEMENT
+     Produit par `runique start` depuis src/admin.rs. Toute modification sera écrasée. -->

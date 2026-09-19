@@ -8,11 +8,11 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-# CLI Runique — installé depuis le repo git (branche main) tant que 2.2.0 (UUID) n'est pas publiée sur crates.io
+# CLI Runique
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
-    --mount=type=cache,target=/usr/local/cargo/git \
-    cargo install --git https://github.com/seb-alliot/runique.git --branch main runique --features "orm,postgres" && \
-    find /usr/local/cargo/git/checkouts -path "*/runique/static" -type d -exec cp -r {} /tmp/runique-static \;
+    cargo install runique --version "=2.2.0" --features "orm,postgres" && \
+    find /usr/local/cargo/registry -path "*/runique-2.2.0/static" -type d \
+        -exec cp -r {} /tmp/runique-static \;
 
 # Build de l'app
 COPY Cargo.toml Cargo.lock ./

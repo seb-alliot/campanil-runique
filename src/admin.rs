@@ -102,7 +102,7 @@ admin! {
         ],
         group_action: [["disponible", "Rendre disponible"]],
         m2m: [
-            ["allergenes", "Allergènes", "entree_allergene", "entree_id", "allergene_id", "crate::entities::allergene", "libelle"],
+            ["allergenes", "Allergènes", "entree_allergenes", "entree_id", "allergene_id", "crate::entities::allergene", "libelle"],
         ],
     }
     desserts: dessert::Model => dessert::AdminForm {
@@ -119,7 +119,7 @@ admin! {
         ],
         group_action: [["disponible", "Rendre disponible"]],
         m2m: [
-            ["allergenes", "Allergènes", "dessert_allergene", "dessert_id", "allergene_id", "crate::entities::allergene", "libelle"],
+            ["allergenes", "Allergènes", "dessert_allergenes", "dessert_id", "allergene_id", "crate::entities::allergene", "libelle"],
         ],
     }
     plats: plat::Model => plat::AdminForm {
@@ -140,7 +140,7 @@ admin! {
         ],
         group_action: [["disponible", "Rendre disponible"]],
         m2m: [
-            ["allergenes",   "Allergènes",   "plat_allergene",   "plat_id", "allergene_id",   "crate::entities::allergene",   "libelle"],
+            ["allergenes",   "Allergènes",   "plat_allergenes",   "plat_id", "allergene_id",   "crate::entities::allergene",   "libelle"],
             ["garnitures",   "Garnitures",   "plat_garnitures",  "plat_id", "garniture_id",   "crate::entities::garniture",   "libelle"],
             ["supplements",  "Suppléments",  "plat_supplements", "plat_id", "supplement_id",  "crate::entities::supplement",  "titre"],
         ],

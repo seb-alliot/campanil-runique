@@ -104,7 +104,8 @@ pub async fn panier_ajouter(request: &Request, p: PanierAjouterParams) -> Result
         return Err("Article introuvable ou indisponible");
     };
 
-    let garniture_ids = garnitures_valides_pour_plat(request.db(), p.plat_id, &p.garniture_ids).await;
+    let garniture_ids =
+        garnitures_valides_pour_plat(request.db(), p.plat_id, &p.garniture_ids).await;
 
     let mut panier = panier_get(&request.session).await;
     if panier.user_id.is_none() {
