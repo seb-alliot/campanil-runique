@@ -43,7 +43,7 @@ pub async fn handle_admin_commande_detail(
     };
     let numero = cmd.numero.clone();
 
-    if request.is_post() {
+    if request.method == Method::POST {
         let Some(data) = request.prisme.checked_data() else {
             return Ok(
                 Redirect::to(&format!("{}/commandes/list", admin.config.prefix)).into_response(),

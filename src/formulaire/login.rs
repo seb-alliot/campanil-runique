@@ -26,4 +26,6 @@ impl RuniqueForm for LoginForm {
     }
 
     impl_form_access!();
+    // `validator_get` defaults to `false` (runique) — login never runs on a
+    // GET, no override needed.
 }

@@ -1517,7 +1517,7 @@ dependencies = [
 [[package]]
 name = "derive_form"
 version = "2.2.0"
-source = "git+https://github.com/seb-alliot/runique?branch=main#f490c1c3c62da7734ff74beb96c379581c4d4de0"
+source = "git+https://github.com/seb-alliot/runique?branch=main#6c522a4b71010992004381a8cccc84d7f2e4bffe"
 dependencies = [
  "dotenvy",
  "proc-macro2",
@@ -2162,7 +2162,7 @@ dependencies = [
  "idna",
  "ipnet",
  "jni",
- "rand 0.10.2",
+ "rand 0.10.3",
  "thiserror",
  "tinyvec",
  "tokio",
@@ -2182,7 +2182,7 @@ dependencies = [
  "jni",
  "once_cell",
  "prefix-trie",
- "rand 0.10.2",
+ "rand 0.10.3",
  "ring",
  "thiserror",
  "tinyvec",
@@ -2207,7 +2207,7 @@ dependencies = [
  "ndk-context",
  "once_cell",
  "parking_lot",
- "rand 0.10.2",
+ "rand 0.10.3",
  "resolv-conf",
  "smallvec",
  "system-configuration",
@@ -2355,9 +2355,9 @@ dependencies = [
 
 [[package]]
 name = "hyper-rustls"
-version = "0.27.9"
+version = "0.27.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "33ca68d021ef39cf6463ab54c1d0f5daf03377b70561305bb89a8f83aab66e0f"
+checksum = "dfa8e654703247911e29c23fbeaa261834bd9bb74efba2f9acddc37bfb127f53"
 dependencies = [
  "http",
  "hyper",
@@ -2672,9 +2672,9 @@ dependencies = [
 
 [[package]]
 name = "icu_time_data"
-version = "2.3.0"
+version = "2.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "005ff86fa5851a77fc0a977b72d717f777bd9230415a247219d7898aefb1517a"
+checksum = "d9e21be527807cda7562cbfbdb04179f9cca46c12691d6a8073ffae6cfd7aeec"
 
 [[package]]
 name = "ident_case"
@@ -4150,7 +4150,7 @@ dependencies = [
  "bytes",
  "getrandom 0.4.3",
  "lru-slab",
- "rand 0.10.2",
+ "rand 0.10.3",
  "rand_pcg",
  "ring",
  "rustc-hash",
@@ -4233,9 +4233,9 @@ dependencies = [
 
 [[package]]
 name = "rand"
-version = "0.10.2"
+version = "0.10.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c7f5fa3a058cd35567ef9bfa5e75732bee0f9e4c55fa90477bef2dfcdbc4be80"
+checksum = "65c9fb96cbc91e3478eaae79a69fcd3f1ae4ad052e471fe6732fff548984b4af"
 dependencies = [
  "chacha20",
  "getrandom 0.4.3",
@@ -4508,7 +4508,7 @@ dependencies = [
 [[package]]
 name = "runique"
 version = "2.2.0"
-source = "git+https://github.com/seb-alliot/runique?branch=main#f490c1c3c62da7734ff74beb96c379581c4d4de0"
+source = "git+https://github.com/seb-alliot/runique?branch=main#6c522a4b71010992004381a8cccc84d7f2e4bffe"
 dependencies = [
  "ammonia",
  "anyhow",
@@ -4543,7 +4543,7 @@ dependencies = [
  "proc-macro2",
  "pulldown-cmark",
  "quote",
- "rand 0.10.2",
+ "rand 0.10.3",
  "regex",
  "rpassword",
  "rust_decimal",
@@ -5379,7 +5379,7 @@ dependencies = [
  "log",
  "md-5",
  "memchr",
- "rand 0.10.2",
+ "rand 0.10.3",
  "rust_decimal",
  "serde",
  "serde_json",
@@ -5635,7 +5635,7 @@ dependencies = [
  "jiff",
  "jiff-icu",
  "percent-encoding",
- "rand 0.10.2",
+ "rand 0.10.3",
  "regex",
  "serde_json",
  "slug",

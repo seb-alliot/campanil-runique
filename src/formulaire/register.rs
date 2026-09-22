@@ -49,6 +49,8 @@ impl RuniqueForm for RegisterForm {
             Err(errors)
         }
     }
+    // `validator_get` defaults to `false` (runique) — registration never runs
+    // on a GET, no override needed.
 }
 
 impl RegisterForm {

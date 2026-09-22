@@ -5,7 +5,7 @@ use crate::entities::{
 use runique::prelude::*;
 
 pub async fn handle_supprimer_compte(request: &mut Request) -> AppResult<Response> {
-    if !request.is_post() {
+    if request.method != Method::POST {
         return Ok(Redirect::to("/compte").into_response());
     }
     inject_auth(request).await;

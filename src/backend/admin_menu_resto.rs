@@ -38,7 +38,7 @@ pub async fn handle_menu_resto_composition(
         return Ok(StatusCode::NOT_FOUND.into_response());
     };
 
-    if request.is_post() {
+    if request.method == Method::POST {
         let Some(data) = request.prisme.checked_data() else {
             return Ok(StatusCode::FORBIDDEN.into_response());
         };

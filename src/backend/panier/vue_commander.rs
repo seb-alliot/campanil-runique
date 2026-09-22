@@ -5,7 +5,7 @@ use crate::backend::utils::inject_auth;
 use runique::prelude::*;
 
 pub async fn vue_panier_commander(request: &mut Request) -> AppResult<Response> {
-    if !request.is_post() {
+    if request.method != Method::POST {
         return Ok(Redirect::to("/panier").into_response());
     }
     inject_auth(request).await;

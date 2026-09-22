@@ -13,8 +13,8 @@ pub async fn index(mut request: Request) -> AppResult<Response> {
 }
 
 pub async fn connexion(mut request: Request) -> AppResult<Response> {
-    let mut form: LoginForm = request.form();
-    handle_login(&mut request, &mut form).await
+    let form: LoginForm = request.form();
+    handle_login(&mut request, form).await
 }
 
 pub async fn deconnexion(request: Request) -> AppResult<Response> {
@@ -23,8 +23,8 @@ pub async fn deconnexion(request: Request) -> AppResult<Response> {
 }
 
 pub async fn inscription(headers: HeaderMap, mut request: Request) -> AppResult<Response> {
-    let mut form: RegisterForm = request.form();
-    handle_inscription(&mut request, &mut form, &headers).await
+    let form: RegisterForm = request.form();
+    handle_inscription(&mut request, form, &headers).await
 }
 
 pub async fn activer(
@@ -35,8 +35,8 @@ pub async fn activer(
 }
 
 pub async fn contact(mut request: Request) -> AppResult<Response> {
-    let mut form: ContactForm = request.form();
-    handle_contact(&mut request, &mut form).await
+    let form: ContactForm = request.form();
+    handle_contact(&mut request, form).await
 }
 
 pub async fn menus(mut request: Request) -> AppResult<Response> {
@@ -175,8 +175,8 @@ pub async fn service_stock_update(mut request: Request) -> AppResult<Response> {
 }
 
 pub async fn devis_traiteur(mut request: Request) -> AppResult<Response> {
-    let mut form: DevisTraiteurForm = request.form();
-    handle_devis_traiteur(&mut request, &mut form).await
+    let form: DevisTraiteurForm = request.form();
+    handle_devis_traiteur(&mut request, form).await
 }
 
 pub async fn devis_confirmation(mut request: Request) -> AppResult<Response> {

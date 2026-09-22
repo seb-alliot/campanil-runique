@@ -21,7 +21,7 @@ pub async fn get_avis_plat(
         PlatId eq plat_id,
         Statut eq StatutAvisPlat::Valide,
     )
-    .order_by_random()
+    .order_by_random(db)
     .limit(n)
     .all(db)
     .await

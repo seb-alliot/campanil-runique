@@ -4,7 +4,7 @@ use crate::entities::{commande, commande_statut};
 use runique::prelude::*;
 
 pub async fn handle_commande_annuler(request: &mut Request) -> AppResult<Response> {
-    if !request.is_post() {
+    if request.method != Method::POST {
         return Ok(Redirect::to("/compte").into_response());
     }
     inject_auth(request).await;
