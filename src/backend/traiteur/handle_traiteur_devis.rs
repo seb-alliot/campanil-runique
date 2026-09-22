@@ -42,19 +42,14 @@ pub async fn handle_devis_traiteur(
     let mut form = match ValidationForm::try_new(form, request).await {
         Ok(validated) => validated.into_form(),
         Err(form) => {
-            match crate::backend::form_error_flash(&form) {
-                Some(messages) => context_update!(request => {
-                    "title"      => "Demande de devis — U Campanile",
-                    "devis_form" => &form,
-                    "menu"       => &menu_model,
-                    "messages"   => messages,
-                }),
-                None => context_update!(request => {
-                    "title"      => "Demande de devis — U Campanile",
-                    "devis_form" => &form,
-                    "menu"       => &menu_model,
-                }),
-            }
+            // No flash here: a global error (e.g. CSRF) is already rendered
+            // inline by `{% form.devis_form %}` (Forms::render() puts global
+            // errors first) — a flash would just repeat the same text.
+            context_update!(request => {
+                "title"      => "Demande de devis — U Campanile",
+                "devis_form" => &form,
+                "menu"       => &menu_model,
+            });
             return request.render(template);
         }
     };

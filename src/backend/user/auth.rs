@@ -18,17 +18,13 @@ pub async fn handle_login(request: &mut Request, form: LoginForm) -> AppResult<R
     let validated = match ValidationForm::try_new(form, request).await {
         Ok(validated) => validated,
         Err(form) => {
-            match crate::backend::form_error_flash(&form) {
-                Some(messages) => context_update!(request => {
-                    "title"      => "Login",
-                    "login_form" => &form,
-                    "messages"   => messages,
-                }),
-                None => context_update!(request => {
-                    "title"      => "Login",
-                    "login_form" => &form,
-                }),
-            }
+            // No flash here: a global error (e.g. CSRF) is already rendered
+            // inline by `{% form.login_form %}` (Forms::render() puts global
+            // errors first) — a flash would just repeat the same text.
+            context_update!(request => {
+                "title"      => "Login",
+                "login_form" => &form,
+            });
             return request.render(template);
         }
     };
@@ -78,17 +74,13 @@ pub async fn handle_inscription(
     let validated = match ValidationForm::try_new(form, request).await {
         Ok(validated) => validated,
         Err(form) => {
-            match crate::backend::form_error_flash(&form) {
-                Some(messages) => context_update!(request => {
-                    "title"            => "Créer un compte",
-                    "inscription_form" => &form,
-                    "messages"         => messages,
-                }),
-                None => context_update!(request => {
-                    "title"            => "Créer un compte",
-                    "inscription_form" => &form,
-                }),
-            }
+            // No flash here: a global error (e.g. CSRF) is already rendered
+            // inline by `{% form.inscription_form %}` (Forms::render() puts
+            // global errors first) — a flash would just repeat the same text.
+            context_update!(request => {
+                "title"            => "Créer un compte",
+                "inscription_form" => &form,
+            });
             return request.render(template);
         }
     };

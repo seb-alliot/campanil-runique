@@ -12,17 +12,13 @@ pub async fn handle_contact(request: &mut Request, form: ContactForm) -> AppResu
     let mut validated = match ValidationForm::try_new(form, request).await {
         Ok(validated) => validated,
         Err(form) => {
-            match crate::backend::form_error_flash(&form) {
-                Some(messages) => context_update!(request => {
-                    "title"        => "Contact — U Campanile",
-                    "contact_form" => &form,
-                    "messages"     => messages,
-                }),
-                None => context_update!(request => {
-                    "title"        => "Contact — U Campanile",
-                    "contact_form" => &form,
-                }),
-            }
+            // No flash here: a global error (e.g. CSRF) is already rendered
+            // inline by `{% form.contact_form %}` (Forms::render() puts global
+            // errors first) — a flash would just repeat the same text.
+            context_update!(request => {
+                "title"        => "Contact — U Campanile",
+                "contact_form" => &form,
+            });
             return request.render(template);
         }
     };

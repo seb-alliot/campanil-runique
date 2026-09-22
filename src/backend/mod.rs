@@ -38,4 +38,4 @@ pub use service::{
 pub use stats::load_stats;
 pub use traiteur::{handle_devis_confirmation, handle_devis_traiteur};
 pub use user::{handle_activate, handle_inscription, handle_login};
-pub use utils::{form_error_flash, inject_auth};
+pub use utils::inject_auth;
