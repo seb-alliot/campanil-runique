@@ -354,7 +354,7 @@ pub async fn handle_admin_commande_detail(
         "statuts"          => all_statuts(),
         "title"            => format!("Commande {}", numero),
         "site_title"       => &admin.config.site_title,
-        "site_url"         => &admin.config.site_url,
+        "site_url"         => &request.public_url(),
         "current_page"     => "commandes",
         "current_resource" => "commandes",
         "resources"        => resources,

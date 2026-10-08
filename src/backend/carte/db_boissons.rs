@@ -31,7 +31,7 @@ pub fn slug_to_type(slug: &str) -> Option<TypeBoisson> {
     }
 }
 
-pub async fn build_boissons(db: &sea_orm::DatabaseConnection) -> Vec<CarteBoissonGroupe> {
+pub async fn build_boissons(db: &ADb) -> Vec<CarteBoissonGroupe> {
     let items = search!(boisson::Entity => asc TypeBoisson, asc Ordre, asc Titre,)
         .all(db)
         .await
@@ -66,10 +66,7 @@ pub async fn build_boissons(db: &sea_orm::DatabaseConnection) -> Vec<CarteBoisso
     groupes
 }
 
-pub async fn get_boissons_par_type(
-    db: &sea_orm::DatabaseConnection,
-    type_val: TypeBoisson,
-) -> Vec<CarteBoisson> {
+pub async fn get_boissons_par_type(db: &ADb, type_val: TypeBoisson) -> Vec<CarteBoisson> {
     search!(boisson::Entity => TypeBoisson eq type_val, Disponible eq true, asc Ordre, asc Titre,)
         .all(db)
         .await

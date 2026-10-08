@@ -3,7 +3,7 @@ use crate::entities::{garniture, supplement};
 use runique::prelude::*;
 use std::collections::HashMap;
 
-pub async fn build_supplements(db: &sea_orm::DatabaseConnection) -> Vec<CarteSupplementItem> {
+pub async fn build_supplements(db: &ADb) -> Vec<CarteSupplementItem> {
     let sups = search!(supplement::Entity => Disponible eq true, asc Ordre,)
         .all(db)
         .await

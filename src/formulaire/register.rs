@@ -54,10 +54,7 @@ impl RuniqueForm for RegisterForm {
 }
 
 impl RegisterForm {
-    pub async fn save(
-        &self,
-        db: &DatabaseConnection,
-    ) -> Result<runique::prelude::runique_users::Model, DbErr> {
+    pub async fn save(&self, db: &ADb) -> Result<runique::prelude::runique_users::Model, DbErr> {
         use runique::prelude::runique_users::ActiveModel;
         let user = ActiveModel {
             username: Set(self.cleaned_string("username").unwrap_or_default()),

@@ -2,7 +2,7 @@ use crate::backend::menus::{MenuDetail, PlatDetail};
 use crate::entities::{allergene, menu_traiteur, menu_traiteur_plat, plat, plat_allergene};
 use runique::prelude::*;
 
-pub async fn get_menu_detail(db: &DatabaseConnection, id: Pk) -> Option<MenuDetail> {
+pub async fn get_menu_detail(db: &ADb, id: Pk) -> Option<MenuDetail> {
     let menu_model = search!(menu_traiteur::Entity => Id eq id, Actif eq true,)
         .one(db)
         .await

@@ -4,13 +4,13 @@ use std::str::FromStr;
 const PRIX_PAR_KM_FALLBACK: f64 = 0.59;
 const BASE_LIVRAISON_FALLBACK: f64 = 5.0;
 
-pub async fn get_prix_livraison(db: &sea_orm::DatabaseConnection) -> Decimal {
+pub async fn get_prix_livraison(db: &ADb) -> Decimal {
     search!(info_resto::Entity)
         .first(db)
         .await
         .ok()
         .flatten()
-        .and_then(|r| r.prix_livraison)
+        .map(|r| r.prix_livraison_minimal)
         .unwrap_or_else(|| Decimal::from_str("5.00").unwrap())
 }
 
@@ -24,7 +24,7 @@ fn haversine_km(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> f64 {
 }
 
 pub async fn prix_livraison_distance(
-    db: &sea_orm::DatabaseConnection,
+    db: &ADb,
     adresse: &str,
     cp: &str,
     ville: &str,
@@ -66,12 +66,14 @@ pub async fn prix_livraison_distance(
     let lon: f64 = result.get("lon")?.as_str()?.parse().ok()?;
 
     let prix_par_km = row
-        .prix_livraison
-        .and_then(|p| p.to_string().parse::<f64>().ok())
+        .prix_km_livraison
+        .to_string()
+        .parse::<f64>()
         .unwrap_or(PRIX_PAR_KM_FALLBACK);
     let base = row
         .prix_livraison_minimal
-        .and_then(|p| p.to_string().parse::<f64>().ok())
+        .to_string()
+        .parse::<f64>()
         .unwrap_or(BASE_LIVRAISON_FALLBACK);
     let km = haversine_km(resto_lat, resto_lon, lat, lon);
     let prix = base + km * prix_par_km;

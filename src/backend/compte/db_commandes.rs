@@ -41,7 +41,7 @@ fn statuts_pour_filtre(filtre: &str) -> Vec<StatutCommande> {
 }
 
 pub async fn get_commandes_user(
-    db: &sea_orm::DatabaseConnection,
+    db: &ADb,
     user_id: Pk,
     page: u64,
     filtre: &str,
@@ -191,10 +191,7 @@ pub async fn get_commandes_user(
         .unwrap_or_default();
     let mut statuts_map: HashMap<Pk, Vec<StatutHistorique>> = HashMap::new();
     for s in statuts_raw {
-        let heure = s
-            .created_at
-            .map(|dt| dt.format("%d/%m %H:%M").to_string())
-            .unwrap_or_default();
+        let heure = s.created_at.format("%d/%m %H:%M").to_string();
         statuts_map
             .entry(s.commande_id as Pk)
             .or_default()
@@ -279,14 +276,8 @@ pub async fn get_commandes_user(
         };
         let is_livraison = c.type_retrait == TypeRetrait::Livraison;
         let mode_paiement = c.mode_paiement.to_string();
-        let date = c
-            .created_at
-            .map(|dt| dt.format("%d/%m/%Y %H:%M").to_string())
-            .unwrap_or_default();
-        let date_iso = c
-            .created_at
-            .map(|dt| dt.format("%Y-%m-%dT%H:%M:%SZ").to_string())
-            .unwrap_or_default();
+        let date = c.created_at.format("%d/%m/%Y %H:%M").to_string();
+        let date_iso = c.created_at.format("%Y-%m-%dT%H:%M:%SZ").to_string();
         let heure_retrait = c.heure_retrait.map(|t| t.format("%H:%M").to_string());
         let date_annulation = c
             .date_annulation

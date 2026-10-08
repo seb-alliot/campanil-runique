@@ -3,7 +3,7 @@ use crate::entities::{devis_traiteur, menu_traiteur};
 use runique::prelude::*;
 use sea_orm::ColumnTrait;
 
-pub async fn get_devis_user(db: &DatabaseConnection, user_id: i32) -> Vec<DevisCard> {
+pub async fn get_devis_user(db: &ADb, user_id: i32) -> Vec<DevisCard> {
     let devis = search!(devis_traiteur::Entity => UserId eq user_id, desc Id,)
         .all(db)
         .await
@@ -53,10 +53,7 @@ pub async fn get_devis_user(db: &DatabaseConnection, user_id: i32) -> Vec<DevisC
                 remise_appliquee,
                 statut_label: statut_label.to_string(),
                 statut_css: statut_css.to_string(),
-                created_at: d
-                    .created_at
-                    .map(|dt| dt.format("%d/%m/%Y").to_string())
-                    .unwrap_or_default(),
+                created_at: d.created_at.format("%d/%m/%Y").to_string(),
             }
         })
         .collect()

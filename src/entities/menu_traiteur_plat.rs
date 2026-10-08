@@ -6,7 +6,10 @@ model! {
     pk: id => Pk,
     {
         menu_traiteur_id: int [required],
-        plat_id:          int [required, fk(plats.id, cascade)],
+        plat_id:          int [required],
+    },
+    relations: {
+        belongs_to: Plat via plat_id [cascade],
     },
     meta: {
         unique_together: [(menu_traiteur_id, plat_id)],

@@ -12,16 +12,12 @@ pub struct AvisPlatPublic {
     pub auteur: String,
 }
 
-pub async fn get_avis_plat(
-    db: &sea_orm::DatabaseConnection,
-    plat_id: Pk,
-    n: u64,
-) -> Vec<AvisPlatPublic> {
+pub async fn get_avis_plat(db: &ADb, plat_id: Pk, n: u64) -> Vec<AvisPlatPublic> {
     let avis_list = search!(avis_plat::Entity =>
         PlatId eq plat_id,
         Statut eq StatutAvisPlat::Valide,
     )
-    .order_by_random(db)
+    .order_by_random()
     .limit(n)
     .all(db)
     .await

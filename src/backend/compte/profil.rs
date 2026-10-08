@@ -4,7 +4,7 @@ use crate::formulaire::ProfilForm;
 use runique::prelude::*;
 use sea_orm::{ActiveModelTrait, Set};
 
-pub async fn load_profil(db: &DatabaseConnection, user_id: Pk) -> Option<user_profil::Model> {
+pub async fn load_profil(db: &ADb, user_id: Pk) -> Option<user_profil::Model> {
     search!(user_profil::Entity => Id eq user_id,)
         .first(db)
         .await

@@ -26,10 +26,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let app = builder::new(config)
         .routes(url::routes())
+        // Base of the links sent by email (reset, activation, admin). Empty in
+        // dev: the request's Host is used, in debug only.
+        .with_public_url("https://test-itsuki.fr")
         .with_database(db)
         .with_custom_db(mongo)
         .with_mailer_from_env()
-        .with_password_reset::<BuiltinUserEntity>(|pr| {
+        .with_password_reset(|pr| {
             pr.forgot_template("auth/forgot_password.html")
                 .reset_template("auth/reset_password.html")
                 .email_template("emails/reset_password.html")
@@ -60,7 +63,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 .routes(admins::routes("/admin-campanile"))
                 .extra_routes(url::admin_extra_routes())
                 .with_state(admins::admin_state())
-                .auth(RuniqueAdminAuth::new())
                 .site_title("Campanile — Administration")
                 .hot_reload(is_debug())
                 .resource_order([

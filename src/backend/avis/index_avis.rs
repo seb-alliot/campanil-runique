@@ -1,6 +1,5 @@
 use crate::entities::avis;
 use runique::prelude::*;
-use sea_orm::DatabaseConnection;
 use serde::Serialize;
 use std::collections::HashMap;
 
@@ -12,7 +11,7 @@ pub struct AvisPublic {
     pub auteur: String,
 }
 
-pub async fn get_avis_valides(db: &DatabaseConnection) -> Vec<AvisPublic> {
+pub async fn get_avis_valides(db: &ADb) -> Vec<AvisPublic> {
     let avis_list = search!(avis::Entity => Statut eq avis::StatutAvis::Valide, desc CreatedAt,)
         .limit(8)
         .all(db)

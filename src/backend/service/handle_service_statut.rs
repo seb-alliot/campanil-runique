@@ -102,13 +102,9 @@ pub async fn handle_service_statut(request: &mut Request) -> AppResult<Response>
     if mailer_configured()
         && let Ok(Some(user)) = runique_users::Entity::find_by_id(cmd.user_id).one(db).await
     {
-        if statut_str == "pret" || statut_str == "livre" {
-            let base_url = request
-                .headers
-                .get("host")
-                .and_then(|v| v.to_str().ok())
-                .map(|h| format!("http://{h}"))
-                .unwrap_or_else(|| "http://localhost:3000".to_string());
+        if (statut_str == "pret" || statut_str == "livre")
+            && let Some(base_url) = request.public_url()
+        {
             let (statut_titre, statut_message) = if statut_str == "livre" {
                 ("Votre commande est livrée", "a bien été livrée.")
             } else {

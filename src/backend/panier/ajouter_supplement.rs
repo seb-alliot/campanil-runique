@@ -3,7 +3,7 @@ use crate::entities::{garniture, plat_supplement, supplement};
 use runique::prelude::*;
 
 pub async fn supplements_valides_pour_plat(
-    db: &sea_orm::DatabaseConnection,
+    db: &ADb,
     plat_id: Pk,
     supplement_ids: &[Pk],
 ) -> Vec<Pk> {
@@ -26,7 +26,7 @@ pub async fn supplements_valides_pour_plat(
 
 pub async fn panier_ajouter_supplement(
     session: &Session,
-    db: &sea_orm::DatabaseConnection,
+    db: &ADb,
     supplement_id: Pk,
     quantite: i32,
     user_id: Option<Pk>,

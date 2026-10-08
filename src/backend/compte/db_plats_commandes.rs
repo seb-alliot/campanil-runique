@@ -4,10 +4,7 @@ use crate::entities::{avis_plat, commande, commande_ligne, dessert, entree, plat
 use runique::prelude::*;
 use std::collections::HashMap;
 
-pub async fn get_plats_commandes_user(
-    db: &sea_orm::DatabaseConnection,
-    user_id: Pk,
-) -> Vec<PlatCommande> {
+pub async fn get_plats_commandes_user(db: &ADb, user_id: Pk) -> Vec<PlatCommande> {
     let commande_ids: Vec<Pk> = search!(commande::Entity =>
         UserId eq user_id,
         or(Statut eq StatutCommande::Termine, Statut eq StatutCommande::Livre),

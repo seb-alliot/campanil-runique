@@ -59,14 +59,25 @@ pub fn routes() -> Router {
     .rate_limit("/panier/commander", "panier_commander", view!{ panier_commander_view }, 3, 300, vec![Method::POST])
 }
 
-pub fn admin_extra_routes() -> Vec<(&'static str, runique::axum::routing::MethodRouter)> {
+// (path, admin resource, right checked, handler): both pages write on POST,
+// so both require the edit right on their resource.
+pub fn admin_extra_routes() -> Vec<(
+    &'static str,
+    &'static str,
+    CrudOperation,
+    runique::axum::routing::MethodRouter,
+)> {
     vec![
         (
             "/commandes/{numero}/detail",
+            "commandes",
+            CrudOperation::Edit,
             view! { admin_commande_detail },
         ),
         (
             "/menus/{id}/composition",
+            "menus",
+            CrudOperation::Edit,
             view! { admin_menu_resto_composition },
         ),
     ]

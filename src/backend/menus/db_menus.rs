@@ -3,7 +3,7 @@ use crate::entities::menu_traiteur;
 use runique::prelude::*;
 use std::str::FromStr;
 
-pub async fn get_menu_cards(db: &DatabaseConnection, filters: &MenuFilters) -> Vec<MenuCard> {
+pub async fn get_menu_cards(db: &ADb, filters: &MenuFilters) -> Vec<MenuCard> {
     let mut query = search!(menu_traiteur::Entity => Actif eq true, desc Id,);
 
     if let Some(ref pmin) = filters.prix_min

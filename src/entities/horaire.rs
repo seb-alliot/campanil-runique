@@ -17,11 +17,11 @@ model! {
     },
     {
         jour:             choice [enum(Jour), required, unique],
-        ouverture_midi:   time,
-        fermeture_midi:   time,
-        ouverture_soir:   time,
-        fermeture_soir:   time,
+        ouverture_midi:   time [nullable],
+        fermeture_midi:   time [nullable],
+        ouverture_soir:   time [nullable],
+        fermeture_soir:   time [nullable],
         ferme:            bool   [required, default: false],
-        note:             text,
+        note:             text [nullable],
     }
 }

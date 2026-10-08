@@ -5,7 +5,11 @@ model! {
     table: "entree_allergenes",
     pk: id => Pk,
     {
-        entree_id:    int [required, fk(entrees.id, cascade)],
-        allergene_id: int [required, fk(allergenes.id, cascade)],
-    }
+        entree_id:    int [required],
+        allergene_id: int [required],
+    },
+    relations: {
+        belongs_to: Entree via entree_id [cascade],
+        belongs_to: Allergene via allergene_id [cascade],
+    },
 }

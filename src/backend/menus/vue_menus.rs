@@ -7,7 +7,7 @@ use runique::prelude::*;
 
 pub async fn vue_menus(request: &mut Request) -> AppResult<Response> {
     inject_auth(request).await;
-    let filters: MenuFilters = request.query();
+    let filters: MenuFilters = request.query()?;
 
     let _ = get_menu_filters(request, &filters).await;
 

@@ -13,9 +13,9 @@ model! {
     },
     {
         titre:       text    [required, max_length: 255],
-        label:       text    [max_length: 80],
-        description: textarea,
-        image:       image   [upload_to: "desserts/"],
+        label:       text    [max_length: 80, nullable],
+        description: textarea [nullable],
+        image:       image   [upload_to: "desserts/", nullable],
         prix:        decimal [required],
         disponible:  bool    [required, default: true],
         usage:       choice  [enum(UsageDessert), required, default: "les_deux"],

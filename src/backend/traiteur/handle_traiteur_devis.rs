@@ -2,7 +2,6 @@ use crate::backend::stats::{MenuEventParams, get_menu_event};
 use crate::backend::utils::inject_auth;
 use crate::entities::{devis_traiteur, info_resto, menu_traiteur};
 use crate::formulaire::DevisTraiteurForm;
-use runique::auth::session::UserEntity;
 use runique::auth::user::BuiltinUserEntity;
 use runique::context;
 use runique::prelude::*;
@@ -86,7 +85,7 @@ pub async fn handle_devis_traiteur(
             let base = menu.prix_par_personne * Decimal::from(nb_personnes);
             if let Some(remise) = menu.remise_groupe
                 && remise > Decimal::ZERO
-                && nb_personnes >= menu.remise_groupe_min.unwrap_or(0)
+                && nb_personnes >= menu.remise_groupe_min
             {
                 (
                     Some(base * (Decimal::ONE - remise / Decimal::from(100))),

@@ -3,8 +3,10 @@ use crate::entities::{horaire, info_resto};
 use runique::prelude::*;
 
 pub async fn inject_auth(request: &mut Request) {
-    let is_admin = is_admin_authenticated(&request.session).await;
     let current_user = request.user.clone();
+    let is_admin = current_user
+        .as_ref()
+        .is_some_and(|user| user.can_access_admin());
     let panier_nb = panier_get(&request.session).await.nb_articles();
     let db = request.db();
 

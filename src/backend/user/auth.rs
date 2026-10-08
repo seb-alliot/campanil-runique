@@ -32,10 +32,8 @@ pub async fn handle_login(request: &mut Request, form: LoginForm) -> AppResult<R
     let credentials = get_credentials(&validated);
     if let Some((username_val, password_val)) = &credentials
         && let Some(user) = authenticate_user(&request.engine.db, username_val, password_val).await
+        && login(&request.session, &user, None, false).await.is_ok()
     {
-        auth_login(&request.session, &request.engine.db, user.id)
-            .await
-            .ok();
         // Vider le panier seulement s'il appartenait à un autre compte.
         // Un panier guest (user_id: None) est conservé et rattaché au compte.
         let mut panier = panier_get(&request.session).await;
@@ -59,11 +57,7 @@ pub async fn handle_login(request: &mut Request, form: LoginForm) -> AppResult<R
     request.render(template)
 }
 
-pub async fn handle_inscription(
-    request: &mut Request,
-    form: RegisterForm,
-    headers: &HeaderMap,
-) -> AppResult<Response> {
+pub async fn handle_inscription(request: &mut Request, form: RegisterForm) -> AppResult<Response> {
     inject_auth(request).await;
     if is_authenticated(&request.session).await {
         return Ok(Redirect::to("/compte").into_response());
@@ -95,14 +89,11 @@ pub async fn handle_inscription(
             .await
             .unwrap_or_default();
             let encrypted = reset_token::encrypt_email(&token, &user.email);
-            let base_url = headers
-                .get("host")
-                .and_then(|v| v.to_str().ok())
-                .map(|h| format!("http://{h}"))
-                .unwrap_or_else(|| "http://localhost:3000".to_string());
-            let activate_url = format!("{}/activer/{}/{}", base_url, token, encrypted);
 
-            if mailer_configured() {
+            if mailer_configured()
+                && let Some(base_url) = request.public_url()
+            {
+                let activate_url = format!("{}/activer/{}/{}", base_url, token, encrypted);
                 let ctx = context! {
                     "username"     => &user.username,
                     "activate_url" => &activate_url,

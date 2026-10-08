@@ -7,7 +7,7 @@ use runique::prelude::*;
 pub async fn panier_ajouter_boisson(
     request: &Request,
     session: &Session,
-    db: &sea_orm::DatabaseConnection,
+    db: &ADb,
     boisson_id: Pk,
     quantite: i32,
     user_id: Option<Pk>,

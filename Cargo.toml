@@ -6,7 +6,7 @@ rust-version = "1.94"
 
 [dependencies]
 
-runique = { git = "https://github.com/seb-alliot/runique", branch = "main", features = ["orm", "postgres"] }
+runique = { version = "3.0.1", features = ["postgres"] }
 
 serde = "1"
 

@@ -17,7 +17,7 @@ fn weekday_to_jour(wd: Weekday) -> Jour {
 /// Génère un numéro de commande basé sur le service (M/S) de l'heure de retrait/livraison,
 /// pas sur l'heure de passation — évite les conflits entre services.
 pub async fn generer_numero(
-    db: &sea_orm::DatabaseConnection,
+    db: &ADb,
     tz_str: &str,
     dt_cible: NaiveDateTime,
     offset: u64,

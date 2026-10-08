@@ -5,9 +5,9 @@ model! {
     table: "commande_statuts",
     pk: id => Pk,
     {
-        commande_id: int      [required, fk(commandes.id, cascade)],
+        commande_id: int      [required],
         statut:      text     [required, max_length: 50],
-        note:        textarea,
+        note:        textarea [nullable],
         created_at:  datetime [auto_now],
     },
     relations: {

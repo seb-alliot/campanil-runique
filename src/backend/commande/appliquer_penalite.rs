@@ -59,7 +59,7 @@ pub async fn handle_appliquer_penalite(request: &mut Request) -> AppResult<Respo
         .await
         .ok()
         .flatten()
-        .and_then(|r| r.penalite_materiel)
+        .map(|r| r.penalite_materiel)
         .unwrap_or_else(|| Decimal::new(600, 0));
 
     let nouveau_total = cmd.prix_total + montant;

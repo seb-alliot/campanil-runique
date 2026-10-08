@@ -29,7 +29,7 @@ impl DynForm for AllergeneAdminFormDynWrapper {
         self.0.is_valid().await
     }
 
-    async fn save(&mut self, db: &DatabaseConnection) -> Result<(), DbErr> {
+    async fn save(&mut self, db: &ADb) -> Result<(), DbErr> {
         self.0.save(db).await
     }
 
@@ -51,7 +51,7 @@ impl DynForm for HoraireAdminFormDynWrapper {
         self.0.is_valid().await
     }
 
-    async fn save(&mut self, db: &DatabaseConnection) -> Result<(), DbErr> {
+    async fn save(&mut self, db: &ADb) -> Result<(), DbErr> {
         self.0.save(db).await
     }
 
@@ -73,7 +73,7 @@ impl DynForm for HoraireEditFormDynWrapper {
         self.0.is_valid().await
     }
 
-    async fn save(&mut self, _db: &DatabaseConnection) -> Result<(), DbErr> {
+    async fn save(&mut self, _db: &ADb) -> Result<(), DbErr> {
         Ok(()) // update_fn handles persistence
     }
 
@@ -95,7 +95,7 @@ impl DynForm for DevisTraiteurAdminFormDynWrapper {
         self.0.is_valid().await
     }
 
-    async fn save(&mut self, db: &DatabaseConnection) -> Result<(), DbErr> {
+    async fn save(&mut self, db: &ADb) -> Result<(), DbErr> {
         self.0.save(db).await
     }
 
@@ -117,7 +117,7 @@ impl DynForm for ContactAdminFormDynWrapper {
         self.0.is_valid().await
     }
 
-    async fn save(&mut self, db: &DatabaseConnection) -> Result<(), DbErr> {
+    async fn save(&mut self, db: &ADb) -> Result<(), DbErr> {
         self.0.save(db).await
     }
 
@@ -139,7 +139,7 @@ impl DynForm for GarnitureAdminFormDynWrapper {
         self.0.is_valid().await
     }
 
-    async fn save(&mut self, db: &DatabaseConnection) -> Result<(), DbErr> {
+    async fn save(&mut self, db: &ADb) -> Result<(), DbErr> {
         self.0.save(db).await
     }
 
@@ -161,7 +161,7 @@ impl DynForm for SupplementAdminFormDynWrapper {
         self.0.is_valid().await
     }
 
-    async fn save(&mut self, db: &DatabaseConnection) -> Result<(), DbErr> {
+    async fn save(&mut self, db: &ADb) -> Result<(), DbErr> {
         self.0.save(db).await
     }
 
@@ -183,7 +183,7 @@ impl DynForm for EntreeAdminFormDynWrapper {
         self.0.is_valid().await
     }
 
-    async fn save(&mut self, db: &DatabaseConnection) -> Result<(), DbErr> {
+    async fn save(&mut self, db: &ADb) -> Result<(), DbErr> {
         self.0.save(db).await
     }
 
@@ -205,7 +205,7 @@ impl DynForm for DessertAdminFormDynWrapper {
         self.0.is_valid().await
     }
 
-    async fn save(&mut self, db: &DatabaseConnection) -> Result<(), DbErr> {
+    async fn save(&mut self, db: &ADb) -> Result<(), DbErr> {
         self.0.save(db).await
     }
 
@@ -227,7 +227,7 @@ impl DynForm for PlatAdminFormDynWrapper {
         self.0.is_valid().await
     }
 
-    async fn save(&mut self, db: &DatabaseConnection) -> Result<(), DbErr> {
+    async fn save(&mut self, db: &ADb) -> Result<(), DbErr> {
         self.0.save(db).await
     }
 
@@ -249,7 +249,7 @@ impl DynForm for MenuAdminFormDynWrapper {
         self.0.is_valid().await
     }
 
-    async fn save(&mut self, db: &DatabaseConnection) -> Result<(), DbErr> {
+    async fn save(&mut self, db: &ADb) -> Result<(), DbErr> {
         self.0.save(db).await
     }
 
@@ -271,7 +271,7 @@ impl DynForm for MenuTraiteurAdminFormDynWrapper {
         self.0.is_valid().await
     }
 
-    async fn save(&mut self, db: &DatabaseConnection) -> Result<(), DbErr> {
+    async fn save(&mut self, db: &ADb) -> Result<(), DbErr> {
         self.0.save(db).await
     }
 
@@ -293,7 +293,7 @@ impl DynForm for BoissonAdminFormDynWrapper {
         self.0.is_valid().await
     }
 
-    async fn save(&mut self, db: &DatabaseConnection) -> Result<(), DbErr> {
+    async fn save(&mut self, db: &ADb) -> Result<(), DbErr> {
         self.0.save(db).await
     }
 
@@ -315,7 +315,7 @@ impl DynForm for CommandeAdminFormDynWrapper {
         self.0.is_valid().await
     }
 
-    async fn save(&mut self, db: &DatabaseConnection) -> Result<(), DbErr> {
+    async fn save(&mut self, db: &ADb) -> Result<(), DbErr> {
         self.0.save(db).await
     }
 
@@ -337,7 +337,7 @@ impl DynForm for CommandeEditFormDynWrapper {
         self.0.is_valid().await
     }
 
-    async fn save(&mut self, _db: &DatabaseConnection) -> Result<(), DbErr> {
+    async fn save(&mut self, _db: &ADb) -> Result<(), DbErr> {
         Ok(()) // update_fn handles persistence
     }
 
@@ -359,7 +359,7 @@ impl DynForm for AvisAdminFormDynWrapper {
         self.0.is_valid().await
     }
 
-    async fn save(&mut self, db: &DatabaseConnection) -> Result<(), DbErr> {
+    async fn save(&mut self, db: &ADb) -> Result<(), DbErr> {
         self.0.save(db).await
     }
 
@@ -381,7 +381,7 @@ impl DynForm for AvisPlatAdminFormDynWrapper {
         self.0.is_valid().await
     }
 
-    async fn save(&mut self, db: &DatabaseConnection) -> Result<(), DbErr> {
+    async fn save(&mut self, db: &ADb) -> Result<(), DbErr> {
         self.0.save(db).await
     }
 
@@ -403,7 +403,7 @@ impl DynForm for InfoRestoAdminFormDynWrapper {
         self.0.is_valid().await
     }
 
-    async fn save(&mut self, db: &DatabaseConnection) -> Result<(), DbErr> {
+    async fn save(&mut self, db: &ADb) -> Result<(), DbErr> {
         self.0.save(db).await
     }
 
@@ -430,7 +430,6 @@ pub fn admin_register() -> AdminRegistry {
         "crate::entities::allergene::Model",
         "AdminForm",
         "Allergènes",
-        vec![],
     );
     let form_builder: FormBuilder = Arc::new(
         |_db: ADb,
@@ -495,10 +494,20 @@ pub fn admin_register() -> AdminRegistry {
     });
 
     let count_fn: CountFn = Arc::new(
-        |db: ADb, _search: Option<String>, scope: Option<(String, String)>| {
+        |db: ADb,
+         _search: Option<String>,
+         column_filters: Vec<(String, String)>,
+         scope: Option<(String, String)>| {
             Box::pin(async move {
                 use sea_orm::QueryFilter;
                 let mut query = allergene::Entity::find();
+                const FILTER_COLS: &[&str] = &[];
+                for (col, val) in &column_filters {
+                    if !FILTER_COLS.contains(&col.as_str()) {
+                        continue;
+                    }
+                    query = query.filter(text_eq(&db, col.as_str(), val));
+                }
                 if let Some(ref search_str) = _search {
                     let search_cond = search_cond!(&db => allergene::Entity => or("libelle" icontains search_str));
                     query = query.filter(search_cond);
@@ -518,8 +527,12 @@ pub fn admin_register() -> AdminRegistry {
             let Ok(id) = id.parse::<Pk>() else {
                 return Ok(None);
             };
-            let row = allergene::Entity::find_by_id(id).one(&*db).await?;
-            Ok(row.map(|r| serde_json::to_value(r).unwrap_or(serde_json::Value::Null)))
+            let Some(row) = allergene::Entity::find_by_id(id).one(&*db).await? else {
+                return Ok(None);
+            };
+            let mut value = serde_json::to_value(&row).unwrap_or(serde_json::Value::Null);
+            row.admin_list_values(&*db, &mut value).await?;
+            Ok(Some(value))
         })
     });
 
@@ -537,10 +550,13 @@ pub fn admin_register() -> AdminRegistry {
 
     let create_fn: CreateFn = Arc::new(|db: ADb, data: StrMap| {
         Box::pin(async move {
-            allergene::admin_from_form(&data, None)
-                .insert(&*db)
-                .await
-                .map(|_| ())
+            use sea_orm::TransactionTrait;
+            let txn = db.begin().await?;
+            let result = allergene::admin_from_form(&data, None)?
+                .insert(&txn)
+                .await?;
+            result.admin_save_lists(&txn, &data).await?;
+            txn.commit().await
         })
     });
 
@@ -549,10 +565,13 @@ pub fn admin_register() -> AdminRegistry {
             let id = id
                 .parse::<Pk>()
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
-            allergene::admin_from_form(&data, Some(id))
-                .update(&*db)
-                .await
-                .map(|_| ())
+            use sea_orm::TransactionTrait;
+            let txn = db.begin().await?;
+            let result = allergene::admin_from_form(&data, Some(id))?
+                .update(&txn)
+                .await?;
+            result.admin_save_lists(&txn, &data).await?;
+            txn.commit().await
         })
     });
 
@@ -561,7 +580,7 @@ pub fn admin_register() -> AdminRegistry {
             let id = id
                 .parse::<Pk>()
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
-            allergene::admin_partial_update(&data, id)
+            allergene::admin_partial_update(&data, id)?
                 .update(&*db)
                 .await
                 .map(|_| ())
@@ -588,7 +607,6 @@ pub fn admin_register() -> AdminRegistry {
         "crate::entities::horaire::Model",
         "AdminForm",
         "Horaires",
-        vec![],
     );
     let meta = meta.inject_password(true);
     let form_builder: FormBuilder = Arc::new(
@@ -664,10 +682,20 @@ pub fn admin_register() -> AdminRegistry {
     });
 
     let count_fn: CountFn = Arc::new(
-        |db: ADb, _search: Option<String>, scope: Option<(String, String)>| {
+        |db: ADb,
+         _search: Option<String>,
+         column_filters: Vec<(String, String)>,
+         scope: Option<(String, String)>| {
             Box::pin(async move {
                 use sea_orm::QueryFilter;
                 let mut query = horaire::Entity::find();
+                const FILTER_COLS: &[&str] = &["ferme"];
+                for (col, val) in &column_filters {
+                    if !FILTER_COLS.contains(&col.as_str()) {
+                        continue;
+                    }
+                    query = query.filter(text_eq(&db, col.as_str(), val));
+                }
                 if let Some(ref search_str) = _search {
                     let search_cond = search_cond!(&db => horaire::Entity => or("jour" icontains search_str, "ouverture_midi" icontains search_str, "fermeture_midi" icontains search_str, "ouverture_soir" icontains search_str, "fermeture_soir" icontains search_str, "ferme" icontains search_str));
                     query = query.filter(search_cond);
@@ -687,8 +715,12 @@ pub fn admin_register() -> AdminRegistry {
             let Ok(id) = id.parse::<Pk>() else {
                 return Ok(None);
             };
-            let row = horaire::Entity::find_by_id(id).one(&*db).await?;
-            Ok(row.map(|r| serde_json::to_value(r).unwrap_or(serde_json::Value::Null)))
+            let Some(row) = horaire::Entity::find_by_id(id).one(&*db).await? else {
+                return Ok(None);
+            };
+            let mut value = serde_json::to_value(&row).unwrap_or(serde_json::Value::Null);
+            row.admin_list_values(&*db, &mut value).await?;
+            Ok(Some(value))
         })
     });
 
@@ -725,11 +757,11 @@ pub fn admin_register() -> AdminRegistry {
                     let id = id
                         .parse::<Pk>()
                         .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
-                    horaire::admin_from_form(&row, Some(id))
+                    horaire::admin_from_form(&row, Some(id))?
                         .update(&*db)
                         .await?;
                 } else {
-                    horaire::admin_from_form(&row, None).insert(&*db).await?;
+                    horaire::admin_from_form(&row, None)?.insert(&*db).await?;
                 }
             }
             Ok(())
@@ -741,10 +773,13 @@ pub fn admin_register() -> AdminRegistry {
             let id = id
                 .parse::<Pk>()
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
-            horaire::admin_from_form(&data, Some(id))
-                .update(&*db)
-                .await
-                .map(|_| ())
+            use sea_orm::TransactionTrait;
+            let txn = db.begin().await?;
+            let result = horaire::admin_from_form(&data, Some(id))?
+                .update(&txn)
+                .await?;
+            result.admin_save_lists(&txn, &data).await?;
+            txn.commit().await
         })
     });
 
@@ -753,7 +788,7 @@ pub fn admin_register() -> AdminRegistry {
             let id = id
                 .parse::<Pk>()
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
-            horaire::admin_partial_update(&data, id)
+            horaire::admin_partial_update(&data, id)?
                 .update(&*db)
                 .await
                 .map(|_| ())
@@ -795,7 +830,9 @@ pub fn admin_register() -> AdminRegistry {
             let page_size_ferme = 10u64;
             let cur_page_ferme = pages.get("ferme").copied().unwrap_or(0);
             let count_stmt_ferme = Query::select()
-                .expr(Expr::cust("COUNT(DISTINCT ferme)"))
+                .expr(sea_orm::sea_query::Func::count_distinct(Expr::col(
+                    Alias::new("ferme"),
+                )))
                 .from(Alias::new(horaire::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("ferme")).is_not_null())
                 .to_owned();
@@ -814,10 +851,7 @@ pub fn admin_register() -> AdminRegistry {
                 .unwrap_or(0) as u64;
             let stmt_ferme = Query::select()
                 .distinct()
-                .expr(Expr::cust(format!(
-                    "CAST(ferme AS {})",
-                    text_cast_type(&db)
-                )))
+                .expr(Expr::col(Alias::new("ferme")).cast_as(Alias::new(text_cast_type(&db))))
                 .from(Alias::new(horaire::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("ferme")).is_not_null())
                 .limit(page_size_ferme)
@@ -868,7 +902,6 @@ pub fn admin_register() -> AdminRegistry {
         "crate::entities::devis_traiteur::Model",
         "AdminForm",
         "Demandes de devis",
-        vec![],
     );
     let form_builder: FormBuilder = Arc::new(
         |_db: ADb,
@@ -943,10 +976,20 @@ pub fn admin_register() -> AdminRegistry {
     });
 
     let count_fn: CountFn = Arc::new(
-        |db: ADb, _search: Option<String>, scope: Option<(String, String)>| {
+        |db: ADb,
+         _search: Option<String>,
+         column_filters: Vec<(String, String)>,
+         scope: Option<(String, String)>| {
             Box::pin(async move {
                 use sea_orm::QueryFilter;
                 let mut query = devis_traiteur::Entity::find();
+                const FILTER_COLS: &[&str] = &["statut"];
+                for (col, val) in &column_filters {
+                    if !FILTER_COLS.contains(&col.as_str()) {
+                        continue;
+                    }
+                    query = query.filter(text_eq(&db, col.as_str(), val));
+                }
                 if let Some(ref search_str) = _search {
                     let search_cond = search_cond!(&db => devis_traiteur::Entity => or("nom" icontains search_str, "email" icontains search_str, "date_evenement" icontains search_str, "nb_personnes" icontains search_str, "prix_total" icontains search_str, "remise_appliquee" icontains search_str, "statut" icontains search_str, "created_at" icontains search_str));
                     query = query.filter(search_cond);
@@ -966,8 +1009,12 @@ pub fn admin_register() -> AdminRegistry {
             let Ok(id) = id.parse::<Pk>() else {
                 return Ok(None);
             };
-            let row = devis_traiteur::Entity::find_by_id(id).one(&*db).await?;
-            Ok(row.map(|r| serde_json::to_value(r).unwrap_or(serde_json::Value::Null)))
+            let Some(row) = devis_traiteur::Entity::find_by_id(id).one(&*db).await? else {
+                return Ok(None);
+            };
+            let mut value = serde_json::to_value(&row).unwrap_or(serde_json::Value::Null);
+            row.admin_list_values(&*db, &mut value).await?;
+            Ok(Some(value))
         })
     });
 
@@ -985,10 +1032,13 @@ pub fn admin_register() -> AdminRegistry {
 
     let create_fn: CreateFn = Arc::new(|db: ADb, data: StrMap| {
         Box::pin(async move {
-            devis_traiteur::admin_from_form(&data, None)
-                .insert(&*db)
-                .await
-                .map(|_| ())
+            use sea_orm::TransactionTrait;
+            let txn = db.begin().await?;
+            let result = devis_traiteur::admin_from_form(&data, None)?
+                .insert(&txn)
+                .await?;
+            result.admin_save_lists(&txn, &data).await?;
+            txn.commit().await
         })
     });
 
@@ -997,10 +1047,13 @@ pub fn admin_register() -> AdminRegistry {
             let id = id
                 .parse::<Pk>()
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
-            devis_traiteur::admin_from_form(&data, Some(id))
-                .update(&*db)
-                .await
-                .map(|_| ())
+            use sea_orm::TransactionTrait;
+            let txn = db.begin().await?;
+            let result = devis_traiteur::admin_from_form(&data, Some(id))?
+                .update(&txn)
+                .await?;
+            result.admin_save_lists(&txn, &data).await?;
+            txn.commit().await
         })
     });
 
@@ -1009,7 +1062,7 @@ pub fn admin_register() -> AdminRegistry {
             let id = id
                 .parse::<Pk>()
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
-            devis_traiteur::admin_partial_update(&data, id)
+            devis_traiteur::admin_partial_update(&data, id)?
                 .update(&*db)
                 .await
                 .map(|_| ())
@@ -1039,7 +1092,9 @@ pub fn admin_register() -> AdminRegistry {
             let page_size_statut = 10u64;
             let cur_page_statut = pages.get("statut").copied().unwrap_or(0);
             let count_stmt_statut = Query::select()
-                .expr(Expr::cust("COUNT(DISTINCT statut)"))
+                .expr(sea_orm::sea_query::Func::count_distinct(Expr::col(
+                    Alias::new("statut"),
+                )))
                 .from(Alias::new(devis_traiteur::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("statut")).is_not_null())
                 .to_owned();
@@ -1058,10 +1113,7 @@ pub fn admin_register() -> AdminRegistry {
                 .unwrap_or(0) as u64;
             let stmt_statut = Query::select()
                 .distinct()
-                .expr(Expr::cust(format!(
-                    "CAST(statut AS {})",
-                    text_cast_type(&db)
-                )))
+                .expr(Expr::col(Alias::new("statut")).cast_as(Alias::new(text_cast_type(&db))))
                 .from(Alias::new(devis_traiteur::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("statut")).is_not_null())
                 .limit(page_size_statut)
@@ -1111,7 +1163,6 @@ pub fn admin_register() -> AdminRegistry {
         "crate::entities::contact::Model",
         "AdminForm",
         "Messages de contact",
-        vec![],
     );
     let form_builder: FormBuilder = Arc::new(
         |_db: ADb,
@@ -1175,10 +1226,20 @@ pub fn admin_register() -> AdminRegistry {
     });
 
     let count_fn: CountFn = Arc::new(
-        |db: ADb, _search: Option<String>, scope: Option<(String, String)>| {
+        |db: ADb,
+         _search: Option<String>,
+         column_filters: Vec<(String, String)>,
+         scope: Option<(String, String)>| {
             Box::pin(async move {
                 use sea_orm::QueryFilter;
                 let mut query = contact::Entity::find();
+                const FILTER_COLS: &[&str] = &["raison"];
+                for (col, val) in &column_filters {
+                    if !FILTER_COLS.contains(&col.as_str()) {
+                        continue;
+                    }
+                    query = query.filter(text_eq(&db, col.as_str(), val));
+                }
                 if let Some(ref search_str) = _search {
                     let search_cond = search_cond!(&db => contact::Entity => or("raison" icontains search_str, "titre" icontains search_str, "email" icontains search_str, "created_at" icontains search_str));
                     query = query.filter(search_cond);
@@ -1198,8 +1259,12 @@ pub fn admin_register() -> AdminRegistry {
             let Ok(id) = id.parse::<Pk>() else {
                 return Ok(None);
             };
-            let row = contact::Entity::find_by_id(id).one(&*db).await?;
-            Ok(row.map(|r| serde_json::to_value(r).unwrap_or(serde_json::Value::Null)))
+            let Some(row) = contact::Entity::find_by_id(id).one(&*db).await? else {
+                return Ok(None);
+            };
+            let mut value = serde_json::to_value(&row).unwrap_or(serde_json::Value::Null);
+            row.admin_list_values(&*db, &mut value).await?;
+            Ok(Some(value))
         })
     });
 
@@ -1217,10 +1282,11 @@ pub fn admin_register() -> AdminRegistry {
 
     let create_fn: CreateFn = Arc::new(|db: ADb, data: StrMap| {
         Box::pin(async move {
-            contact::admin_from_form(&data, None)
-                .insert(&*db)
-                .await
-                .map(|_| ())
+            use sea_orm::TransactionTrait;
+            let txn = db.begin().await?;
+            let result = contact::admin_from_form(&data, None)?.insert(&txn).await?;
+            result.admin_save_lists(&txn, &data).await?;
+            txn.commit().await
         })
     });
 
@@ -1229,10 +1295,13 @@ pub fn admin_register() -> AdminRegistry {
             let id = id
                 .parse::<Pk>()
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
-            contact::admin_from_form(&data, Some(id))
-                .update(&*db)
-                .await
-                .map(|_| ())
+            use sea_orm::TransactionTrait;
+            let txn = db.begin().await?;
+            let result = contact::admin_from_form(&data, Some(id))?
+                .update(&txn)
+                .await?;
+            result.admin_save_lists(&txn, &data).await?;
+            txn.commit().await
         })
     });
 
@@ -1241,7 +1310,7 @@ pub fn admin_register() -> AdminRegistry {
             let id = id
                 .parse::<Pk>()
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
-            contact::admin_partial_update(&data, id)
+            contact::admin_partial_update(&data, id)?
                 .update(&*db)
                 .await
                 .map(|_| ())
@@ -1267,7 +1336,9 @@ pub fn admin_register() -> AdminRegistry {
             let page_size_raison = 10u64;
             let cur_page_raison = pages.get("raison").copied().unwrap_or(0);
             let count_stmt_raison = Query::select()
-                .expr(Expr::cust("COUNT(DISTINCT raison)"))
+                .expr(sea_orm::sea_query::Func::count_distinct(Expr::col(
+                    Alias::new("raison"),
+                )))
                 .from(Alias::new(contact::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("raison")).is_not_null())
                 .to_owned();
@@ -1286,10 +1357,7 @@ pub fn admin_register() -> AdminRegistry {
                 .unwrap_or(0) as u64;
             let stmt_raison = Query::select()
                 .distinct()
-                .expr(Expr::cust(format!(
-                    "CAST(raison AS {})",
-                    text_cast_type(&db)
-                )))
+                .expr(Expr::col(Alias::new("raison")).cast_as(Alias::new(text_cast_type(&db))))
                 .from(Alias::new(contact::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("raison")).is_not_null())
                 .limit(page_size_raison)
@@ -1338,7 +1406,6 @@ pub fn admin_register() -> AdminRegistry {
         "crate::entities::garniture::Model",
         "AdminForm",
         "Garnitures",
-        vec![],
     );
     let form_builder: FormBuilder = Arc::new(
         |_db: ADb,
@@ -1402,10 +1469,20 @@ pub fn admin_register() -> AdminRegistry {
     });
 
     let count_fn: CountFn = Arc::new(
-        |db: ADb, _search: Option<String>, scope: Option<(String, String)>| {
+        |db: ADb,
+         _search: Option<String>,
+         column_filters: Vec<(String, String)>,
+         scope: Option<(String, String)>| {
             Box::pin(async move {
                 use sea_orm::QueryFilter;
                 let mut query = garniture::Entity::find();
+                const FILTER_COLS: &[&str] = &["type_garniture", "disponible"];
+                for (col, val) in &column_filters {
+                    if !FILTER_COLS.contains(&col.as_str()) {
+                        continue;
+                    }
+                    query = query.filter(text_eq(&db, col.as_str(), val));
+                }
                 if let Some(ref search_str) = _search {
                     let search_cond = search_cond!(&db => garniture::Entity => or("libelle" icontains search_str, "type_garniture" icontains search_str, "disponible" icontains search_str));
                     query = query.filter(search_cond);
@@ -1425,8 +1502,12 @@ pub fn admin_register() -> AdminRegistry {
             let Ok(id) = id.parse::<Pk>() else {
                 return Ok(None);
             };
-            let row = garniture::Entity::find_by_id(id).one(&*db).await?;
-            Ok(row.map(|r| serde_json::to_value(r).unwrap_or(serde_json::Value::Null)))
+            let Some(row) = garniture::Entity::find_by_id(id).one(&*db).await? else {
+                return Ok(None);
+            };
+            let mut value = serde_json::to_value(&row).unwrap_or(serde_json::Value::Null);
+            row.admin_list_values(&*db, &mut value).await?;
+            Ok(Some(value))
         })
     });
 
@@ -1444,10 +1525,13 @@ pub fn admin_register() -> AdminRegistry {
 
     let create_fn: CreateFn = Arc::new(|db: ADb, data: StrMap| {
         Box::pin(async move {
-            garniture::admin_from_form(&data, None)
-                .insert(&*db)
-                .await
-                .map(|_| ())
+            use sea_orm::TransactionTrait;
+            let txn = db.begin().await?;
+            let result = garniture::admin_from_form(&data, None)?
+                .insert(&txn)
+                .await?;
+            result.admin_save_lists(&txn, &data).await?;
+            txn.commit().await
         })
     });
 
@@ -1456,10 +1540,13 @@ pub fn admin_register() -> AdminRegistry {
             let id = id
                 .parse::<Pk>()
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
-            garniture::admin_from_form(&data, Some(id))
-                .update(&*db)
-                .await
-                .map(|_| ())
+            use sea_orm::TransactionTrait;
+            let txn = db.begin().await?;
+            let result = garniture::admin_from_form(&data, Some(id))?
+                .update(&txn)
+                .await?;
+            result.admin_save_lists(&txn, &data).await?;
+            txn.commit().await
         })
     });
 
@@ -1468,7 +1555,7 @@ pub fn admin_register() -> AdminRegistry {
             let id = id
                 .parse::<Pk>()
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
-            garniture::admin_partial_update(&data, id)
+            garniture::admin_partial_update(&data, id)?
                 .update(&*db)
                 .await
                 .map(|_| ())
@@ -1496,7 +1583,9 @@ pub fn admin_register() -> AdminRegistry {
             let page_size_type_garniture = 10u64;
             let cur_page_type_garniture = pages.get("type_garniture").copied().unwrap_or(0);
             let count_stmt_type_garniture = Query::select()
-                .expr(Expr::cust("COUNT(DISTINCT type_garniture)"))
+                .expr(sea_orm::sea_query::Func::count_distinct(Expr::col(
+                    Alias::new("type_garniture"),
+                )))
                 .from(Alias::new(garniture::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("type_garniture")).is_not_null())
                 .to_owned();
@@ -1515,10 +1604,10 @@ pub fn admin_register() -> AdminRegistry {
                 .unwrap_or(0) as u64;
             let stmt_type_garniture = Query::select()
                 .distinct()
-                .expr(Expr::cust(format!(
-                    "CAST(type_garniture AS {})",
-                    text_cast_type(&db)
-                )))
+                .expr(
+                    Expr::col(Alias::new("type_garniture"))
+                        .cast_as(Alias::new(text_cast_type(&db))),
+                )
                 .from(Alias::new(garniture::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("type_garniture")).is_not_null())
                 .limit(page_size_type_garniture)
@@ -1549,7 +1638,9 @@ pub fn admin_register() -> AdminRegistry {
             let page_size_disponible = 10u64;
             let cur_page_disponible = pages.get("disponible").copied().unwrap_or(0);
             let count_stmt_disponible = Query::select()
-                .expr(Expr::cust("COUNT(DISTINCT disponible)"))
+                .expr(sea_orm::sea_query::Func::count_distinct(Expr::col(
+                    Alias::new("disponible"),
+                )))
                 .from(Alias::new(garniture::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("disponible")).is_not_null())
                 .to_owned();
@@ -1568,10 +1659,7 @@ pub fn admin_register() -> AdminRegistry {
                 .unwrap_or(0) as u64;
             let stmt_disponible = Query::select()
                 .distinct()
-                .expr(Expr::cust(format!(
-                    "CAST(disponible AS {})",
-                    text_cast_type(&db)
-                )))
+                .expr(Expr::col(Alias::new("disponible")).cast_as(Alias::new(text_cast_type(&db))))
                 .from(Alias::new(garniture::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("disponible")).is_not_null())
                 .limit(page_size_disponible)
@@ -1624,7 +1712,6 @@ pub fn admin_register() -> AdminRegistry {
         "crate::entities::supplement::Model",
         "AdminForm",
         "Suppléments",
-        vec![],
     );
     let form_builder: FormBuilder = Arc::new(
         |db: ADb,
@@ -1637,13 +1724,17 @@ pub fn admin_register() -> AdminRegistry {
                 let mut form =
                     supplement::AdminForm::build_with_data(&data, tera, &csrf, method).await;
                 {
-                    use sea_orm::ConnectionTrait;
+                    use sea_orm::{ConnectionTrait, sea_query::ExprTrait};
                     let _fk_opt_stmt_garniture_id = sea_orm::sea_query::Query::select()
-                        .expr(sea_orm::sea_query::Expr::cust(format!(
-                            "CAST(id AS {})",
-                            runique::admin::helper::text_cast_type(&db)
-                        )))
-                        .expr(sea_orm::sea_query::Expr::cust("libelle"))
+                        .expr(
+                            sea_orm::sea_query::Expr::col(sea_orm::sea_query::Alias::new("id"))
+                                .cast_as(sea_orm::sea_query::Alias::new(
+                                    runique::admin::helper::text_cast_type(&db),
+                                )),
+                        )
+                        .expr(sea_orm::sea_query::Expr::col(
+                            sea_orm::sea_query::Alias::new("libelle"),
+                        ))
                         .from(sea_orm::sea_query::Alias::new("garnitures"))
                         .to_owned();
                     let _fk_opt_choices_garniture_id: Vec<(String, String)> = db
@@ -1699,7 +1790,28 @@ pub fn admin_register() -> AdminRegistry {
                 query = query.filter(text_eq(&db, col.as_str(), val));
             }
             if let Some(ref search_str) = params.search {
-                let search_cond = search_cond!(&db => supplement::Entity => or("titre" icontains search_str, "prix" icontains search_str, "disponible" icontains search_str));
+                let mut search_cond = search_cond!(&db => supplement::Entity => or("titre" icontains search_str, "prix" icontains search_str, "disponible" icontains search_str));
+                {
+                    let __fk_ids = runique::admin::helper::fetch_fk_matching_ids(
+                        &*db,
+                        "garnitures",
+                        "libelle",
+                        search_str,
+                    )
+                    .await;
+                    if !__fk_ids.is_empty() {
+                        use sea_orm::sea_query::ExprTrait;
+                        search_cond = search_cond.add(
+                            sea_orm::sea_query::Expr::col(sea_orm::sea_query::Alias::new(
+                                "garniture_id",
+                            ))
+                            .cast_as(sea_orm::sea_query::Alias::new(
+                                runique::admin::helper::text_cast_type(&db),
+                            ))
+                            .is_in(__fk_ids),
+                        );
+                    }
+                }
                 query = query.filter(search_cond);
             }
             let db_rows = query
@@ -1716,12 +1828,43 @@ pub fn admin_register() -> AdminRegistry {
     });
 
     let count_fn: CountFn = Arc::new(
-        |db: ADb, _search: Option<String>, scope: Option<(String, String)>| {
+        |db: ADb,
+         _search: Option<String>,
+         column_filters: Vec<(String, String)>,
+         scope: Option<(String, String)>| {
             Box::pin(async move {
                 use sea_orm::QueryFilter;
                 let mut query = supplement::Entity::find();
+                const FILTER_COLS: &[&str] = &["disponible"];
+                for (col, val) in &column_filters {
+                    if !FILTER_COLS.contains(&col.as_str()) {
+                        continue;
+                    }
+                    query = query.filter(text_eq(&db, col.as_str(), val));
+                }
                 if let Some(ref search_str) = _search {
-                    let search_cond = search_cond!(&db => supplement::Entity => or("titre" icontains search_str, "prix" icontains search_str, "disponible" icontains search_str));
+                    let mut search_cond = search_cond!(&db => supplement::Entity => or("titre" icontains search_str, "prix" icontains search_str, "disponible" icontains search_str));
+                    {
+                        let __fk_ids = runique::admin::helper::fetch_fk_matching_ids(
+                            &*db,
+                            "garnitures",
+                            "libelle",
+                            search_str,
+                        )
+                        .await;
+                        if !__fk_ids.is_empty() {
+                            use sea_orm::sea_query::ExprTrait;
+                            search_cond = search_cond.add(
+                                sea_orm::sea_query::Expr::col(sea_orm::sea_query::Alias::new(
+                                    "garniture_id",
+                                ))
+                                .cast_as(sea_orm::sea_query::Alias::new(
+                                    runique::admin::helper::text_cast_type(&db),
+                                ))
+                                .is_in(__fk_ids),
+                            );
+                        }
+                    }
                     query = query.filter(search_cond);
                 }
                 if let Some((col, val)) = &scope
@@ -1739,8 +1882,12 @@ pub fn admin_register() -> AdminRegistry {
             let Ok(id) = id.parse::<Pk>() else {
                 return Ok(None);
             };
-            let row = supplement::Entity::find_by_id(id).one(&*db).await?;
-            Ok(row.map(|r| serde_json::to_value(r).unwrap_or(serde_json::Value::Null)))
+            let Some(row) = supplement::Entity::find_by_id(id).one(&*db).await? else {
+                return Ok(None);
+            };
+            let mut value = serde_json::to_value(&row).unwrap_or(serde_json::Value::Null);
+            row.admin_list_values(&*db, &mut value).await?;
+            Ok(Some(value))
         })
     });
 
@@ -1758,10 +1905,13 @@ pub fn admin_register() -> AdminRegistry {
 
     let create_fn: CreateFn = Arc::new(|db: ADb, data: StrMap| {
         Box::pin(async move {
-            supplement::admin_from_form(&data, None)
-                .insert(&*db)
-                .await
-                .map(|_| ())
+            use sea_orm::TransactionTrait;
+            let txn = db.begin().await?;
+            let result = supplement::admin_from_form(&data, None)?
+                .insert(&txn)
+                .await?;
+            result.admin_save_lists(&txn, &data).await?;
+            txn.commit().await
         })
     });
 
@@ -1770,10 +1920,13 @@ pub fn admin_register() -> AdminRegistry {
             let id = id
                 .parse::<Pk>()
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
-            supplement::admin_from_form(&data, Some(id))
-                .update(&*db)
-                .await
-                .map(|_| ())
+            use sea_orm::TransactionTrait;
+            let txn = db.begin().await?;
+            let result = supplement::admin_from_form(&data, Some(id))?
+                .update(&txn)
+                .await?;
+            result.admin_save_lists(&txn, &data).await?;
+            txn.commit().await
         })
     });
 
@@ -1782,7 +1935,7 @@ pub fn admin_register() -> AdminRegistry {
             let id = id
                 .parse::<Pk>()
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
-            supplement::admin_partial_update(&data, id)
+            supplement::admin_partial_update(&data, id)?
                 .update(&*db)
                 .await
                 .map(|_| ())
@@ -1813,7 +1966,9 @@ pub fn admin_register() -> AdminRegistry {
             let page_size_disponible = 10u64;
             let cur_page_disponible = pages.get("disponible").copied().unwrap_or(0);
             let count_stmt_disponible = Query::select()
-                .expr(Expr::cust("COUNT(DISTINCT disponible)"))
+                .expr(sea_orm::sea_query::Func::count_distinct(Expr::col(
+                    Alias::new("disponible"),
+                )))
                 .from(Alias::new(supplement::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("disponible")).is_not_null())
                 .to_owned();
@@ -1832,10 +1987,7 @@ pub fn admin_register() -> AdminRegistry {
                 .unwrap_or(0) as u64;
             let stmt_disponible = Query::select()
                 .distinct()
-                .expr(Expr::cust(format!(
-                    "CAST(disponible AS {})",
-                    text_cast_type(&db)
-                )))
+                .expr(Expr::col(Alias::new("disponible")).cast_as(Alias::new(text_cast_type(&db))))
                 .from(Alias::new(supplement::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("disponible")).is_not_null())
                 .limit(page_size_disponible)
@@ -1888,7 +2040,6 @@ pub fn admin_register() -> AdminRegistry {
         "crate::entities::entree::Model",
         "AdminForm",
         "Entrées",
-        vec![],
     );
     let form_builder: FormBuilder = Arc::new(
         |_db: ADb,
@@ -1952,10 +2103,20 @@ pub fn admin_register() -> AdminRegistry {
     });
 
     let count_fn: CountFn = Arc::new(
-        |db: ADb, _search: Option<String>, scope: Option<(String, String)>| {
+        |db: ADb,
+         _search: Option<String>,
+         column_filters: Vec<(String, String)>,
+         scope: Option<(String, String)>| {
             Box::pin(async move {
                 use sea_orm::QueryFilter;
                 let mut query = entree::Entity::find();
+                const FILTER_COLS: &[&str] = &["usage", "disponible"];
+                for (col, val) in &column_filters {
+                    if !FILTER_COLS.contains(&col.as_str()) {
+                        continue;
+                    }
+                    query = query.filter(text_eq(&db, col.as_str(), val));
+                }
                 if let Some(ref search_str) = _search {
                     let search_cond = search_cond!(&db => entree::Entity => or("titre" icontains search_str, "usage" icontains search_str, "prix" icontains search_str, "disponible" icontains search_str));
                     query = query.filter(search_cond);
@@ -1975,8 +2136,12 @@ pub fn admin_register() -> AdminRegistry {
             let Ok(id) = id.parse::<Pk>() else {
                 return Ok(None);
             };
-            let row = entree::Entity::find_by_id(id).one(&*db).await?;
-            Ok(row.map(|r| serde_json::to_value(r).unwrap_or(serde_json::Value::Null)))
+            let Some(row) = entree::Entity::find_by_id(id).one(&*db).await? else {
+                return Ok(None);
+            };
+            let mut value = serde_json::to_value(&row).unwrap_or(serde_json::Value::Null);
+            row.admin_list_values(&*db, &mut value).await?;
+            Ok(Some(value))
         })
     });
 
@@ -1994,24 +2159,22 @@ pub fn admin_register() -> AdminRegistry {
 
     let create_fn: CreateFn = Arc::new(|db: ADb, data: StrMap| {
         Box::pin(async move {
-            use sea_orm::ConnectionTrait;
-            let result = entree::admin_from_form(&data, None).insert(&*db).await?;
-            let inserted_id = result.id.to_string();
-            for key in data.keys() {
-                if let Some(target_id) = key.strip_prefix("m2m_allergenes__")
-                    && !target_id.is_empty()
-                    && target_id
-                        .chars()
-                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
-                {
-                    let sql = format!(
-                        "INSERT INTO entree_allergenes (entree_id, allergene_id) VALUES ({}, {}) ON CONFLICT DO NOTHING",
-                        inserted_id, target_id
-                    );
-                    let _ = db.execute_unprepared(&sql).await;
-                }
-            }
-            Ok(())
+            use sea_orm::TransactionTrait;
+            let txn = db.begin().await?;
+            let result = entree::admin_from_form(&data, None)?.insert(&txn).await?;
+            result.admin_save_lists(&txn, &data).await?;
+            runique::admin::helper::m2m::write_links(
+                &txn,
+                "entree_allergenes",
+                "entree_id",
+                "allergene_id",
+                result.id.into(),
+                &data,
+                "m2m_allergenes__",
+                false,
+            )
+            .await?;
+            txn.commit().await
         })
     });
 
@@ -2020,32 +2183,24 @@ pub fn admin_register() -> AdminRegistry {
             let id = id
                 .parse::<Pk>()
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
-            use sea_orm::ConnectionTrait;
-            let id_str = id.to_string();
-            entree::admin_from_form(&data, Some(id))
-                .update(&*db)
+            use sea_orm::TransactionTrait;
+            let txn = db.begin().await?;
+            let result = entree::admin_from_form(&data, Some(id))?
+                .update(&txn)
                 .await?;
-            let _ = db
-                .execute_unprepared(&format!(
-                    "DELETE FROM entree_allergenes WHERE entree_id = {}",
-                    id_str
-                ))
-                .await;
-            for key in data.keys() {
-                if let Some(target_id) = key.strip_prefix("m2m_allergenes__")
-                    && !target_id.is_empty()
-                    && target_id
-                        .chars()
-                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
-                {
-                    let sql = format!(
-                        "INSERT INTO entree_allergenes (entree_id, allergene_id) VALUES ({}, {})",
-                        id_str, target_id
-                    );
-                    let _ = db.execute_unprepared(&sql).await;
-                }
-            }
-            Ok(())
+            result.admin_save_lists(&txn, &data).await?;
+            runique::admin::helper::m2m::write_links(
+                &txn,
+                "entree_allergenes",
+                "entree_id",
+                "allergene_id",
+                id.into(),
+                &data,
+                "m2m_allergenes__",
+                true,
+            )
+            .await?;
+            txn.commit().await
         })
     });
 
@@ -2054,7 +2209,7 @@ pub fn admin_register() -> AdminRegistry {
             let id = id
                 .parse::<Pk>()
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
-            entree::admin_partial_update(&data, id)
+            entree::admin_partial_update(&data, id)?
                 .update(&*db)
                 .await
                 .map(|_| ())
@@ -2087,12 +2242,12 @@ pub fn admin_register() -> AdminRegistry {
                     })
                     .collect();
                 let selected = if let Some(ref oid) = object_id {
-                    use sea_orm::sea_query::{Alias, Expr, Query};
+                    use sea_orm::sea_query::{Alias, Expr, ExprTrait, Query};
                     let stmt = Query::select()
-                        .expr(Expr::cust(format!(
-                            "CAST(allergene_id AS {})",
-                            text_cast_type(&db)
-                        )))
+                        .expr(
+                            Expr::col(Alias::new("allergene_id"))
+                                .cast_as(Alias::new(text_cast_type(&db))),
+                        )
                         .from(Alias::new("entree_allergenes"))
                         .and_where(text_eq(&db, "entree_id", oid))
                         .to_owned();
@@ -2138,7 +2293,9 @@ pub fn admin_register() -> AdminRegistry {
             let page_size_usage = 10u64;
             let cur_page_usage = pages.get("usage").copied().unwrap_or(0);
             let count_stmt_usage = Query::select()
-                .expr(Expr::cust("COUNT(DISTINCT usage)"))
+                .expr(sea_orm::sea_query::Func::count_distinct(Expr::col(
+                    Alias::new("usage"),
+                )))
                 .from(Alias::new(entree::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("usage")).is_not_null())
                 .to_owned();
@@ -2157,10 +2314,7 @@ pub fn admin_register() -> AdminRegistry {
                 .unwrap_or(0) as u64;
             let stmt_usage = Query::select()
                 .distinct()
-                .expr(Expr::cust(format!(
-                    "CAST(usage AS {})",
-                    text_cast_type(&db)
-                )))
+                .expr(Expr::col(Alias::new("usage")).cast_as(Alias::new(text_cast_type(&db))))
                 .from(Alias::new(entree::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("usage")).is_not_null())
                 .limit(page_size_usage)
@@ -2188,7 +2342,9 @@ pub fn admin_register() -> AdminRegistry {
             let page_size_disponible = 10u64;
             let cur_page_disponible = pages.get("disponible").copied().unwrap_or(0);
             let count_stmt_disponible = Query::select()
-                .expr(Expr::cust("COUNT(DISTINCT disponible)"))
+                .expr(sea_orm::sea_query::Func::count_distinct(Expr::col(
+                    Alias::new("disponible"),
+                )))
                 .from(Alias::new(entree::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("disponible")).is_not_null())
                 .to_owned();
@@ -2207,10 +2363,7 @@ pub fn admin_register() -> AdminRegistry {
                 .unwrap_or(0) as u64;
             let stmt_disponible = Query::select()
                 .distinct()
-                .expr(Expr::cust(format!(
-                    "CAST(disponible AS {})",
-                    text_cast_type(&db)
-                )))
+                .expr(Expr::col(Alias::new("disponible")).cast_as(Alias::new(text_cast_type(&db))))
                 .from(Alias::new(entree::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("disponible")).is_not_null())
                 .limit(page_size_disponible)
@@ -2264,7 +2417,6 @@ pub fn admin_register() -> AdminRegistry {
         "crate::entities::dessert::Model",
         "AdminForm",
         "Desserts",
-        vec![],
     );
     let form_builder: FormBuilder = Arc::new(
         |_db: ADb,
@@ -2328,10 +2480,20 @@ pub fn admin_register() -> AdminRegistry {
     });
 
     let count_fn: CountFn = Arc::new(
-        |db: ADb, _search: Option<String>, scope: Option<(String, String)>| {
+        |db: ADb,
+         _search: Option<String>,
+         column_filters: Vec<(String, String)>,
+         scope: Option<(String, String)>| {
             Box::pin(async move {
                 use sea_orm::QueryFilter;
                 let mut query = dessert::Entity::find();
+                const FILTER_COLS: &[&str] = &["usage", "disponible"];
+                for (col, val) in &column_filters {
+                    if !FILTER_COLS.contains(&col.as_str()) {
+                        continue;
+                    }
+                    query = query.filter(text_eq(&db, col.as_str(), val));
+                }
                 if let Some(ref search_str) = _search {
                     let search_cond = search_cond!(&db => dessert::Entity => or("titre" icontains search_str, "usage" icontains search_str, "prix" icontains search_str, "disponible" icontains search_str));
                     query = query.filter(search_cond);
@@ -2351,8 +2513,12 @@ pub fn admin_register() -> AdminRegistry {
             let Ok(id) = id.parse::<Pk>() else {
                 return Ok(None);
             };
-            let row = dessert::Entity::find_by_id(id).one(&*db).await?;
-            Ok(row.map(|r| serde_json::to_value(r).unwrap_or(serde_json::Value::Null)))
+            let Some(row) = dessert::Entity::find_by_id(id).one(&*db).await? else {
+                return Ok(None);
+            };
+            let mut value = serde_json::to_value(&row).unwrap_or(serde_json::Value::Null);
+            row.admin_list_values(&*db, &mut value).await?;
+            Ok(Some(value))
         })
     });
 
@@ -2370,24 +2536,22 @@ pub fn admin_register() -> AdminRegistry {
 
     let create_fn: CreateFn = Arc::new(|db: ADb, data: StrMap| {
         Box::pin(async move {
-            use sea_orm::ConnectionTrait;
-            let result = dessert::admin_from_form(&data, None).insert(&*db).await?;
-            let inserted_id = result.id.to_string();
-            for key in data.keys() {
-                if let Some(target_id) = key.strip_prefix("m2m_allergenes__")
-                    && !target_id.is_empty()
-                    && target_id
-                        .chars()
-                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
-                {
-                    let sql = format!(
-                        "INSERT INTO dessert_allergenes (dessert_id, allergene_id) VALUES ({}, {}) ON CONFLICT DO NOTHING",
-                        inserted_id, target_id
-                    );
-                    let _ = db.execute_unprepared(&sql).await;
-                }
-            }
-            Ok(())
+            use sea_orm::TransactionTrait;
+            let txn = db.begin().await?;
+            let result = dessert::admin_from_form(&data, None)?.insert(&txn).await?;
+            result.admin_save_lists(&txn, &data).await?;
+            runique::admin::helper::m2m::write_links(
+                &txn,
+                "dessert_allergenes",
+                "dessert_id",
+                "allergene_id",
+                result.id.into(),
+                &data,
+                "m2m_allergenes__",
+                false,
+            )
+            .await?;
+            txn.commit().await
         })
     });
 
@@ -2396,32 +2560,24 @@ pub fn admin_register() -> AdminRegistry {
             let id = id
                 .parse::<Pk>()
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
-            use sea_orm::ConnectionTrait;
-            let id_str = id.to_string();
-            dessert::admin_from_form(&data, Some(id))
-                .update(&*db)
+            use sea_orm::TransactionTrait;
+            let txn = db.begin().await?;
+            let result = dessert::admin_from_form(&data, Some(id))?
+                .update(&txn)
                 .await?;
-            let _ = db
-                .execute_unprepared(&format!(
-                    "DELETE FROM dessert_allergenes WHERE dessert_id = {}",
-                    id_str
-                ))
-                .await;
-            for key in data.keys() {
-                if let Some(target_id) = key.strip_prefix("m2m_allergenes__")
-                    && !target_id.is_empty()
-                    && target_id
-                        .chars()
-                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
-                {
-                    let sql = format!(
-                        "INSERT INTO dessert_allergenes (dessert_id, allergene_id) VALUES ({}, {})",
-                        id_str, target_id
-                    );
-                    let _ = db.execute_unprepared(&sql).await;
-                }
-            }
-            Ok(())
+            result.admin_save_lists(&txn, &data).await?;
+            runique::admin::helper::m2m::write_links(
+                &txn,
+                "dessert_allergenes",
+                "dessert_id",
+                "allergene_id",
+                id.into(),
+                &data,
+                "m2m_allergenes__",
+                true,
+            )
+            .await?;
+            txn.commit().await
         })
     });
 
@@ -2430,7 +2586,7 @@ pub fn admin_register() -> AdminRegistry {
             let id = id
                 .parse::<Pk>()
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
-            dessert::admin_partial_update(&data, id)
+            dessert::admin_partial_update(&data, id)?
                 .update(&*db)
                 .await
                 .map(|_| ())
@@ -2463,12 +2619,12 @@ pub fn admin_register() -> AdminRegistry {
                     })
                     .collect();
                 let selected = if let Some(ref oid) = object_id {
-                    use sea_orm::sea_query::{Alias, Expr, Query};
+                    use sea_orm::sea_query::{Alias, Expr, ExprTrait, Query};
                     let stmt = Query::select()
-                        .expr(Expr::cust(format!(
-                            "CAST(allergene_id AS {})",
-                            text_cast_type(&db)
-                        )))
+                        .expr(
+                            Expr::col(Alias::new("allergene_id"))
+                                .cast_as(Alias::new(text_cast_type(&db))),
+                        )
                         .from(Alias::new("dessert_allergenes"))
                         .and_where(text_eq(&db, "dessert_id", oid))
                         .to_owned();
@@ -2514,7 +2670,9 @@ pub fn admin_register() -> AdminRegistry {
             let page_size_usage = 10u64;
             let cur_page_usage = pages.get("usage").copied().unwrap_or(0);
             let count_stmt_usage = Query::select()
-                .expr(Expr::cust("COUNT(DISTINCT usage)"))
+                .expr(sea_orm::sea_query::Func::count_distinct(Expr::col(
+                    Alias::new("usage"),
+                )))
                 .from(Alias::new(dessert::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("usage")).is_not_null())
                 .to_owned();
@@ -2533,10 +2691,7 @@ pub fn admin_register() -> AdminRegistry {
                 .unwrap_or(0) as u64;
             let stmt_usage = Query::select()
                 .distinct()
-                .expr(Expr::cust(format!(
-                    "CAST(usage AS {})",
-                    text_cast_type(&db)
-                )))
+                .expr(Expr::col(Alias::new("usage")).cast_as(Alias::new(text_cast_type(&db))))
                 .from(Alias::new(dessert::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("usage")).is_not_null())
                 .limit(page_size_usage)
@@ -2564,7 +2719,9 @@ pub fn admin_register() -> AdminRegistry {
             let page_size_disponible = 10u64;
             let cur_page_disponible = pages.get("disponible").copied().unwrap_or(0);
             let count_stmt_disponible = Query::select()
-                .expr(Expr::cust("COUNT(DISTINCT disponible)"))
+                .expr(sea_orm::sea_query::Func::count_distinct(Expr::col(
+                    Alias::new("disponible"),
+                )))
                 .from(Alias::new(dessert::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("disponible")).is_not_null())
                 .to_owned();
@@ -2583,10 +2740,7 @@ pub fn admin_register() -> AdminRegistry {
                 .unwrap_or(0) as u64;
             let stmt_disponible = Query::select()
                 .distinct()
-                .expr(Expr::cust(format!(
-                    "CAST(disponible AS {})",
-                    text_cast_type(&db)
-                )))
+                .expr(Expr::col(Alias::new("disponible")).cast_as(Alias::new(text_cast_type(&db))))
                 .from(Alias::new(dessert::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("disponible")).is_not_null())
                 .limit(page_size_disponible)
@@ -2640,7 +2794,6 @@ pub fn admin_register() -> AdminRegistry {
         "crate::entities::plat::Model",
         "AdminForm",
         "Plats",
-        vec![],
     );
     let form_builder: FormBuilder = Arc::new(
         |_db: ADb,
@@ -2712,10 +2865,20 @@ pub fn admin_register() -> AdminRegistry {
     });
 
     let count_fn: CountFn = Arc::new(
-        |db: ADb, _search: Option<String>, scope: Option<(String, String)>| {
+        |db: ADb,
+         _search: Option<String>,
+         column_filters: Vec<(String, String)>,
+         scope: Option<(String, String)>| {
             Box::pin(async move {
                 use sea_orm::QueryFilter;
                 let mut query = plat::Entity::find();
+                const FILTER_COLS: &[&str] = &["type_plat", "usage", "disponible", "est_viande"];
+                for (col, val) in &column_filters {
+                    if !FILTER_COLS.contains(&col.as_str()) {
+                        continue;
+                    }
+                    query = query.filter(text_eq(&db, col.as_str(), val));
+                }
                 if let Some(ref search_str) = _search {
                     let search_cond = search_cond!(&db => plat::Entity => or("titre" icontains search_str, "type_plat" icontains search_str, "usage" icontains search_str, "prix" icontains search_str, "disponible" icontains search_str, "est_viande" icontains search_str));
                     query = query.filter(search_cond);
@@ -2735,8 +2898,12 @@ pub fn admin_register() -> AdminRegistry {
             let Ok(id) = id.parse::<Pk>() else {
                 return Ok(None);
             };
-            let row = plat::Entity::find_by_id(id).one(&*db).await?;
-            Ok(row.map(|r| serde_json::to_value(r).unwrap_or(serde_json::Value::Null)))
+            let Some(row) = plat::Entity::find_by_id(id).one(&*db).await? else {
+                return Ok(None);
+            };
+            let mut value = serde_json::to_value(&row).unwrap_or(serde_json::Value::Null);
+            row.admin_list_values(&*db, &mut value).await?;
+            Ok(Some(value))
         })
     });
 
@@ -2751,52 +2918,44 @@ pub fn admin_register() -> AdminRegistry {
 
     let create_fn: CreateFn = Arc::new(|db: ADb, data: StrMap| {
         Box::pin(async move {
-            use sea_orm::ConnectionTrait;
-            let result = plat::admin_from_form(&data, None).insert(&*db).await?;
-            let inserted_id = result.id.to_string();
-            for key in data.keys() {
-                if let Some(target_id) = key.strip_prefix("m2m_allergenes__")
-                    && !target_id.is_empty()
-                    && target_id
-                        .chars()
-                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
-                {
-                    let sql = format!(
-                        "INSERT INTO plat_allergenes (plat_id, allergene_id) VALUES ({}, {}) ON CONFLICT DO NOTHING",
-                        inserted_id, target_id
-                    );
-                    let _ = db.execute_unprepared(&sql).await;
-                }
-            }
-            for key in data.keys() {
-                if let Some(target_id) = key.strip_prefix("m2m_garnitures__")
-                    && !target_id.is_empty()
-                    && target_id
-                        .chars()
-                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
-                {
-                    let sql = format!(
-                        "INSERT INTO plat_garnitures (plat_id, garniture_id) VALUES ({}, {}) ON CONFLICT DO NOTHING",
-                        inserted_id, target_id
-                    );
-                    let _ = db.execute_unprepared(&sql).await;
-                }
-            }
-            for key in data.keys() {
-                if let Some(target_id) = key.strip_prefix("m2m_supplements__")
-                    && !target_id.is_empty()
-                    && target_id
-                        .chars()
-                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
-                {
-                    let sql = format!(
-                        "INSERT INTO plat_supplements (plat_id, supplement_id) VALUES ({}, {}) ON CONFLICT DO NOTHING",
-                        inserted_id, target_id
-                    );
-                    let _ = db.execute_unprepared(&sql).await;
-                }
-            }
-            Ok(())
+            use sea_orm::TransactionTrait;
+            let txn = db.begin().await?;
+            let result = plat::admin_from_form(&data, None)?.insert(&txn).await?;
+            result.admin_save_lists(&txn, &data).await?;
+            runique::admin::helper::m2m::write_links(
+                &txn,
+                "plat_allergenes",
+                "plat_id",
+                "allergene_id",
+                result.id.into(),
+                &data,
+                "m2m_allergenes__",
+                false,
+            )
+            .await?;
+            runique::admin::helper::m2m::write_links(
+                &txn,
+                "plat_garnitures",
+                "plat_id",
+                "garniture_id",
+                result.id.into(),
+                &data,
+                "m2m_garnitures__",
+                false,
+            )
+            .await?;
+            runique::admin::helper::m2m::write_links(
+                &txn,
+                "plat_supplements",
+                "plat_id",
+                "supplement_id",
+                result.id.into(),
+                &data,
+                "m2m_supplements__",
+                false,
+            )
+            .await?;
+            txn.commit().await
         })
     });
 
@@ -2805,70 +2964,44 @@ pub fn admin_register() -> AdminRegistry {
             let id = id
                 .parse::<Pk>()
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
-            use sea_orm::ConnectionTrait;
-            let id_str = id.to_string();
-            plat::admin_from_form(&data, Some(id)).update(&*db).await?;
-            let _ = db
-                .execute_unprepared(&format!(
-                    "DELETE FROM plat_allergenes WHERE plat_id = {}",
-                    id_str
-                ))
-                .await;
-            for key in data.keys() {
-                if let Some(target_id) = key.strip_prefix("m2m_allergenes__")
-                    && !target_id.is_empty()
-                    && target_id
-                        .chars()
-                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
-                {
-                    let sql = format!(
-                        "INSERT INTO plat_allergenes (plat_id, allergene_id) VALUES ({}, {})",
-                        id_str, target_id
-                    );
-                    let _ = db.execute_unprepared(&sql).await;
-                }
-            }
-            let _ = db
-                .execute_unprepared(&format!(
-                    "DELETE FROM plat_garnitures WHERE plat_id = {}",
-                    id_str
-                ))
-                .await;
-            for key in data.keys() {
-                if let Some(target_id) = key.strip_prefix("m2m_garnitures__")
-                    && !target_id.is_empty()
-                    && target_id
-                        .chars()
-                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
-                {
-                    let sql = format!(
-                        "INSERT INTO plat_garnitures (plat_id, garniture_id) VALUES ({}, {})",
-                        id_str, target_id
-                    );
-                    let _ = db.execute_unprepared(&sql).await;
-                }
-            }
-            let _ = db
-                .execute_unprepared(&format!(
-                    "DELETE FROM plat_supplements WHERE plat_id = {}",
-                    id_str
-                ))
-                .await;
-            for key in data.keys() {
-                if let Some(target_id) = key.strip_prefix("m2m_supplements__")
-                    && !target_id.is_empty()
-                    && target_id
-                        .chars()
-                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
-                {
-                    let sql = format!(
-                        "INSERT INTO plat_supplements (plat_id, supplement_id) VALUES ({}, {})",
-                        id_str, target_id
-                    );
-                    let _ = db.execute_unprepared(&sql).await;
-                }
-            }
-            Ok(())
+            use sea_orm::TransactionTrait;
+            let txn = db.begin().await?;
+            let result = plat::admin_from_form(&data, Some(id))?.update(&txn).await?;
+            result.admin_save_lists(&txn, &data).await?;
+            runique::admin::helper::m2m::write_links(
+                &txn,
+                "plat_allergenes",
+                "plat_id",
+                "allergene_id",
+                id.into(),
+                &data,
+                "m2m_allergenes__",
+                true,
+            )
+            .await?;
+            runique::admin::helper::m2m::write_links(
+                &txn,
+                "plat_garnitures",
+                "plat_id",
+                "garniture_id",
+                id.into(),
+                &data,
+                "m2m_garnitures__",
+                true,
+            )
+            .await?;
+            runique::admin::helper::m2m::write_links(
+                &txn,
+                "plat_supplements",
+                "plat_id",
+                "supplement_id",
+                id.into(),
+                &data,
+                "m2m_supplements__",
+                true,
+            )
+            .await?;
+            txn.commit().await
         })
     });
 
@@ -2877,7 +3010,7 @@ pub fn admin_register() -> AdminRegistry {
             let id = id
                 .parse::<Pk>()
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
-            plat::admin_partial_update(&data, id)
+            plat::admin_partial_update(&data, id)?
                 .update(&*db)
                 .await
                 .map(|_| ())
@@ -2910,12 +3043,12 @@ pub fn admin_register() -> AdminRegistry {
                     })
                     .collect();
                 let selected = if let Some(ref oid) = object_id {
-                    use sea_orm::sea_query::{Alias, Expr, Query};
+                    use sea_orm::sea_query::{Alias, Expr, ExprTrait, Query};
                     let stmt = Query::select()
-                        .expr(Expr::cust(format!(
-                            "CAST(allergene_id AS {})",
-                            text_cast_type(&db)
-                        )))
+                        .expr(
+                            Expr::col(Alias::new("allergene_id"))
+                                .cast_as(Alias::new(text_cast_type(&db))),
+                        )
                         .from(Alias::new("plat_allergenes"))
                         .and_where(text_eq(&db, "plat_id", oid))
                         .to_owned();
@@ -2957,12 +3090,12 @@ pub fn admin_register() -> AdminRegistry {
                     })
                     .collect();
                 let selected = if let Some(ref oid) = object_id {
-                    use sea_orm::sea_query::{Alias, Expr, Query};
+                    use sea_orm::sea_query::{Alias, Expr, ExprTrait, Query};
                     let stmt = Query::select()
-                        .expr(Expr::cust(format!(
-                            "CAST(garniture_id AS {})",
-                            text_cast_type(&db)
-                        )))
+                        .expr(
+                            Expr::col(Alias::new("garniture_id"))
+                                .cast_as(Alias::new(text_cast_type(&db))),
+                        )
                         .from(Alias::new("plat_garnitures"))
                         .and_where(text_eq(&db, "plat_id", oid))
                         .to_owned();
@@ -3004,12 +3137,12 @@ pub fn admin_register() -> AdminRegistry {
                     })
                     .collect();
                 let selected = if let Some(ref oid) = object_id {
-                    use sea_orm::sea_query::{Alias, Expr, Query};
+                    use sea_orm::sea_query::{Alias, Expr, ExprTrait, Query};
                     let stmt = Query::select()
-                        .expr(Expr::cust(format!(
-                            "CAST(supplement_id AS {})",
-                            text_cast_type(&db)
-                        )))
+                        .expr(
+                            Expr::col(Alias::new("supplement_id"))
+                                .cast_as(Alias::new(text_cast_type(&db))),
+                        )
                         .from(Alias::new("plat_supplements"))
                         .and_where(text_eq(&db, "plat_id", oid))
                         .to_owned();
@@ -3059,7 +3192,9 @@ pub fn admin_register() -> AdminRegistry {
             let page_size_type_plat = 10u64;
             let cur_page_type_plat = pages.get("type_plat").copied().unwrap_or(0);
             let count_stmt_type_plat = Query::select()
-                .expr(Expr::cust("COUNT(DISTINCT type_plat)"))
+                .expr(sea_orm::sea_query::Func::count_distinct(Expr::col(
+                    Alias::new("type_plat"),
+                )))
                 .from(Alias::new(plat::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("type_plat")).is_not_null())
                 .to_owned();
@@ -3078,10 +3213,7 @@ pub fn admin_register() -> AdminRegistry {
                 .unwrap_or(0) as u64;
             let stmt_type_plat = Query::select()
                 .distinct()
-                .expr(Expr::cust(format!(
-                    "CAST(type_plat AS {})",
-                    text_cast_type(&db)
-                )))
+                .expr(Expr::col(Alias::new("type_plat")).cast_as(Alias::new(text_cast_type(&db))))
                 .from(Alias::new(plat::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("type_plat")).is_not_null())
                 .limit(page_size_type_plat)
@@ -3109,7 +3241,9 @@ pub fn admin_register() -> AdminRegistry {
             let page_size_usage = 10u64;
             let cur_page_usage = pages.get("usage").copied().unwrap_or(0);
             let count_stmt_usage = Query::select()
-                .expr(Expr::cust("COUNT(DISTINCT usage)"))
+                .expr(sea_orm::sea_query::Func::count_distinct(Expr::col(
+                    Alias::new("usage"),
+                )))
                 .from(Alias::new(plat::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("usage")).is_not_null())
                 .to_owned();
@@ -3128,10 +3262,7 @@ pub fn admin_register() -> AdminRegistry {
                 .unwrap_or(0) as u64;
             let stmt_usage = Query::select()
                 .distinct()
-                .expr(Expr::cust(format!(
-                    "CAST(usage AS {})",
-                    text_cast_type(&db)
-                )))
+                .expr(Expr::col(Alias::new("usage")).cast_as(Alias::new(text_cast_type(&db))))
                 .from(Alias::new(plat::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("usage")).is_not_null())
                 .limit(page_size_usage)
@@ -3159,7 +3290,9 @@ pub fn admin_register() -> AdminRegistry {
             let page_size_disponible = 10u64;
             let cur_page_disponible = pages.get("disponible").copied().unwrap_or(0);
             let count_stmt_disponible = Query::select()
-                .expr(Expr::cust("COUNT(DISTINCT disponible)"))
+                .expr(sea_orm::sea_query::Func::count_distinct(Expr::col(
+                    Alias::new("disponible"),
+                )))
                 .from(Alias::new(plat::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("disponible")).is_not_null())
                 .to_owned();
@@ -3178,10 +3311,7 @@ pub fn admin_register() -> AdminRegistry {
                 .unwrap_or(0) as u64;
             let stmt_disponible = Query::select()
                 .distinct()
-                .expr(Expr::cust(format!(
-                    "CAST(disponible AS {})",
-                    text_cast_type(&db)
-                )))
+                .expr(Expr::col(Alias::new("disponible")).cast_as(Alias::new(text_cast_type(&db))))
                 .from(Alias::new(plat::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("disponible")).is_not_null())
                 .limit(page_size_disponible)
@@ -3212,7 +3342,9 @@ pub fn admin_register() -> AdminRegistry {
             let page_size_est_viande = 10u64;
             let cur_page_est_viande = pages.get("est_viande").copied().unwrap_or(0);
             let count_stmt_est_viande = Query::select()
-                .expr(Expr::cust("COUNT(DISTINCT est_viande)"))
+                .expr(sea_orm::sea_query::Func::count_distinct(Expr::col(
+                    Alias::new("est_viande"),
+                )))
                 .from(Alias::new(plat::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("est_viande")).is_not_null())
                 .to_owned();
@@ -3231,10 +3363,7 @@ pub fn admin_register() -> AdminRegistry {
                 .unwrap_or(0) as u64;
             let stmt_est_viande = Query::select()
                 .distinct()
-                .expr(Expr::cust(format!(
-                    "CAST(est_viande AS {})",
-                    text_cast_type(&db)
-                )))
+                .expr(Expr::col(Alias::new("est_viande")).cast_as(Alias::new(text_cast_type(&db))))
                 .from(Alias::new(plat::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("est_viande")).is_not_null())
                 .limit(page_size_est_viande)
@@ -3288,7 +3417,6 @@ pub fn admin_register() -> AdminRegistry {
         "crate::entities::menu::Model",
         "AdminForm",
         "Menus",
-        vec![],
     );
     let meta = meta.template_detail("admin/menu_resto_detail.html");
     let form_builder: FormBuilder = Arc::new(
@@ -3353,10 +3481,20 @@ pub fn admin_register() -> AdminRegistry {
     });
 
     let count_fn: CountFn = Arc::new(
-        |db: ADb, _search: Option<String>, scope: Option<(String, String)>| {
+        |db: ADb,
+         _search: Option<String>,
+         column_filters: Vec<(String, String)>,
+         scope: Option<(String, String)>| {
             Box::pin(async move {
                 use sea_orm::QueryFilter;
                 let mut query = menu::Entity::find();
+                const FILTER_COLS: &[&str] = &["type_menu"];
+                for (col, val) in &column_filters {
+                    if !FILTER_COLS.contains(&col.as_str()) {
+                        continue;
+                    }
+                    query = query.filter(text_eq(&db, col.as_str(), val));
+                }
                 if let Some(ref search_str) = _search {
                     let search_cond = search_cond!(&db => menu::Entity => or("nom" icontains search_str, "type_menu" icontains search_str, "prix" icontains search_str, "ordre" icontains search_str));
                     query = query.filter(search_cond);
@@ -3376,8 +3514,12 @@ pub fn admin_register() -> AdminRegistry {
             let Ok(id) = id.parse::<Pk>() else {
                 return Ok(None);
             };
-            let row = menu::Entity::find_by_id(id).one(&*db).await?;
-            Ok(row.map(|r| serde_json::to_value(r).unwrap_or(serde_json::Value::Null)))
+            let Some(row) = menu::Entity::find_by_id(id).one(&*db).await? else {
+                return Ok(None);
+            };
+            let mut value = serde_json::to_value(&row).unwrap_or(serde_json::Value::Null);
+            row.admin_list_values(&*db, &mut value).await?;
+            Ok(Some(value))
         })
     });
 
@@ -3392,52 +3534,44 @@ pub fn admin_register() -> AdminRegistry {
 
     let create_fn: CreateFn = Arc::new(|db: ADb, data: StrMap| {
         Box::pin(async move {
-            use sea_orm::ConnectionTrait;
-            let result = menu::admin_from_form(&data, None).insert(&*db).await?;
-            let inserted_id = result.id.to_string();
-            for key in data.keys() {
-                if let Some(target_id) = key.strip_prefix("m2m_entrees__")
-                    && !target_id.is_empty()
-                    && target_id
-                        .chars()
-                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
-                {
-                    let sql = format!(
-                        "INSERT INTO menu_entrees (menu_id, entree_id) VALUES ({}, {}) ON CONFLICT DO NOTHING",
-                        inserted_id, target_id
-                    );
-                    let _ = db.execute_unprepared(&sql).await;
-                }
-            }
-            for key in data.keys() {
-                if let Some(target_id) = key.strip_prefix("m2m_plats__")
-                    && !target_id.is_empty()
-                    && target_id
-                        .chars()
-                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
-                {
-                    let sql = format!(
-                        "INSERT INTO menu_plats (menu_id, plat_id) VALUES ({}, {}) ON CONFLICT DO NOTHING",
-                        inserted_id, target_id
-                    );
-                    let _ = db.execute_unprepared(&sql).await;
-                }
-            }
-            for key in data.keys() {
-                if let Some(target_id) = key.strip_prefix("m2m_desserts__")
-                    && !target_id.is_empty()
-                    && target_id
-                        .chars()
-                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
-                {
-                    let sql = format!(
-                        "INSERT INTO menu_desserts (menu_id, dessert_id) VALUES ({}, {}) ON CONFLICT DO NOTHING",
-                        inserted_id, target_id
-                    );
-                    let _ = db.execute_unprepared(&sql).await;
-                }
-            }
-            Ok(())
+            use sea_orm::TransactionTrait;
+            let txn = db.begin().await?;
+            let result = menu::admin_from_form(&data, None)?.insert(&txn).await?;
+            result.admin_save_lists(&txn, &data).await?;
+            runique::admin::helper::m2m::write_links(
+                &txn,
+                "menu_entrees",
+                "menu_id",
+                "entree_id",
+                result.id.into(),
+                &data,
+                "m2m_entrees__",
+                false,
+            )
+            .await?;
+            runique::admin::helper::m2m::write_links(
+                &txn,
+                "menu_plats",
+                "menu_id",
+                "plat_id",
+                result.id.into(),
+                &data,
+                "m2m_plats__",
+                false,
+            )
+            .await?;
+            runique::admin::helper::m2m::write_links(
+                &txn,
+                "menu_desserts",
+                "menu_id",
+                "dessert_id",
+                result.id.into(),
+                &data,
+                "m2m_desserts__",
+                false,
+            )
+            .await?;
+            txn.commit().await
         })
     });
 
@@ -3446,70 +3580,44 @@ pub fn admin_register() -> AdminRegistry {
             let id = id
                 .parse::<Pk>()
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
-            use sea_orm::ConnectionTrait;
-            let id_str = id.to_string();
-            menu::admin_from_form(&data, Some(id)).update(&*db).await?;
-            let _ = db
-                .execute_unprepared(&format!(
-                    "DELETE FROM menu_entrees WHERE menu_id = {}",
-                    id_str
-                ))
-                .await;
-            for key in data.keys() {
-                if let Some(target_id) = key.strip_prefix("m2m_entrees__")
-                    && !target_id.is_empty()
-                    && target_id
-                        .chars()
-                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
-                {
-                    let sql = format!(
-                        "INSERT INTO menu_entrees (menu_id, entree_id) VALUES ({}, {})",
-                        id_str, target_id
-                    );
-                    let _ = db.execute_unprepared(&sql).await;
-                }
-            }
-            let _ = db
-                .execute_unprepared(&format!(
-                    "DELETE FROM menu_plats WHERE menu_id = {}",
-                    id_str
-                ))
-                .await;
-            for key in data.keys() {
-                if let Some(target_id) = key.strip_prefix("m2m_plats__")
-                    && !target_id.is_empty()
-                    && target_id
-                        .chars()
-                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
-                {
-                    let sql = format!(
-                        "INSERT INTO menu_plats (menu_id, plat_id) VALUES ({}, {})",
-                        id_str, target_id
-                    );
-                    let _ = db.execute_unprepared(&sql).await;
-                }
-            }
-            let _ = db
-                .execute_unprepared(&format!(
-                    "DELETE FROM menu_desserts WHERE menu_id = {}",
-                    id_str
-                ))
-                .await;
-            for key in data.keys() {
-                if let Some(target_id) = key.strip_prefix("m2m_desserts__")
-                    && !target_id.is_empty()
-                    && target_id
-                        .chars()
-                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
-                {
-                    let sql = format!(
-                        "INSERT INTO menu_desserts (menu_id, dessert_id) VALUES ({}, {})",
-                        id_str, target_id
-                    );
-                    let _ = db.execute_unprepared(&sql).await;
-                }
-            }
-            Ok(())
+            use sea_orm::TransactionTrait;
+            let txn = db.begin().await?;
+            let result = menu::admin_from_form(&data, Some(id))?.update(&txn).await?;
+            result.admin_save_lists(&txn, &data).await?;
+            runique::admin::helper::m2m::write_links(
+                &txn,
+                "menu_entrees",
+                "menu_id",
+                "entree_id",
+                id.into(),
+                &data,
+                "m2m_entrees__",
+                true,
+            )
+            .await?;
+            runique::admin::helper::m2m::write_links(
+                &txn,
+                "menu_plats",
+                "menu_id",
+                "plat_id",
+                id.into(),
+                &data,
+                "m2m_plats__",
+                true,
+            )
+            .await?;
+            runique::admin::helper::m2m::write_links(
+                &txn,
+                "menu_desserts",
+                "menu_id",
+                "dessert_id",
+                id.into(),
+                &data,
+                "m2m_desserts__",
+                true,
+            )
+            .await?;
+            txn.commit().await
         })
     });
 
@@ -3518,7 +3626,7 @@ pub fn admin_register() -> AdminRegistry {
             let id = id
                 .parse::<Pk>()
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
-            menu::admin_partial_update(&data, id)
+            menu::admin_partial_update(&data, id)?
                 .update(&*db)
                 .await
                 .map(|_| ())
@@ -3551,12 +3659,12 @@ pub fn admin_register() -> AdminRegistry {
                     })
                     .collect();
                 let selected = if let Some(ref oid) = object_id {
-                    use sea_orm::sea_query::{Alias, Expr, Query};
+                    use sea_orm::sea_query::{Alias, Expr, ExprTrait, Query};
                     let stmt = Query::select()
-                        .expr(Expr::cust(format!(
-                            "CAST(entree_id AS {})",
-                            text_cast_type(&db)
-                        )))
+                        .expr(
+                            Expr::col(Alias::new("entree_id"))
+                                .cast_as(Alias::new(text_cast_type(&db))),
+                        )
                         .from(Alias::new("menu_entrees"))
                         .and_where(text_eq(&db, "menu_id", oid))
                         .to_owned();
@@ -3598,12 +3706,12 @@ pub fn admin_register() -> AdminRegistry {
                     })
                     .collect();
                 let selected = if let Some(ref oid) = object_id {
-                    use sea_orm::sea_query::{Alias, Expr, Query};
+                    use sea_orm::sea_query::{Alias, Expr, ExprTrait, Query};
                     let stmt = Query::select()
-                        .expr(Expr::cust(format!(
-                            "CAST(plat_id AS {})",
-                            text_cast_type(&db)
-                        )))
+                        .expr(
+                            Expr::col(Alias::new("plat_id"))
+                                .cast_as(Alias::new(text_cast_type(&db))),
+                        )
                         .from(Alias::new("menu_plats"))
                         .and_where(text_eq(&db, "menu_id", oid))
                         .to_owned();
@@ -3645,12 +3753,12 @@ pub fn admin_register() -> AdminRegistry {
                     })
                     .collect();
                 let selected = if let Some(ref oid) = object_id {
-                    use sea_orm::sea_query::{Alias, Expr, Query};
+                    use sea_orm::sea_query::{Alias, Expr, ExprTrait, Query};
                     let stmt = Query::select()
-                        .expr(Expr::cust(format!(
-                            "CAST(dessert_id AS {})",
-                            text_cast_type(&db)
-                        )))
+                        .expr(
+                            Expr::col(Alias::new("dessert_id"))
+                                .cast_as(Alias::new(text_cast_type(&db))),
+                        )
                         .from(Alias::new("menu_desserts"))
                         .and_where(text_eq(&db, "menu_id", oid))
                         .to_owned();
@@ -3693,7 +3801,9 @@ pub fn admin_register() -> AdminRegistry {
             let page_size_type_menu = 10u64;
             let cur_page_type_menu = pages.get("type_menu").copied().unwrap_or(0);
             let count_stmt_type_menu = Query::select()
-                .expr(Expr::cust("COUNT(DISTINCT type_menu)"))
+                .expr(sea_orm::sea_query::Func::count_distinct(Expr::col(
+                    Alias::new("type_menu"),
+                )))
                 .from(Alias::new(menu::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("type_menu")).is_not_null())
                 .to_owned();
@@ -3712,10 +3822,7 @@ pub fn admin_register() -> AdminRegistry {
                 .unwrap_or(0) as u64;
             let stmt_type_menu = Query::select()
                 .distinct()
-                .expr(Expr::cust(format!(
-                    "CAST(type_menu AS {})",
-                    text_cast_type(&db)
-                )))
+                .expr(Expr::col(Alias::new("type_menu")).cast_as(Alias::new(text_cast_type(&db))))
                 .from(Alias::new(menu::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("type_menu")).is_not_null())
                 .limit(page_size_type_menu)
@@ -3765,7 +3872,6 @@ pub fn admin_register() -> AdminRegistry {
         "crate::entities::menu_traiteur::Model",
         "AdminForm",
         "Menus traiteur",
-        vec![],
     );
     let form_builder: FormBuilder = Arc::new(
         |_db: ADb,
@@ -3841,10 +3947,20 @@ pub fn admin_register() -> AdminRegistry {
     });
 
     let count_fn: CountFn = Arc::new(
-        |db: ADb, _search: Option<String>, scope: Option<(String, String)>| {
+        |db: ADb,
+         _search: Option<String>,
+         column_filters: Vec<(String, String)>,
+         scope: Option<(String, String)>| {
             Box::pin(async move {
                 use sea_orm::QueryFilter;
                 let mut query = menu_traiteur::Entity::find();
+                const FILTER_COLS: &[&str] = &["theme", "regime", "actif"];
+                for (col, val) in &column_filters {
+                    if !FILTER_COLS.contains(&col.as_str()) {
+                        continue;
+                    }
+                    query = query.filter(text_eq(&db, col.as_str(), val));
+                }
                 if let Some(ref search_str) = _search {
                     let search_cond = search_cond!(&db => menu_traiteur::Entity => or("titre" icontains search_str, "theme" icontains search_str, "regime" icontains search_str, "prix_par_personne" icontains search_str, "nb_personnes_min" icontains search_str, "remise_groupe" icontains search_str, "remise_groupe_min" icontains search_str, "stock" icontains search_str, "actif" icontains search_str));
                     query = query.filter(search_cond);
@@ -3864,8 +3980,12 @@ pub fn admin_register() -> AdminRegistry {
             let Ok(id) = id.parse::<Pk>() else {
                 return Ok(None);
             };
-            let row = menu_traiteur::Entity::find_by_id(id).one(&*db).await?;
-            Ok(row.map(|r| serde_json::to_value(r).unwrap_or(serde_json::Value::Null)))
+            let Some(row) = menu_traiteur::Entity::find_by_id(id).one(&*db).await? else {
+                return Ok(None);
+            };
+            let mut value = serde_json::to_value(&row).unwrap_or(serde_json::Value::Null);
+            row.admin_list_values(&*db, &mut value).await?;
+            Ok(Some(value))
         })
     });
 
@@ -3883,26 +4003,24 @@ pub fn admin_register() -> AdminRegistry {
 
     let create_fn: CreateFn = Arc::new(|db: ADb, data: StrMap| {
         Box::pin(async move {
-            use sea_orm::ConnectionTrait;
-            let result = menu_traiteur::admin_from_form(&data, None)
-                .insert(&*db)
+            use sea_orm::TransactionTrait;
+            let txn = db.begin().await?;
+            let result = menu_traiteur::admin_from_form(&data, None)?
+                .insert(&txn)
                 .await?;
-            let inserted_id = result.id.to_string();
-            for key in data.keys() {
-                if let Some(target_id) = key.strip_prefix("m2m_plats__")
-                    && !target_id.is_empty()
-                    && target_id
-                        .chars()
-                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
-                {
-                    let sql = format!(
-                        "INSERT INTO menu_traiteur_plats (menu_traiteur_id, plat_id) VALUES ({}, {}) ON CONFLICT DO NOTHING",
-                        inserted_id, target_id
-                    );
-                    let _ = db.execute_unprepared(&sql).await;
-                }
-            }
-            Ok(())
+            result.admin_save_lists(&txn, &data).await?;
+            runique::admin::helper::m2m::write_links(
+                &txn,
+                "menu_traiteur_plats",
+                "menu_traiteur_id",
+                "plat_id",
+                result.id.into(),
+                &data,
+                "m2m_plats__",
+                false,
+            )
+            .await?;
+            txn.commit().await
         })
     });
 
@@ -3911,32 +4029,24 @@ pub fn admin_register() -> AdminRegistry {
             let id = id
                 .parse::<Pk>()
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
-            use sea_orm::ConnectionTrait;
-            let id_str = id.to_string();
-            menu_traiteur::admin_from_form(&data, Some(id))
-                .update(&*db)
+            use sea_orm::TransactionTrait;
+            let txn = db.begin().await?;
+            let result = menu_traiteur::admin_from_form(&data, Some(id))?
+                .update(&txn)
                 .await?;
-            let _ = db
-                .execute_unprepared(&format!(
-                    "DELETE FROM menu_traiteur_plats WHERE menu_traiteur_id = {}",
-                    id_str
-                ))
-                .await;
-            for key in data.keys() {
-                if let Some(target_id) = key.strip_prefix("m2m_plats__")
-                    && !target_id.is_empty()
-                    && target_id
-                        .chars()
-                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
-                {
-                    let sql = format!(
-                        "INSERT INTO menu_traiteur_plats (menu_traiteur_id, plat_id) VALUES ({}, {})",
-                        id_str, target_id
-                    );
-                    let _ = db.execute_unprepared(&sql).await;
-                }
-            }
-            Ok(())
+            result.admin_save_lists(&txn, &data).await?;
+            runique::admin::helper::m2m::write_links(
+                &txn,
+                "menu_traiteur_plats",
+                "menu_traiteur_id",
+                "plat_id",
+                id.into(),
+                &data,
+                "m2m_plats__",
+                true,
+            )
+            .await?;
+            txn.commit().await
         })
     });
 
@@ -3945,7 +4055,7 @@ pub fn admin_register() -> AdminRegistry {
             let id = id
                 .parse::<Pk>()
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
-            menu_traiteur::admin_partial_update(&data, id)
+            menu_traiteur::admin_partial_update(&data, id)?
                 .update(&*db)
                 .await
                 .map(|_| ())
@@ -3978,12 +4088,12 @@ pub fn admin_register() -> AdminRegistry {
                     })
                     .collect();
                 let selected = if let Some(ref oid) = object_id {
-                    use sea_orm::sea_query::{Alias, Expr, Query};
+                    use sea_orm::sea_query::{Alias, Expr, ExprTrait, Query};
                     let stmt = Query::select()
-                        .expr(Expr::cust(format!(
-                            "CAST(plat_id AS {})",
-                            text_cast_type(&db)
-                        )))
+                        .expr(
+                            Expr::col(Alias::new("plat_id"))
+                                .cast_as(Alias::new(text_cast_type(&db))),
+                        )
                         .from(Alias::new("menu_traiteur_plats"))
                         .and_where(text_eq(&db, "menu_traiteur_id", oid))
                         .to_owned();
@@ -4035,7 +4145,9 @@ pub fn admin_register() -> AdminRegistry {
             let page_size_theme = 10u64;
             let cur_page_theme = pages.get("theme").copied().unwrap_or(0);
             let count_stmt_theme = Query::select()
-                .expr(Expr::cust("COUNT(DISTINCT theme)"))
+                .expr(sea_orm::sea_query::Func::count_distinct(Expr::col(
+                    Alias::new("theme"),
+                )))
                 .from(Alias::new(menu_traiteur::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("theme")).is_not_null())
                 .to_owned();
@@ -4054,10 +4166,7 @@ pub fn admin_register() -> AdminRegistry {
                 .unwrap_or(0) as u64;
             let stmt_theme = Query::select()
                 .distinct()
-                .expr(Expr::cust(format!(
-                    "CAST(theme AS {})",
-                    text_cast_type(&db)
-                )))
+                .expr(Expr::col(Alias::new("theme")).cast_as(Alias::new(text_cast_type(&db))))
                 .from(Alias::new(menu_traiteur::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("theme")).is_not_null())
                 .limit(page_size_theme)
@@ -4085,7 +4194,9 @@ pub fn admin_register() -> AdminRegistry {
             let page_size_regime = 10u64;
             let cur_page_regime = pages.get("regime").copied().unwrap_or(0);
             let count_stmt_regime = Query::select()
-                .expr(Expr::cust("COUNT(DISTINCT regime)"))
+                .expr(sea_orm::sea_query::Func::count_distinct(Expr::col(
+                    Alias::new("regime"),
+                )))
                 .from(Alias::new(menu_traiteur::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("regime")).is_not_null())
                 .to_owned();
@@ -4104,10 +4215,7 @@ pub fn admin_register() -> AdminRegistry {
                 .unwrap_or(0) as u64;
             let stmt_regime = Query::select()
                 .distinct()
-                .expr(Expr::cust(format!(
-                    "CAST(regime AS {})",
-                    text_cast_type(&db)
-                )))
+                .expr(Expr::col(Alias::new("regime")).cast_as(Alias::new(text_cast_type(&db))))
                 .from(Alias::new(menu_traiteur::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("regime")).is_not_null())
                 .limit(page_size_regime)
@@ -4135,7 +4243,9 @@ pub fn admin_register() -> AdminRegistry {
             let page_size_actif = 10u64;
             let cur_page_actif = pages.get("actif").copied().unwrap_or(0);
             let count_stmt_actif = Query::select()
-                .expr(Expr::cust("COUNT(DISTINCT actif)"))
+                .expr(sea_orm::sea_query::Func::count_distinct(Expr::col(
+                    Alias::new("actif"),
+                )))
                 .from(Alias::new(menu_traiteur::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("actif")).is_not_null())
                 .to_owned();
@@ -4154,10 +4264,7 @@ pub fn admin_register() -> AdminRegistry {
                 .unwrap_or(0) as u64;
             let stmt_actif = Query::select()
                 .distinct()
-                .expr(Expr::cust(format!(
-                    "CAST(actif AS {})",
-                    text_cast_type(&db)
-                )))
+                .expr(Expr::col(Alias::new("actif")).cast_as(Alias::new(text_cast_type(&db))))
                 .from(Alias::new(menu_traiteur::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("actif")).is_not_null())
                 .limit(page_size_actif)
@@ -4208,7 +4315,6 @@ pub fn admin_register() -> AdminRegistry {
         "crate::entities::boisson::Model",
         "AdminForm",
         "Boissons",
-        vec![],
     );
     let form_builder: FormBuilder = Arc::new(
         |_db: ADb,
@@ -4272,10 +4378,20 @@ pub fn admin_register() -> AdminRegistry {
     });
 
     let count_fn: CountFn = Arc::new(
-        |db: ADb, _search: Option<String>, scope: Option<(String, String)>| {
+        |db: ADb,
+         _search: Option<String>,
+         column_filters: Vec<(String, String)>,
+         scope: Option<(String, String)>| {
             Box::pin(async move {
                 use sea_orm::QueryFilter;
                 let mut query = boisson::Entity::find();
+                const FILTER_COLS: &[&str] = &["type_boisson", "disponible"];
+                for (col, val) in &column_filters {
+                    if !FILTER_COLS.contains(&col.as_str()) {
+                        continue;
+                    }
+                    query = query.filter(text_eq(&db, col.as_str(), val));
+                }
                 if let Some(ref search_str) = _search {
                     let search_cond = search_cond!(&db => boisson::Entity => or("titre" icontains search_str, "type_boisson" icontains search_str, "prix" icontains search_str, "disponible" icontains search_str));
                     query = query.filter(search_cond);
@@ -4295,8 +4411,12 @@ pub fn admin_register() -> AdminRegistry {
             let Ok(id) = id.parse::<Pk>() else {
                 return Ok(None);
             };
-            let row = boisson::Entity::find_by_id(id).one(&*db).await?;
-            Ok(row.map(|r| serde_json::to_value(r).unwrap_or(serde_json::Value::Null)))
+            let Some(row) = boisson::Entity::find_by_id(id).one(&*db).await? else {
+                return Ok(None);
+            };
+            let mut value = serde_json::to_value(&row).unwrap_or(serde_json::Value::Null);
+            row.admin_list_values(&*db, &mut value).await?;
+            Ok(Some(value))
         })
     });
 
@@ -4314,10 +4434,11 @@ pub fn admin_register() -> AdminRegistry {
 
     let create_fn: CreateFn = Arc::new(|db: ADb, data: StrMap| {
         Box::pin(async move {
-            boisson::admin_from_form(&data, None)
-                .insert(&*db)
-                .await
-                .map(|_| ())
+            use sea_orm::TransactionTrait;
+            let txn = db.begin().await?;
+            let result = boisson::admin_from_form(&data, None)?.insert(&txn).await?;
+            result.admin_save_lists(&txn, &data).await?;
+            txn.commit().await
         })
     });
 
@@ -4326,10 +4447,13 @@ pub fn admin_register() -> AdminRegistry {
             let id = id
                 .parse::<Pk>()
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
-            boisson::admin_from_form(&data, Some(id))
-                .update(&*db)
-                .await
-                .map(|_| ())
+            use sea_orm::TransactionTrait;
+            let txn = db.begin().await?;
+            let result = boisson::admin_from_form(&data, Some(id))?
+                .update(&txn)
+                .await?;
+            result.admin_save_lists(&txn, &data).await?;
+            txn.commit().await
         })
     });
 
@@ -4338,7 +4462,7 @@ pub fn admin_register() -> AdminRegistry {
             let id = id
                 .parse::<Pk>()
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
-            boisson::admin_partial_update(&data, id)
+            boisson::admin_partial_update(&data, id)?
                 .update(&*db)
                 .await
                 .map(|_| ())
@@ -4367,7 +4491,9 @@ pub fn admin_register() -> AdminRegistry {
             let page_size_type_boisson = 10u64;
             let cur_page_type_boisson = pages.get("type_boisson").copied().unwrap_or(0);
             let count_stmt_type_boisson = Query::select()
-                .expr(Expr::cust("COUNT(DISTINCT type_boisson)"))
+                .expr(sea_orm::sea_query::Func::count_distinct(Expr::col(
+                    Alias::new("type_boisson"),
+                )))
                 .from(Alias::new(boisson::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("type_boisson")).is_not_null())
                 .to_owned();
@@ -4386,10 +4512,9 @@ pub fn admin_register() -> AdminRegistry {
                 .unwrap_or(0) as u64;
             let stmt_type_boisson = Query::select()
                 .distinct()
-                .expr(Expr::cust(format!(
-                    "CAST(type_boisson AS {})",
-                    text_cast_type(&db)
-                )))
+                .expr(
+                    Expr::col(Alias::new("type_boisson")).cast_as(Alias::new(text_cast_type(&db))),
+                )
                 .from(Alias::new(boisson::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("type_boisson")).is_not_null())
                 .limit(page_size_type_boisson)
@@ -4420,7 +4545,9 @@ pub fn admin_register() -> AdminRegistry {
             let page_size_disponible = 10u64;
             let cur_page_disponible = pages.get("disponible").copied().unwrap_or(0);
             let count_stmt_disponible = Query::select()
-                .expr(Expr::cust("COUNT(DISTINCT disponible)"))
+                .expr(sea_orm::sea_query::Func::count_distinct(Expr::col(
+                    Alias::new("disponible"),
+                )))
                 .from(Alias::new(boisson::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("disponible")).is_not_null())
                 .to_owned();
@@ -4439,10 +4566,7 @@ pub fn admin_register() -> AdminRegistry {
                 .unwrap_or(0) as u64;
             let stmt_disponible = Query::select()
                 .distinct()
-                .expr(Expr::cust(format!(
-                    "CAST(disponible AS {})",
-                    text_cast_type(&db)
-                )))
+                .expr(Expr::col(Alias::new("disponible")).cast_as(Alias::new(text_cast_type(&db))))
                 .from(Alias::new(boisson::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("disponible")).is_not_null())
                 .limit(page_size_disponible)
@@ -4495,7 +4619,6 @@ pub fn admin_register() -> AdminRegistry {
         "crate::entities::commande::Model",
         "AdminForm",
         "Commandes",
-        vec![],
     );
     let meta = meta.template_detail("admin/commande_detail.html");
     let form_builder: FormBuilder = Arc::new(
@@ -4509,13 +4632,17 @@ pub fn admin_register() -> AdminRegistry {
                 let mut form =
                     commande::AdminForm::build_with_data(&data, tera, &csrf, method).await;
                 {
-                    use sea_orm::ConnectionTrait;
+                    use sea_orm::{ConnectionTrait, sea_query::ExprTrait};
                     let _fk_opt_stmt_user_id = sea_orm::sea_query::Query::select()
-                        .expr(sea_orm::sea_query::Expr::cust(format!(
-                            "CAST(id AS {})",
-                            runique::admin::helper::text_cast_type(&db)
-                        )))
-                        .expr(sea_orm::sea_query::Expr::cust("username"))
+                        .expr(
+                            sea_orm::sea_query::Expr::col(sea_orm::sea_query::Alias::new("id"))
+                                .cast_as(sea_orm::sea_query::Alias::new(
+                                    runique::admin::helper::text_cast_type(&db),
+                                )),
+                        )
+                        .expr(sea_orm::sea_query::Expr::col(
+                            sea_orm::sea_query::Alias::new("username"),
+                        ))
                         .from(sea_orm::sea_query::Alias::new("eihwaz_users"))
                         .to_owned();
                     let _fk_opt_choices_user_id: Vec<(String, String)> = db
@@ -4578,7 +4705,28 @@ pub fn admin_register() -> AdminRegistry {
                 query = query.filter(text_eq(&db, col.as_str(), val));
             }
             if let Some(ref search_str) = params.search {
-                let search_cond = search_cond!(&db => commande::Entity => or("numero" icontains search_str, "type_retrait" icontains search_str, "statut" icontains search_str, "pret_materiel" icontains search_str, "mode_paiement" icontains search_str, "prix_total" icontains search_str, "created_at" icontains search_str));
+                let mut search_cond = search_cond!(&db => commande::Entity => or("numero" icontains search_str, "type_retrait" icontains search_str, "statut" icontains search_str, "pret_materiel" icontains search_str, "mode_paiement" icontains search_str, "prix_total" icontains search_str, "created_at" icontains search_str));
+                {
+                    let __fk_ids = runique::admin::helper::fetch_fk_matching_ids(
+                        &*db,
+                        "eihwaz_users",
+                        "username",
+                        search_str,
+                    )
+                    .await;
+                    if !__fk_ids.is_empty() {
+                        use sea_orm::sea_query::ExprTrait;
+                        search_cond = search_cond.add(
+                            sea_orm::sea_query::Expr::col(sea_orm::sea_query::Alias::new(
+                                "user_id",
+                            ))
+                            .cast_as(sea_orm::sea_query::Alias::new(
+                                runique::admin::helper::text_cast_type(&db),
+                            ))
+                            .is_in(__fk_ids),
+                        );
+                    }
+                }
                 query = query.filter(search_cond);
             }
             let db_rows = query
@@ -4595,12 +4743,43 @@ pub fn admin_register() -> AdminRegistry {
     });
 
     let count_fn: CountFn = Arc::new(
-        |db: ADb, _search: Option<String>, scope: Option<(String, String)>| {
+        |db: ADb,
+         _search: Option<String>,
+         column_filters: Vec<(String, String)>,
+         scope: Option<(String, String)>| {
             Box::pin(async move {
                 use sea_orm::QueryFilter;
                 let mut query = commande::Entity::find();
+                const FILTER_COLS: &[&str] = &["type_retrait", "statut", "mode_paiement"];
+                for (col, val) in &column_filters {
+                    if !FILTER_COLS.contains(&col.as_str()) {
+                        continue;
+                    }
+                    query = query.filter(text_eq(&db, col.as_str(), val));
+                }
                 if let Some(ref search_str) = _search {
-                    let search_cond = search_cond!(&db => commande::Entity => or("numero" icontains search_str, "type_retrait" icontains search_str, "statut" icontains search_str, "pret_materiel" icontains search_str, "mode_paiement" icontains search_str, "prix_total" icontains search_str, "created_at" icontains search_str));
+                    let mut search_cond = search_cond!(&db => commande::Entity => or("numero" icontains search_str, "type_retrait" icontains search_str, "statut" icontains search_str, "pret_materiel" icontains search_str, "mode_paiement" icontains search_str, "prix_total" icontains search_str, "created_at" icontains search_str));
+                    {
+                        let __fk_ids = runique::admin::helper::fetch_fk_matching_ids(
+                            &*db,
+                            "eihwaz_users",
+                            "username",
+                            search_str,
+                        )
+                        .await;
+                        if !__fk_ids.is_empty() {
+                            use sea_orm::sea_query::ExprTrait;
+                            search_cond = search_cond.add(
+                                sea_orm::sea_query::Expr::col(sea_orm::sea_query::Alias::new(
+                                    "user_id",
+                                ))
+                                .cast_as(sea_orm::sea_query::Alias::new(
+                                    runique::admin::helper::text_cast_type(&db),
+                                ))
+                                .is_in(__fk_ids),
+                            );
+                        }
+                    }
                     query = query.filter(search_cond);
                 }
                 if let Some((col, val)) = &scope
@@ -4618,8 +4797,12 @@ pub fn admin_register() -> AdminRegistry {
             let Ok(id) = id.parse::<Pk>() else {
                 return Ok(None);
             };
-            let row = commande::Entity::find_by_id(id).one(&*db).await?;
-            Ok(row.map(|r| serde_json::to_value(r).unwrap_or(serde_json::Value::Null)))
+            let Some(row) = commande::Entity::find_by_id(id).one(&*db).await? else {
+                return Ok(None);
+            };
+            let mut value = serde_json::to_value(&row).unwrap_or(serde_json::Value::Null);
+            row.admin_list_values(&*db, &mut value).await?;
+            Ok(Some(value))
         })
     });
 
@@ -4637,10 +4820,11 @@ pub fn admin_register() -> AdminRegistry {
 
     let create_fn: CreateFn = Arc::new(|db: ADb, data: StrMap| {
         Box::pin(async move {
-            commande::admin_from_form(&data, None)
-                .insert(&*db)
-                .await
-                .map(|_| ())
+            use sea_orm::TransactionTrait;
+            let txn = db.begin().await?;
+            let result = commande::admin_from_form(&data, None)?.insert(&txn).await?;
+            result.admin_save_lists(&txn, &data).await?;
+            txn.commit().await
         })
     });
 
@@ -4649,10 +4833,13 @@ pub fn admin_register() -> AdminRegistry {
             let id = id
                 .parse::<Pk>()
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
-            commande::admin_from_form(&data, Some(id))
-                .update(&*db)
-                .await
-                .map(|_| ())
+            use sea_orm::TransactionTrait;
+            let txn = db.begin().await?;
+            let result = commande::admin_from_form(&data, Some(id))?
+                .update(&txn)
+                .await?;
+            result.admin_save_lists(&txn, &data).await?;
+            txn.commit().await
         })
     });
 
@@ -4661,7 +4848,7 @@ pub fn admin_register() -> AdminRegistry {
             let id = id
                 .parse::<Pk>()
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
-            commande::admin_partial_update(&data, id)
+            commande::admin_partial_update(&data, id)?
                 .update(&*db)
                 .await
                 .map(|_| ())
@@ -4717,7 +4904,9 @@ pub fn admin_register() -> AdminRegistry {
             let page_size_type_retrait = 10u64;
             let cur_page_type_retrait = pages.get("type_retrait").copied().unwrap_or(0);
             let count_stmt_type_retrait = Query::select()
-                .expr(Expr::cust("COUNT(DISTINCT type_retrait)"))
+                .expr(sea_orm::sea_query::Func::count_distinct(Expr::col(
+                    Alias::new("type_retrait"),
+                )))
                 .from(Alias::new(commande::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("type_retrait")).is_not_null())
                 .to_owned();
@@ -4736,10 +4925,9 @@ pub fn admin_register() -> AdminRegistry {
                 .unwrap_or(0) as u64;
             let stmt_type_retrait = Query::select()
                 .distinct()
-                .expr(Expr::cust(format!(
-                    "CAST(type_retrait AS {})",
-                    text_cast_type(&db)
-                )))
+                .expr(
+                    Expr::col(Alias::new("type_retrait")).cast_as(Alias::new(text_cast_type(&db))),
+                )
                 .from(Alias::new(commande::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("type_retrait")).is_not_null())
                 .limit(page_size_type_retrait)
@@ -4770,7 +4958,9 @@ pub fn admin_register() -> AdminRegistry {
             let page_size_statut = 10u64;
             let cur_page_statut = pages.get("statut").copied().unwrap_or(0);
             let count_stmt_statut = Query::select()
-                .expr(Expr::cust("COUNT(DISTINCT statut)"))
+                .expr(sea_orm::sea_query::Func::count_distinct(Expr::col(
+                    Alias::new("statut"),
+                )))
                 .from(Alias::new(commande::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("statut")).is_not_null())
                 .to_owned();
@@ -4789,10 +4979,7 @@ pub fn admin_register() -> AdminRegistry {
                 .unwrap_or(0) as u64;
             let stmt_statut = Query::select()
                 .distinct()
-                .expr(Expr::cust(format!(
-                    "CAST(statut AS {})",
-                    text_cast_type(&db)
-                )))
+                .expr(Expr::col(Alias::new("statut")).cast_as(Alias::new(text_cast_type(&db))))
                 .from(Alias::new(commande::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("statut")).is_not_null())
                 .limit(page_size_statut)
@@ -4820,7 +5007,9 @@ pub fn admin_register() -> AdminRegistry {
             let page_size_mode_paiement = 10u64;
             let cur_page_mode_paiement = pages.get("mode_paiement").copied().unwrap_or(0);
             let count_stmt_mode_paiement = Query::select()
-                .expr(Expr::cust("COUNT(DISTINCT mode_paiement)"))
+                .expr(sea_orm::sea_query::Func::count_distinct(Expr::col(
+                    Alias::new("mode_paiement"),
+                )))
                 .from(Alias::new(commande::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("mode_paiement")).is_not_null())
                 .to_owned();
@@ -4839,10 +5028,9 @@ pub fn admin_register() -> AdminRegistry {
                 .unwrap_or(0) as u64;
             let stmt_mode_paiement = Query::select()
                 .distinct()
-                .expr(Expr::cust(format!(
-                    "CAST(mode_paiement AS {})",
-                    text_cast_type(&db)
-                )))
+                .expr(
+                    Expr::col(Alias::new("mode_paiement")).cast_as(Alias::new(text_cast_type(&db))),
+                )
                 .from(Alias::new(commande::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("mode_paiement")).is_not_null())
                 .limit(page_size_mode_paiement)
@@ -4895,7 +5083,6 @@ pub fn admin_register() -> AdminRegistry {
         "crate::entities::avis::Model",
         "AdminForm",
         "Avis clients",
-        vec![],
     );
     let form_builder: FormBuilder = Arc::new(
         |db: ADb,
@@ -4907,13 +5094,17 @@ pub fn admin_register() -> AdminRegistry {
             Box::pin(async move {
                 let mut form = avis::AdminForm::build_with_data(&data, tera, &csrf, method).await;
                 {
-                    use sea_orm::ConnectionTrait;
+                    use sea_orm::{ConnectionTrait, sea_query::ExprTrait};
                     let _fk_opt_stmt_commande_id = sea_orm::sea_query::Query::select()
-                        .expr(sea_orm::sea_query::Expr::cust(format!(
-                            "CAST(id AS {})",
-                            runique::admin::helper::text_cast_type(&db)
-                        )))
-                        .expr(sea_orm::sea_query::Expr::cust("numero"))
+                        .expr(
+                            sea_orm::sea_query::Expr::col(sea_orm::sea_query::Alias::new("id"))
+                                .cast_as(sea_orm::sea_query::Alias::new(
+                                    runique::admin::helper::text_cast_type(&db),
+                                )),
+                        )
+                        .expr(sea_orm::sea_query::Expr::col(
+                            sea_orm::sea_query::Alias::new("numero"),
+                        ))
                         .from(sea_orm::sea_query::Alias::new("commandes"))
                         .to_owned();
                     let _fk_opt_choices_commande_id: Vec<(String, String)> = db
@@ -4969,7 +5160,28 @@ pub fn admin_register() -> AdminRegistry {
                 query = query.filter(text_eq(&db, col.as_str(), val));
             }
             if let Some(ref search_str) = params.search {
-                let search_cond = search_cond!(&db => avis::Entity => or("note" icontains search_str, "statut" icontains search_str, "created_at" icontains search_str));
+                let mut search_cond = search_cond!(&db => avis::Entity => or("note" icontains search_str, "statut" icontains search_str, "created_at" icontains search_str));
+                {
+                    let __fk_ids = runique::admin::helper::fetch_fk_matching_ids(
+                        &*db,
+                        "commandes",
+                        "numero",
+                        search_str,
+                    )
+                    .await;
+                    if !__fk_ids.is_empty() {
+                        use sea_orm::sea_query::ExprTrait;
+                        search_cond = search_cond.add(
+                            sea_orm::sea_query::Expr::col(sea_orm::sea_query::Alias::new(
+                                "commande_id",
+                            ))
+                            .cast_as(sea_orm::sea_query::Alias::new(
+                                runique::admin::helper::text_cast_type(&db),
+                            ))
+                            .is_in(__fk_ids),
+                        );
+                    }
+                }
                 query = query.filter(search_cond);
             }
             let db_rows = query
@@ -4986,12 +5198,43 @@ pub fn admin_register() -> AdminRegistry {
     });
 
     let count_fn: CountFn = Arc::new(
-        |db: ADb, _search: Option<String>, scope: Option<(String, String)>| {
+        |db: ADb,
+         _search: Option<String>,
+         column_filters: Vec<(String, String)>,
+         scope: Option<(String, String)>| {
             Box::pin(async move {
                 use sea_orm::QueryFilter;
                 let mut query = avis::Entity::find();
+                const FILTER_COLS: &[&str] = &["statut"];
+                for (col, val) in &column_filters {
+                    if !FILTER_COLS.contains(&col.as_str()) {
+                        continue;
+                    }
+                    query = query.filter(text_eq(&db, col.as_str(), val));
+                }
                 if let Some(ref search_str) = _search {
-                    let search_cond = search_cond!(&db => avis::Entity => or("note" icontains search_str, "statut" icontains search_str, "created_at" icontains search_str));
+                    let mut search_cond = search_cond!(&db => avis::Entity => or("note" icontains search_str, "statut" icontains search_str, "created_at" icontains search_str));
+                    {
+                        let __fk_ids = runique::admin::helper::fetch_fk_matching_ids(
+                            &*db,
+                            "commandes",
+                            "numero",
+                            search_str,
+                        )
+                        .await;
+                        if !__fk_ids.is_empty() {
+                            use sea_orm::sea_query::ExprTrait;
+                            search_cond = search_cond.add(
+                                sea_orm::sea_query::Expr::col(sea_orm::sea_query::Alias::new(
+                                    "commande_id",
+                                ))
+                                .cast_as(sea_orm::sea_query::Alias::new(
+                                    runique::admin::helper::text_cast_type(&db),
+                                ))
+                                .is_in(__fk_ids),
+                            );
+                        }
+                    }
                     query = query.filter(search_cond);
                 }
                 if let Some((col, val)) = &scope
@@ -5009,8 +5252,12 @@ pub fn admin_register() -> AdminRegistry {
             let Ok(id) = id.parse::<Pk>() else {
                 return Ok(None);
             };
-            let row = avis::Entity::find_by_id(id).one(&*db).await?;
-            Ok(row.map(|r| serde_json::to_value(r).unwrap_or(serde_json::Value::Null)))
+            let Some(row) = avis::Entity::find_by_id(id).one(&*db).await? else {
+                return Ok(None);
+            };
+            let mut value = serde_json::to_value(&row).unwrap_or(serde_json::Value::Null);
+            row.admin_list_values(&*db, &mut value).await?;
+            Ok(Some(value))
         })
     });
 
@@ -5025,10 +5272,11 @@ pub fn admin_register() -> AdminRegistry {
 
     let create_fn: CreateFn = Arc::new(|db: ADb, data: StrMap| {
         Box::pin(async move {
-            avis::admin_from_form(&data, None)
-                .insert(&*db)
-                .await
-                .map(|_| ())
+            use sea_orm::TransactionTrait;
+            let txn = db.begin().await?;
+            let result = avis::admin_from_form(&data, None)?.insert(&txn).await?;
+            result.admin_save_lists(&txn, &data).await?;
+            txn.commit().await
         })
     });
 
@@ -5037,10 +5285,11 @@ pub fn admin_register() -> AdminRegistry {
             let id = id
                 .parse::<Pk>()
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
-            avis::admin_from_form(&data, Some(id))
-                .update(&*db)
-                .await
-                .map(|_| ())
+            use sea_orm::TransactionTrait;
+            let txn = db.begin().await?;
+            let result = avis::admin_from_form(&data, Some(id))?.update(&txn).await?;
+            result.admin_save_lists(&txn, &data).await?;
+            txn.commit().await
         })
     });
 
@@ -5049,7 +5298,7 @@ pub fn admin_register() -> AdminRegistry {
             let id = id
                 .parse::<Pk>()
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
-            avis::admin_partial_update(&data, id)
+            avis::admin_partial_update(&data, id)?
                 .update(&*db)
                 .await
                 .map(|_| ())
@@ -5080,7 +5329,9 @@ pub fn admin_register() -> AdminRegistry {
             let page_size_statut = 10u64;
             let cur_page_statut = pages.get("statut").copied().unwrap_or(0);
             let count_stmt_statut = Query::select()
-                .expr(Expr::cust("COUNT(DISTINCT statut)"))
+                .expr(sea_orm::sea_query::Func::count_distinct(Expr::col(
+                    Alias::new("statut"),
+                )))
                 .from(Alias::new(avis::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("statut")).is_not_null())
                 .to_owned();
@@ -5099,10 +5350,7 @@ pub fn admin_register() -> AdminRegistry {
                 .unwrap_or(0) as u64;
             let stmt_statut = Query::select()
                 .distinct()
-                .expr(Expr::cust(format!(
-                    "CAST(statut AS {})",
-                    text_cast_type(&db)
-                )))
+                .expr(Expr::col(Alias::new("statut")).cast_as(Alias::new(text_cast_type(&db))))
                 .from(Alias::new(avis::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("statut")).is_not_null())
                 .limit(page_size_statut)
@@ -5155,7 +5403,6 @@ pub fn admin_register() -> AdminRegistry {
         "crate::entities::avis_plat::Model",
         "AdminForm",
         "Avis sur les plats",
-        vec![],
     );
     let form_builder: FormBuilder = Arc::new(
         |db: ADb,
@@ -5168,13 +5415,17 @@ pub fn admin_register() -> AdminRegistry {
                 let mut form =
                     avis_plat::AdminForm::build_with_data(&data, tera, &csrf, method).await;
                 {
-                    use sea_orm::ConnectionTrait;
+                    use sea_orm::{ConnectionTrait, sea_query::ExprTrait};
                     let _fk_opt_stmt_plat_id = sea_orm::sea_query::Query::select()
-                        .expr(sea_orm::sea_query::Expr::cust(format!(
-                            "CAST(id AS {})",
-                            runique::admin::helper::text_cast_type(&db)
-                        )))
-                        .expr(sea_orm::sea_query::Expr::cust("titre"))
+                        .expr(
+                            sea_orm::sea_query::Expr::col(sea_orm::sea_query::Alias::new("id"))
+                                .cast_as(sea_orm::sea_query::Alias::new(
+                                    runique::admin::helper::text_cast_type(&db),
+                                )),
+                        )
+                        .expr(sea_orm::sea_query::Expr::col(
+                            sea_orm::sea_query::Alias::new("titre"),
+                        ))
                         .from(sea_orm::sea_query::Alias::new("plats"))
                         .to_owned();
                     let _fk_opt_choices_plat_id: Vec<(String, String)> = db
@@ -5227,7 +5478,25 @@ pub fn admin_register() -> AdminRegistry {
                 query = query.filter(text_eq(&db, col.as_str(), val));
             }
             if let Some(ref search_str) = params.search {
-                let search_cond = search_cond!(&db => avis_plat::Entity => or("note" icontains search_str, "statut" icontains search_str, "created_at" icontains search_str));
+                let mut search_cond = search_cond!(&db => avis_plat::Entity => or("note" icontains search_str, "statut" icontains search_str, "created_at" icontains search_str));
+                {
+                    let __fk_ids = runique::admin::helper::fetch_fk_matching_ids(
+                        &*db, "plats", "titre", search_str,
+                    )
+                    .await;
+                    if !__fk_ids.is_empty() {
+                        use sea_orm::sea_query::ExprTrait;
+                        search_cond = search_cond.add(
+                            sea_orm::sea_query::Expr::col(sea_orm::sea_query::Alias::new(
+                                "plat_id",
+                            ))
+                            .cast_as(sea_orm::sea_query::Alias::new(
+                                runique::admin::helper::text_cast_type(&db),
+                            ))
+                            .is_in(__fk_ids),
+                        );
+                    }
+                }
                 query = query.filter(search_cond);
             }
             let db_rows = query
@@ -5244,12 +5513,40 @@ pub fn admin_register() -> AdminRegistry {
     });
 
     let count_fn: CountFn = Arc::new(
-        |db: ADb, _search: Option<String>, scope: Option<(String, String)>| {
+        |db: ADb,
+         _search: Option<String>,
+         column_filters: Vec<(String, String)>,
+         scope: Option<(String, String)>| {
             Box::pin(async move {
                 use sea_orm::QueryFilter;
                 let mut query = avis_plat::Entity::find();
+                const FILTER_COLS: &[&str] = &["statut"];
+                for (col, val) in &column_filters {
+                    if !FILTER_COLS.contains(&col.as_str()) {
+                        continue;
+                    }
+                    query = query.filter(text_eq(&db, col.as_str(), val));
+                }
                 if let Some(ref search_str) = _search {
-                    let search_cond = search_cond!(&db => avis_plat::Entity => or("note" icontains search_str, "statut" icontains search_str, "created_at" icontains search_str));
+                    let mut search_cond = search_cond!(&db => avis_plat::Entity => or("note" icontains search_str, "statut" icontains search_str, "created_at" icontains search_str));
+                    {
+                        let __fk_ids = runique::admin::helper::fetch_fk_matching_ids(
+                            &*db, "plats", "titre", search_str,
+                        )
+                        .await;
+                        if !__fk_ids.is_empty() {
+                            use sea_orm::sea_query::ExprTrait;
+                            search_cond = search_cond.add(
+                                sea_orm::sea_query::Expr::col(sea_orm::sea_query::Alias::new(
+                                    "plat_id",
+                                ))
+                                .cast_as(sea_orm::sea_query::Alias::new(
+                                    runique::admin::helper::text_cast_type(&db),
+                                ))
+                                .is_in(__fk_ids),
+                            );
+                        }
+                    }
                     query = query.filter(search_cond);
                 }
                 if let Some((col, val)) = &scope
@@ -5267,8 +5564,12 @@ pub fn admin_register() -> AdminRegistry {
             let Ok(id) = id.parse::<Pk>() else {
                 return Ok(None);
             };
-            let row = avis_plat::Entity::find_by_id(id).one(&*db).await?;
-            Ok(row.map(|r| serde_json::to_value(r).unwrap_or(serde_json::Value::Null)))
+            let Some(row) = avis_plat::Entity::find_by_id(id).one(&*db).await? else {
+                return Ok(None);
+            };
+            let mut value = serde_json::to_value(&row).unwrap_or(serde_json::Value::Null);
+            row.admin_list_values(&*db, &mut value).await?;
+            Ok(Some(value))
         })
     });
 
@@ -5286,10 +5587,13 @@ pub fn admin_register() -> AdminRegistry {
 
     let create_fn: CreateFn = Arc::new(|db: ADb, data: StrMap| {
         Box::pin(async move {
-            avis_plat::admin_from_form(&data, None)
-                .insert(&*db)
-                .await
-                .map(|_| ())
+            use sea_orm::TransactionTrait;
+            let txn = db.begin().await?;
+            let result = avis_plat::admin_from_form(&data, None)?
+                .insert(&txn)
+                .await?;
+            result.admin_save_lists(&txn, &data).await?;
+            txn.commit().await
         })
     });
 
@@ -5298,10 +5602,13 @@ pub fn admin_register() -> AdminRegistry {
             let id = id
                 .parse::<Pk>()
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
-            avis_plat::admin_from_form(&data, Some(id))
-                .update(&*db)
-                .await
-                .map(|_| ())
+            use sea_orm::TransactionTrait;
+            let txn = db.begin().await?;
+            let result = avis_plat::admin_from_form(&data, Some(id))?
+                .update(&txn)
+                .await?;
+            result.admin_save_lists(&txn, &data).await?;
+            txn.commit().await
         })
     });
 
@@ -5310,7 +5617,7 @@ pub fn admin_register() -> AdminRegistry {
             let id = id
                 .parse::<Pk>()
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
-            avis_plat::admin_partial_update(&data, id)
+            avis_plat::admin_partial_update(&data, id)?
                 .update(&*db)
                 .await
                 .map(|_| ())
@@ -5341,7 +5648,9 @@ pub fn admin_register() -> AdminRegistry {
             let page_size_statut = 10u64;
             let cur_page_statut = pages.get("statut").copied().unwrap_or(0);
             let count_stmt_statut = Query::select()
-                .expr(Expr::cust("COUNT(DISTINCT statut)"))
+                .expr(sea_orm::sea_query::Func::count_distinct(Expr::col(
+                    Alias::new("statut"),
+                )))
                 .from(Alias::new(avis_plat::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("statut")).is_not_null())
                 .to_owned();
@@ -5360,10 +5669,7 @@ pub fn admin_register() -> AdminRegistry {
                 .unwrap_or(0) as u64;
             let stmt_statut = Query::select()
                 .distinct()
-                .expr(Expr::cust(format!(
-                    "CAST(statut AS {})",
-                    text_cast_type(&db)
-                )))
+                .expr(Expr::col(Alias::new("statut")).cast_as(Alias::new(text_cast_type(&db))))
                 .from(Alias::new(avis_plat::Entity.table_name()))
                 .and_where(Expr::col(Alias::new("statut")).is_not_null())
                 .limit(page_size_statut)
@@ -5416,7 +5722,6 @@ pub fn admin_register() -> AdminRegistry {
         "crate::entities::info_resto::Model",
         "AdminForm",
         "Informations du restaurant",
-        vec![],
     );
     let form_builder: FormBuilder = Arc::new(
         |_db: ADb,
@@ -5489,10 +5794,20 @@ pub fn admin_register() -> AdminRegistry {
     });
 
     let count_fn: CountFn = Arc::new(
-        |db: ADb, _search: Option<String>, scope: Option<(String, String)>| {
+        |db: ADb,
+         _search: Option<String>,
+         column_filters: Vec<(String, String)>,
+         scope: Option<(String, String)>| {
             Box::pin(async move {
                 use sea_orm::QueryFilter;
                 let mut query = info_resto::Entity::find();
+                const FILTER_COLS: &[&str] = &[];
+                for (col, val) in &column_filters {
+                    if !FILTER_COLS.contains(&col.as_str()) {
+                        continue;
+                    }
+                    query = query.filter(text_eq(&db, col.as_str(), val));
+                }
                 if let Some(ref search_str) = _search {
                     let search_cond = search_cond!(&db => info_resto::Entity => or("nom" icontains search_str, "adresse" icontains search_str, "telephone" icontains search_str, "email" icontains search_str, "penalite_materiel" icontains search_str, "latitude" icontains search_str, "longitude" icontains search_str));
                     query = query.filter(search_cond);
@@ -5512,8 +5827,12 @@ pub fn admin_register() -> AdminRegistry {
             let Ok(id) = id.parse::<Pk>() else {
                 return Ok(None);
             };
-            let row = info_resto::Entity::find_by_id(id).one(&*db).await?;
-            Ok(row.map(|r| serde_json::to_value(r).unwrap_or(serde_json::Value::Null)))
+            let Some(row) = info_resto::Entity::find_by_id(id).one(&*db).await? else {
+                return Ok(None);
+            };
+            let mut value = serde_json::to_value(&row).unwrap_or(serde_json::Value::Null);
+            row.admin_list_values(&*db, &mut value).await?;
+            Ok(Some(value))
         })
     });
 
@@ -5531,10 +5850,13 @@ pub fn admin_register() -> AdminRegistry {
 
     let create_fn: CreateFn = Arc::new(|db: ADb, data: StrMap| {
         Box::pin(async move {
-            info_resto::admin_from_form(&data, None)
-                .insert(&*db)
-                .await
-                .map(|_| ())
+            use sea_orm::TransactionTrait;
+            let txn = db.begin().await?;
+            let result = info_resto::admin_from_form(&data, None)?
+                .insert(&txn)
+                .await?;
+            result.admin_save_lists(&txn, &data).await?;
+            txn.commit().await
         })
     });
 
@@ -5543,10 +5865,13 @@ pub fn admin_register() -> AdminRegistry {
             let id = id
                 .parse::<Pk>()
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
-            info_resto::admin_from_form(&data, Some(id))
-                .update(&*db)
-                .await
-                .map(|_| ())
+            use sea_orm::TransactionTrait;
+            let txn = db.begin().await?;
+            let result = info_resto::admin_from_form(&data, Some(id))?
+                .update(&txn)
+                .await?;
+            result.admin_save_lists(&txn, &data).await?;
+            txn.commit().await
         })
     });
 
@@ -5555,7 +5880,7 @@ pub fn admin_register() -> AdminRegistry {
             let id = id
                 .parse::<Pk>()
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
-            info_resto::admin_partial_update(&data, id)
+            info_resto::admin_partial_update(&data, id)?
                 .update(&*db)
                 .await
                 .map(|_| ())

@@ -8,7 +8,7 @@ use std::collections::HashMap;
 pub async fn panier_ajouter_menu(
     request: &Request,
     session: &Session,
-    db: &sea_orm::DatabaseConnection,
+    db: &ADb,
     menu_id: Pk,
     quantite: i32,
     choix: Vec<MenuChoixPanier>,

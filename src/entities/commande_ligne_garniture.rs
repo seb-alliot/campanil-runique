@@ -5,8 +5,12 @@ model! {
     table: "commande_ligne_garnitures",
     pk: id => Pk,
     {
-        commande_ligne_id: int [required, fk(commande_lignes.id, cascade)],
-        garniture_id:      int [required, fk(garnitures.id, restrict)],
+        commande_ligne_id: int [required],
+        garniture_id:      int [required],
+    },
+    relations: {
+        belongs_to: CommandeLigne via commande_ligne_id [cascade],
+        belongs_to: Garniture via garniture_id [restrict],
     },
     meta: {
         verbose_name: "Garniture de ligne",

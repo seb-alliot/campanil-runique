@@ -14,13 +14,13 @@ model! {
     {
         type_menu:     choice  [enum(TypeMenu), required, default: "menu_resto"],
         nom:           text    [required, max_length: 255],
-        description:   textarea,
-        image:         image   [upload_to: "menus/"],
+        description:   textarea [nullable],
+        image:         image   [upload_to: "menus/", nullable],
         prix:          decimal [required],
         ordre:         int     [default: 0],
-        entree_libre:  text    [max_length: 500],
-        plat_libre:    text    [max_length: 500],
-        dessert_libre: text    [max_length: 500],
+        entree_libre:  text    [max_length: 500, nullable],
+        plat_libre:    text    [max_length: 500, nullable],
+        dessert_libre: text    [max_length: 500, nullable],
     },
     meta: {
         ordering: [type_menu, ordre, nom],

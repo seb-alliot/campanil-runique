@@ -9,7 +9,7 @@ use crate::entities::{
 use runique::prelude::*;
 use std::collections::HashMap;
 
-pub async fn get_carte(db: &sea_orm::DatabaseConnection) -> CartePage {
+pub async fn get_carte(db: &ADb) -> CartePage {
     let (entrees, desserts_carte, plats_all, menus) = tokio::join!(
         build_entrees(db),
         build_desserts(db),
@@ -34,7 +34,7 @@ pub async fn get_carte(db: &sea_orm::DatabaseConnection) -> CartePage {
     }
 }
 
-async fn build_entrees(db: &sea_orm::DatabaseConnection) -> Vec<CartePlat> {
+async fn build_entrees(db: &ADb) -> Vec<CartePlat> {
     let entree_models: Vec<entree::Model> =
         search!(entree::Entity => Disponible eq true, Usage ne entree::UsageEntree::Menu, asc Ordre, asc Titre,)
             .all(db)
@@ -80,7 +80,7 @@ async fn build_entrees(db: &sea_orm::DatabaseConnection) -> Vec<CartePlat> {
         .collect()
 }
 
-async fn build_desserts(db: &sea_orm::DatabaseConnection) -> Vec<CartePlat> {
+async fn build_desserts(db: &ADb) -> Vec<CartePlat> {
     let dessert_models: Vec<dessert::Model> =
         search!(dessert::Entity => Disponible eq true, Usage ne dessert::UsageDessert::Menu, asc Ordre, asc Titre,)
             .all(db)
@@ -126,9 +126,7 @@ async fn build_desserts(db: &sea_orm::DatabaseConnection) -> Vec<CartePlat> {
         .collect()
 }
 
-async fn build_plats(
-    db: &sea_orm::DatabaseConnection,
-) -> (Vec<CartePlat>, Vec<CartePlat>, Vec<CartePlat>) {
+async fn build_plats(db: &ADb) -> (Vec<CartePlat>, Vec<CartePlat>, Vec<CartePlat>) {
     use crate::entities::plat::TypePlat;
 
     let plat_models: Vec<plat::Model> =
@@ -257,7 +255,7 @@ pub fn grouper_garnitures(garnitures: Vec<CarteGarniture>) -> Vec<CarteGarniture
         .collect()
 }
 
-pub async fn build_feculents(db: &sea_orm::DatabaseConnection) -> Vec<CarteGarniture> {
+pub async fn build_feculents(db: &ADb) -> Vec<CarteGarniture> {
     search!(garniture::Entity => Disponible eq true, asc Libelle,)
         .all(db)
         .await
@@ -272,7 +270,7 @@ pub async fn build_feculents(db: &sea_orm::DatabaseConnection) -> Vec<CarteGarni
         .collect()
 }
 
-async fn build_menus(db: &sea_orm::DatabaseConnection) -> Vec<CarteMenuResto> {
+async fn build_menus(db: &ADb) -> Vec<CarteMenuResto> {
     let menus = search!(menu::Entity => asc Ordre, asc Nom,)
         .all(db)
         .await
@@ -539,7 +537,7 @@ fn grouper_menus(menus: Vec<CarteMenuResto>) -> Vec<CarteMenuSection> {
     .collect()
 }
 
-async fn load_allergene_labels(db: &sea_orm::DatabaseConnection) -> HashMap<Pk, String> {
+async fn load_allergene_labels(db: &ADb) -> HashMap<Pk, String> {
     search!(allergene::Entity)
         .all(db)
         .await

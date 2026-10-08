@@ -47,7 +47,7 @@ fn cours_label(cours: &str) -> &str {
 
 pub async fn panier_valider(
     session: &Session,
-    db: &sea_orm::DatabaseConnection,
+    db: &ADb,
     user_id: Pk,
     form: CommandeForm,
     tz_str: &str,
@@ -149,7 +149,7 @@ pub async fn panier_valider(
                 adresse_livraison: Set(form.adresse_livraison.clone()),
                 ville_livraison: Set(form.ville_livraison.clone()),
                 cp_livraison: Set(form.cp_livraison.clone()),
-                prix_livraison: Set(Some(prix_livraison)),
+                prix_livraison: Set(prix_livraison),
                 ..Default::default()
             };
             match active.insert(db).await {

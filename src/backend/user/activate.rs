@@ -1,4 +1,4 @@
-use runique::prelude::runique_users::{ActiveModel as UserActiveModel, Entity as UserEntity};
+use runique::prelude::runique_users::Entity as UserEntity;
 use runique::prelude::*;
 
 pub async fn handle_activate(
@@ -27,19 +27,21 @@ pub async fn handle_activate(
         return Ok(Redirect::to("/login").into_response());
     };
 
-    // Activate the account
-    let active_model = UserActiveModel {
-        id: Set(user.id),
-        is_active: Set(true),
-        ..Default::default()
+    // `is_active` and `activated_at` together: the database refuses one without the other.
+    let activated = match BuiltinUserEntity::activate_account(&db, user.id).await {
+        Ok(Some(activated)) => activated,
+        Ok(None) => {
+            info!(request.notices => "Ce compte est déjà activé, connectez-vous.");
+            return Ok(Redirect::to("/login").into_response());
+        }
+        Err(_) => {
+            warning!(request.notices => "Erreur lors de l'activation.");
+            return Ok(Redirect::to("/login").into_response());
+        }
     };
-    if active_model.update(&*db).await.is_err() {
-        warning!(request.notices => "Erreur lors de l'activation.");
-        return Ok(Redirect::to("/login").into_response());
-    }
 
     // Directly log in
-    auth_login(&request.session, &db, user.id).await.ok();
+    login(&request.session, &activated, None, false).await.ok();
 
     success!(request.notices => format!("Bienvenue {} ! Votre compte est activé.", user.username));
     Ok(Redirect::to("/compte").into_response())

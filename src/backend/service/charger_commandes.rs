@@ -83,10 +83,7 @@ pub(super) fn grouper_par_statut(
     (attente, accepte, preparation, pret)
 }
 
-pub(super) async fn charger_commandes_jour(
-    db: &sea_orm::DatabaseConnection,
-    tz_str: &str,
-) -> Vec<CommandeService> {
+pub(super) async fn charger_commandes_jour(db: &ADb, tz_str: &str) -> Vec<CommandeService> {
     use chrono::TimeZone as _;
     let tz: chrono_tz::Tz = tz_str.parse().unwrap_or(chrono_tz::UTC);
     let today = chrono::Utc::now().with_timezone(&tz).date_naive();

@@ -4,11 +4,7 @@ use crate::backend::stats::get_plat_views;
 use crate::entities::{dessert, entree, plat, plat_garniture};
 use runique::prelude::*;
 
-async fn garnitures_valides_pour_plat(
-    db: &sea_orm::DatabaseConnection,
-    plat_id: Pk,
-    garniture_ids: &[Pk],
-) -> Vec<Pk> {
+async fn garnitures_valides_pour_plat(db: &ADb, plat_id: Pk, garniture_ids: &[Pk]) -> Vec<Pk> {
     if garniture_ids.is_empty() {
         return Vec::new();
     }
@@ -45,11 +41,7 @@ struct ArticleInfo {
     est_viande: bool,
 }
 
-async fn find_article(
-    db: &sea_orm::DatabaseConnection,
-    id: Pk,
-    type_article: &str,
-) -> Option<ArticleInfo> {
+async fn find_article(db: &ADb, id: Pk, type_article: &str) -> Option<ArticleInfo> {
     match type_article {
         "entree" => {
             let m = entree::Entity::find_by_id(id)

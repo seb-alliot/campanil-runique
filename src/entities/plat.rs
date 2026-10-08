@@ -19,10 +19,10 @@ model! {
     },
     {
         titre:        text    [required, max_length: 255],
-        label:        text    [max_length: 80],
+        label:        text    [max_length: 80, nullable],
         type_plat:    choice  [enum(TypePlat), required],
-        description:  textarea,
-        image:        image   [upload_to: "plats/"],
+        description:  textarea [nullable],
+        image:        image   [upload_to: "plats/", nullable],
         prix:         decimal [required],
         disponible:   bool    [required, default: true],
         est_viande:   bool    [required, default: false],

@@ -22,9 +22,9 @@ pub async fn deconnexion(request: Request) -> AppResult<Response> {
     Ok(Redirect::to("/").into_response())
 }
 
-pub async fn inscription(headers: HeaderMap, mut request: Request) -> AppResult<Response> {
+pub async fn inscription(mut request: Request) -> AppResult<Response> {
     let form: RegisterForm = request.form();
-    handle_inscription(&mut request, form, &headers).await
+    handle_inscription(&mut request, form).await
 }
 
 pub async fn activer(

@@ -1,7 +1,7 @@
 use chrono::{Datelike, Duration, NaiveDateTime, Utc, Weekday};
 use runique::context;
 use runique::prelude::*;
-use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, QueryFilter, Set};
+use sea_orm::{ActiveModelTrait, ColumnTrait, QueryFilter, Set};
 
 use crate::backend::service::charger_commandes::garde_acces;
 use crate::entities::{commande, commande::StatutCommande};
@@ -22,7 +22,7 @@ fn add_jours_ouvres(start: NaiveDateTime, n: u32) -> NaiveDateTime {
 /// Envoie les mails de pénalité pour les commandes livrées sans retour
 /// de matériel depuis plus de 10 jours ouvrés. Idempotent via `penalite_envoyee`.
 /// Retourne le nombre de commandes en attente (avant envoi).
-pub async fn process_penalites(db: &DatabaseConnection, tera: &ATera) -> usize {
+pub async fn process_penalites(db: &ADb, tera: &ATera) -> usize {
     let now = Utc::now().naive_utc();
 
     let commandes_en_attente = commande::Entity::find()
@@ -38,7 +38,7 @@ pub async fn process_penalites(db: &DatabaseConnection, tera: &ATera) -> usize {
         if cmd.penalite_envoyee {
             continue;
         }
-        let echeance = add_jours_ouvres(cmd.updated_at.unwrap_or(now), 10);
+        let echeance = add_jours_ouvres(cmd.updated_at, 10);
         if now < echeance {
             continue;
         }
