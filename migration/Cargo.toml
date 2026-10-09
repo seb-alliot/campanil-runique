@@ -14,9 +14,9 @@ name = "campanile-migration"
 path = "src/main.rs"
 
 [dependencies]
-tokio = { version = "1", features = ["macros", "rt", "rt-multi-thread"] }
-runique = { version = "3.0", features = ["orm", "postgres"] }
+tokio = { version = "1.53.2", features = ["macros", "rt", "rt-multi-thread"] }
+runique = { version = "3.0.1", features = ["orm", "postgres"] }
 
 [dependencies.sea-orm-migration]
-version = "2.0.0"
+version = "2.0.4"
 features = ["runtime-tokio-rustls", "sqlx-postgres"]
