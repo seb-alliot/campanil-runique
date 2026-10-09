@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 
 # Same version as Campanile's Cargo.lock: the CLI and the app share the static files.
-ARG RUNIQUE_VERSION=3.0.1
+ARG RUNIQUE_VERSION=3.0.2
 
 # CLI Runique
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
