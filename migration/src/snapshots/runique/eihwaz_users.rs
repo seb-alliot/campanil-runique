@@ -1,3 +1,4 @@
+// runique: column lengths recorded
 use sea_orm_migration::prelude::*;
 
 #[derive(DeriveMigrationName)]
@@ -11,11 +12,11 @@ async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
                 Table::create()
                     .table(Alias::new("eihwaz_users"))
                     .if_not_exists()
-                    .col(ColumnDef::new(Alias::new("telephone")).string().null())
-                    .col(ColumnDef::new(Alias::new("adresse")).string().null())
-                    .col(ColumnDef::new(Alias::new("ville")).string().null())
-                    .col(ColumnDef::new(Alias::new("code_postal")).string().null())
-                    .col(ColumnDef::new(Alias::new("pays")).string().null())
+                    .col(ColumnDef::new(Alias::new("telephone")).string_len(20).null())
+                    .col(ColumnDef::new(Alias::new("adresse")).string_len(255).null())
+                    .col(ColumnDef::new(Alias::new("ville")).string_len(100).null())
+                    .col(ColumnDef::new(Alias::new("code_postal")).string_len(10).null())
+                    .col(ColumnDef::new(Alias::new("pays")).string_len(100).not_null().default("France"))
                     .to_owned()
             )
             .await?;

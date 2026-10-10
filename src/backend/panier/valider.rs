@@ -300,7 +300,7 @@ pub async fn panier_valider(
 
         for gid in &ligne.garniture_ids {
             commande_ligne_garniture::ActiveModel {
-                commande_ligne_id: Set(cl.id),
+                ligne_id: Set(cl.id),
                 garniture_id: Set(*gid),
                 ..Default::default()
             }

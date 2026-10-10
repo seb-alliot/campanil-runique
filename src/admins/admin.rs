@@ -567,7 +567,7 @@ pub fn admin_register() -> AdminRegistry {
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
             use sea_orm::TransactionTrait;
             let txn = db.begin().await?;
-            let result = allergene::admin_from_form(&data, Some(id))?
+            let result = allergene::admin_partial_update(&data, id)?
                 .update(&txn)
                 .await?;
             result.admin_save_lists(&txn, &data).await?;
@@ -590,6 +590,7 @@ pub fn admin_register() -> AdminRegistry {
     let meta = meta.display(DisplayConfig::new().columns_include(vec![("libelle", "Libellé")]));
     registry.register(
         ResourceEntry::new(meta, form_builder)
+            .with_table(sea_orm::EntityName::table_name(&allergene::Entity))
             .with_list_fn(list_fn)
             .with_get_fn(get_fn)
             .with_enum_label_fn(allergene::apply_enum_labels)
@@ -745,24 +746,29 @@ pub fn admin_register() -> AdminRegistry {
                 .map(str::trim)
                 .filter(|v| !v.is_empty())
                 .collect();
-            for val in values {
-                let mut row = data.clone();
-                row.insert("jour".to_string(), val.to_string());
-                let existing_id: Option<String> = horaire::Entity::find()
-                    .filter(text_eq(&db, "jour", val))
+            let mut seen = std::collections::HashSet::new();
+            let mut created = 0usize;
+            for val in &values {
+                if !seen.insert(val.to_lowercase()) {
+                    continue;
+                }
+                let exists = horaire::Entity::find()
+                    .filter(text_eq_ci(&db, "jour", val))
                     .one(&*db)
                     .await?
-                    .map(|m| m.id.to_string());
-                if let Some(id) = existing_id {
-                    let id = id
-                        .parse::<Pk>()
-                        .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
-                    horaire::admin_from_form(&row, Some(id))?
-                        .update(&*db)
-                        .await?;
-                } else {
-                    horaire::admin_from_form(&row, None)?.insert(&*db).await?;
+                    .is_some();
+                if exists {
+                    continue;
                 }
+                let mut row = data.clone();
+                row.insert("jour".to_string(), (*val).to_string());
+                horaire::admin_from_form(&row, None)?.insert(&*db).await?;
+                created += 1;
+            }
+            if created == 0 && !values.is_empty() {
+                return Err(sea_orm::DbErr::Custom(
+                    runique::utils::trad::t("admin.bulk_create.all_exist").into_owned(),
+                ));
             }
             Ok(())
         })
@@ -775,7 +781,7 @@ pub fn admin_register() -> AdminRegistry {
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
             use sea_orm::TransactionTrait;
             let txn = db.begin().await?;
-            let result = horaire::admin_from_form(&data, Some(id))?
+            let result = horaire::admin_partial_update(&data, id)?
                 .update(&txn)
                 .await?;
             result.admin_save_lists(&txn, &data).await?;
@@ -883,6 +889,7 @@ pub fn admin_register() -> AdminRegistry {
     registry.register(
         ResourceEntry::new(meta, form_builder)
             .with_edit_form_builder(edit_form_builder)
+            .with_table(sea_orm::EntityName::table_name(&horaire::Entity))
             .with_list_fn(list_fn)
             .with_get_fn(get_fn)
             .with_enum_label_fn(horaire::apply_enum_labels)
@@ -1049,7 +1056,7 @@ pub fn admin_register() -> AdminRegistry {
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
             use sea_orm::TransactionTrait;
             let txn = db.begin().await?;
-            let result = devis_traiteur::admin_from_form(&data, Some(id))?
+            let result = devis_traiteur::admin_partial_update(&data, id)?
                 .update(&txn)
                 .await?;
             result.admin_save_lists(&txn, &data).await?;
@@ -1144,6 +1151,7 @@ pub fn admin_register() -> AdminRegistry {
 
     registry.register(
         ResourceEntry::new(meta, form_builder)
+            .with_table(sea_orm::EntityName::table_name(&devis_traiteur::Entity))
             .with_list_fn(list_fn)
             .with_get_fn(get_fn)
             .with_enum_label_fn(devis_traiteur::apply_enum_labels)
@@ -1297,7 +1305,7 @@ pub fn admin_register() -> AdminRegistry {
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
             use sea_orm::TransactionTrait;
             let txn = db.begin().await?;
-            let result = contact::admin_from_form(&data, Some(id))?
+            let result = contact::admin_partial_update(&data, id)?
                 .update(&txn)
                 .await?;
             result.admin_save_lists(&txn, &data).await?;
@@ -1388,6 +1396,7 @@ pub fn admin_register() -> AdminRegistry {
 
     registry.register(
         ResourceEntry::new(meta, form_builder)
+            .with_table(sea_orm::EntityName::table_name(&contact::Entity))
             .with_list_fn(list_fn)
             .with_get_fn(get_fn)
             .with_enum_label_fn(contact::apply_enum_labels)
@@ -1542,7 +1551,7 @@ pub fn admin_register() -> AdminRegistry {
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
             use sea_orm::TransactionTrait;
             let txn = db.begin().await?;
-            let result = garniture::admin_from_form(&data, Some(id))?
+            let result = garniture::admin_partial_update(&data, id)?
                 .update(&txn)
                 .await?;
             result.admin_save_lists(&txn, &data).await?;
@@ -1693,6 +1702,7 @@ pub fn admin_register() -> AdminRegistry {
 
     registry.register(
         ResourceEntry::new(meta, form_builder)
+            .with_table(sea_orm::EntityName::table_name(&garniture::Entity))
             .with_list_fn(list_fn)
             .with_get_fn(get_fn)
             .with_enum_label_fn(garniture::apply_enum_labels)
@@ -1922,7 +1932,7 @@ pub fn admin_register() -> AdminRegistry {
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
             use sea_orm::TransactionTrait;
             let txn = db.begin().await?;
-            let result = supplement::admin_from_form(&data, Some(id))?
+            let result = supplement::admin_partial_update(&data, id)?
                 .update(&txn)
                 .await?;
             result.admin_save_lists(&txn, &data).await?;
@@ -2021,6 +2031,7 @@ pub fn admin_register() -> AdminRegistry {
 
     registry.register(
         ResourceEntry::new(meta, form_builder)
+            .with_table(sea_orm::EntityName::table_name(&supplement::Entity))
             .with_list_fn(list_fn)
             .with_get_fn(get_fn)
             .with_enum_label_fn(supplement::apply_enum_labels)
@@ -2185,7 +2196,7 @@ pub fn admin_register() -> AdminRegistry {
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
             use sea_orm::TransactionTrait;
             let txn = db.begin().await?;
-            let result = entree::admin_from_form(&data, Some(id))?
+            let result = entree::admin_partial_update(&data, id)?
                 .update(&txn)
                 .await?;
             result.admin_save_lists(&txn, &data).await?;
@@ -2397,6 +2408,7 @@ pub fn admin_register() -> AdminRegistry {
 
     registry.register(
         ResourceEntry::new(meta, form_builder)
+            .with_table(sea_orm::EntityName::table_name(&entree::Entity))
             .with_list_fn(list_fn)
             .with_get_fn(get_fn)
             .with_enum_label_fn(entree::apply_enum_labels)
@@ -2562,7 +2574,7 @@ pub fn admin_register() -> AdminRegistry {
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
             use sea_orm::TransactionTrait;
             let txn = db.begin().await?;
-            let result = dessert::admin_from_form(&data, Some(id))?
+            let result = dessert::admin_partial_update(&data, id)?
                 .update(&txn)
                 .await?;
             result.admin_save_lists(&txn, &data).await?;
@@ -2774,6 +2786,7 @@ pub fn admin_register() -> AdminRegistry {
 
     registry.register(
         ResourceEntry::new(meta, form_builder)
+            .with_table(sea_orm::EntityName::table_name(&dessert::Entity))
             .with_list_fn(list_fn)
             .with_get_fn(get_fn)
             .with_enum_label_fn(dessert::apply_enum_labels)
@@ -2966,7 +2979,7 @@ pub fn admin_register() -> AdminRegistry {
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
             use sea_orm::TransactionTrait;
             let txn = db.begin().await?;
-            let result = plat::admin_from_form(&data, Some(id))?.update(&txn).await?;
+            let result = plat::admin_partial_update(&data, id)?.update(&txn).await?;
             result.admin_save_lists(&txn, &data).await?;
             runique::admin::helper::m2m::write_links(
                 &txn,
@@ -3397,6 +3410,7 @@ pub fn admin_register() -> AdminRegistry {
 
     registry.register(
         ResourceEntry::new(meta, form_builder)
+            .with_table(sea_orm::EntityName::table_name(&plat::Entity))
             .with_list_fn(list_fn)
             .with_get_fn(get_fn)
             .with_enum_label_fn(plat::apply_enum_labels)
@@ -3582,7 +3596,7 @@ pub fn admin_register() -> AdminRegistry {
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
             use sea_orm::TransactionTrait;
             let txn = db.begin().await?;
-            let result = menu::admin_from_form(&data, Some(id))?.update(&txn).await?;
+            let result = menu::admin_partial_update(&data, id)?.update(&txn).await?;
             result.admin_save_lists(&txn, &data).await?;
             runique::admin::helper::m2m::write_links(
                 &txn,
@@ -3853,6 +3867,7 @@ pub fn admin_register() -> AdminRegistry {
 
     registry.register(
         ResourceEntry::new(meta, form_builder)
+            .with_table(sea_orm::EntityName::table_name(&menu::Entity))
             .with_list_fn(list_fn)
             .with_get_fn(get_fn)
             .with_enum_label_fn(menu::apply_enum_labels)
@@ -4031,7 +4046,7 @@ pub fn admin_register() -> AdminRegistry {
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
             use sea_orm::TransactionTrait;
             let txn = db.begin().await?;
-            let result = menu_traiteur::admin_from_form(&data, Some(id))?
+            let result = menu_traiteur::admin_partial_update(&data, id)?
                 .update(&txn)
                 .await?;
             result.admin_save_lists(&txn, &data).await?;
@@ -4295,6 +4310,7 @@ pub fn admin_register() -> AdminRegistry {
 
     registry.register(
         ResourceEntry::new(meta, form_builder)
+            .with_table(sea_orm::EntityName::table_name(&menu_traiteur::Entity))
             .with_list_fn(list_fn)
             .with_get_fn(get_fn)
             .with_enum_label_fn(menu_traiteur::apply_enum_labels)
@@ -4449,7 +4465,7 @@ pub fn admin_register() -> AdminRegistry {
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
             use sea_orm::TransactionTrait;
             let txn = db.begin().await?;
-            let result = boisson::admin_from_form(&data, Some(id))?
+            let result = boisson::admin_partial_update(&data, id)?
                 .update(&txn)
                 .await?;
             result.admin_save_lists(&txn, &data).await?;
@@ -4600,6 +4616,7 @@ pub fn admin_register() -> AdminRegistry {
 
     registry.register(
         ResourceEntry::new(meta, form_builder)
+            .with_table(sea_orm::EntityName::table_name(&boisson::Entity))
             .with_list_fn(list_fn)
             .with_get_fn(get_fn)
             .with_enum_label_fn(boisson::apply_enum_labels)
@@ -4835,7 +4852,7 @@ pub fn admin_register() -> AdminRegistry {
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
             use sea_orm::TransactionTrait;
             let txn = db.begin().await?;
-            let result = commande::admin_from_form(&data, Some(id))?
+            let result = commande::admin_partial_update(&data, id)?
                 .update(&txn)
                 .await?;
             result.admin_save_lists(&txn, &data).await?;
@@ -5065,6 +5082,7 @@ pub fn admin_register() -> AdminRegistry {
     registry.register(
         ResourceEntry::new(meta, form_builder)
             .with_edit_form_builder(edit_form_builder)
+            .with_table(sea_orm::EntityName::table_name(&commande::Entity))
             .with_list_fn(list_fn)
             .with_get_fn(get_fn)
             .with_enum_label_fn(commande::apply_enum_labels)
@@ -5287,7 +5305,7 @@ pub fn admin_register() -> AdminRegistry {
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
             use sea_orm::TransactionTrait;
             let txn = db.begin().await?;
-            let result = avis::admin_from_form(&data, Some(id))?.update(&txn).await?;
+            let result = avis::admin_partial_update(&data, id)?.update(&txn).await?;
             result.admin_save_lists(&txn, &data).await?;
             txn.commit().await
         })
@@ -5381,6 +5399,7 @@ pub fn admin_register() -> AdminRegistry {
 
     registry.register(
         ResourceEntry::new(meta, form_builder)
+            .with_table(sea_orm::EntityName::table_name(&avis::Entity))
             .with_list_fn(list_fn)
             .with_get_fn(get_fn)
             .with_enum_label_fn(avis::apply_enum_labels)
@@ -5604,7 +5623,7 @@ pub fn admin_register() -> AdminRegistry {
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
             use sea_orm::TransactionTrait;
             let txn = db.begin().await?;
-            let result = avis_plat::admin_from_form(&data, Some(id))?
+            let result = avis_plat::admin_partial_update(&data, id)?
                 .update(&txn)
                 .await?;
             result.admin_save_lists(&txn, &data).await?;
@@ -5700,6 +5719,7 @@ pub fn admin_register() -> AdminRegistry {
 
     registry.register(
         ResourceEntry::new(meta, form_builder)
+            .with_table(sea_orm::EntityName::table_name(&avis_plat::Entity))
             .with_list_fn(list_fn)
             .with_get_fn(get_fn)
             .with_enum_label_fn(avis_plat::apply_enum_labels)
@@ -5867,7 +5887,7 @@ pub fn admin_register() -> AdminRegistry {
                 .map_err(|_| DbErr::Custom("invalid id".to_string()))?;
             use sea_orm::TransactionTrait;
             let txn = db.begin().await?;
-            let result = info_resto::admin_from_form(&data, Some(id))?
+            let result = info_resto::admin_partial_update(&data, id)?
                 .update(&txn)
                 .await?;
             result.admin_save_lists(&txn, &data).await?;
@@ -5898,6 +5918,7 @@ pub fn admin_register() -> AdminRegistry {
     ]));
     registry.register(
         ResourceEntry::new(meta, form_builder)
+            .with_table(sea_orm::EntityName::table_name(&info_resto::Entity))
             .with_list_fn(list_fn)
             .with_get_fn(get_fn)
             .with_enum_label_fn(info_resto::apply_enum_labels)

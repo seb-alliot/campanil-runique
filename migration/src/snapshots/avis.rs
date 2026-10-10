@@ -1,3 +1,4 @@
+// runique: column lengths recorded
 use sea_orm_migration::prelude::*;
 
 #[derive(DeriveMigrationName)]
@@ -34,6 +35,28 @@ async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
             )
             .await?;
 
+        manager
+            .create_foreign_key(
+                ForeignKey::create()
+                    .name("avis_user_id_eihwaz_users_fkey")
+                    .from(Alias::new("avis"), Alias::new("user_id"))
+                    .to(Alias::new("eihwaz_users"), Alias::new("id"))
+                    .on_delete(ForeignKeyAction::Restrict)
+                    .on_update(ForeignKeyAction::NoAction)
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .name("idx_avis_user_id")
+                    .table(Alias::new("avis"))
+                    .col(Alias::new("user_id"))
+                    .to_owned(),
+            )
+            .await?;
+
         Ok(())
 }
 
@@ -45,6 +68,19 @@ async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
                     .name("avis_commande_id_commandes_fkey")
                     .to_owned(),
             )
+            .await?;
+
+        manager
+            .drop_foreign_key(
+                ForeignKey::drop()
+                    .table(Alias::new("avis"))
+                    .name("avis_user_id_eihwaz_users_fkey")
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .drop_index(Index::drop().name("idx_avis_user_id").table(Alias::new("avis")).to_owned())
             .await?;
 
         manager

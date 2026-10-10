@@ -39,7 +39,7 @@ model! {
         belongs_to: Commande via commande_id [cascade],
         belongs_to: Plat via plat_id [restrict],
         belongs_to: Boisson via boisson_id [restrict],
-        many_to_many: Garniture through CommandeLigneGarniture via commande_ligne_id,
+        many_to_many: Garniture through CommandeLigneGarniture via ligne_id,
         belongs_to: Entree via entree_id [restrict],
         belongs_to: Dessert via dessert_id [restrict],
         belongs_to: Menu via menu_id [restrict],

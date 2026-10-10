@@ -1,3 +1,4 @@
+// runique: column lengths recorded
 use sea_orm_migration::prelude::*;
 
 #[derive(DeriveMigrationName)]
@@ -17,7 +18,7 @@ async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
                     .col(ColumnDef::new(Alias::new("fermeture_midi")).time().null())
                     .col(ColumnDef::new(Alias::new("ouverture_soir")).time().null())
                     .col(ColumnDef::new(Alias::new("fermeture_soir")).time().null())
-                    .col(ColumnDef::new(Alias::new("ferme")).boolean().not_null())
+                    .col(ColumnDef::new(Alias::new("ferme")).boolean().not_null().default(false))
                     .col(ColumnDef::new(Alias::new("note")).string().null())
                     .to_owned()
             )

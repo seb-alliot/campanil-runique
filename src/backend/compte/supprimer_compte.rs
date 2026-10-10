@@ -38,7 +38,7 @@ pub async fn handle_supprimer_compte(request: &mut Request) -> AppResult<Respons
 
         if !ligne_ids.is_empty() {
             commande_ligne_garniture::Entity::delete_many()
-                .filter(commande_ligne_garniture::Column::CommandeLigneId.is_in(ligne_ids.clone()))
+                .filter(commande_ligne_garniture::Column::LigneId.is_in(ligne_ids.clone()))
                 .exec(db)
                 .await
                 .ok();

@@ -4520,9 +4520,9 @@ dependencies = [
 
 [[package]]
 name = "runique"
-version = "3.0.2"
+version = "3.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "64076ed21ce0e7053cb840d8d1344aa08e9ff372617cd1bfd37eb81daa09ca70"
+checksum = "152d676a7b471dce29eedd76599ccf3d97345667b79919b40767b7ba8edcbaab"
 dependencies = [
  "ammonia",
  "anyhow",
@@ -4584,6 +4584,7 @@ dependencies = [
  "tracing-appender",
  "tracing-futures",
  "tracing-subscriber",
+ "url",
  "urlencoding",
  "uuid",
  "validator",

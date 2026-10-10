@@ -230,7 +230,7 @@ pub(super) async fn charger_commandes_jour(db: &ADb, tz_str: &str) -> Vec<Comman
         HashMap::new()
     };
 
-    let garn_links = search!(commande_ligne_garniture::Entity => CommandeLigneId in (cl_ids),)
+    let garn_links = search!(commande_ligne_garniture::Entity => LigneId in (cl_ids),)
         .all(db)
         .await
         .unwrap_or_default();
@@ -252,7 +252,7 @@ pub(super) async fn charger_commandes_jour(db: &ADb, tz_str: &str) -> Vec<Comman
     for link in garn_links {
         if let Some(label) = garnitures_map.get(&(link.garniture_id as Pk)) {
             garnitures_par_cl
-                .entry(link.commande_ligne_id as Pk)
+                .entry(link.ligne_id as Pk)
                 .or_default()
                 .push(label.clone());
         }

@@ -1,3 +1,4 @@
+// runique: column lengths recorded
 use sea_orm_migration::prelude::*;
 
 #[derive(DeriveMigrationName)]
@@ -13,9 +14,9 @@ async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
                     .if_not_exists()
                     .col(ColumnDef::new(Alias::new("id")).integer().not_null().auto_increment().primary_key())
                     .col(ColumnDef::new_with_type(Alias::new("raison"), ColumnType::Enum { name: Alias::new("RaisonContact").into_iden(), variants: vec![Alias::new("reservation").into_iden(), Alias::new("traiteur").into_iden(), Alias::new("commande").into_iden(), Alias::new("autre").into_iden()] }).not_null())
-                    .col(ColumnDef::new(Alias::new("titre")).string().not_null())
+                    .col(ColumnDef::new(Alias::new("titre")).string_len(255).not_null())
                     .col(ColumnDef::new(Alias::new("description")).text().not_null())
-                    .col(ColumnDef::new(Alias::new("email")).string().not_null())
+                    .col(ColumnDef::new(Alias::new("email")).string_len(254).not_null())
                     .col(ColumnDef::new(Alias::new("created_at")).date_time().not_null().default(Expr::current_timestamp()))
                     .to_owned()
             )

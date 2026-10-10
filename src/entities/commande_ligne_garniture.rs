@@ -5,11 +5,11 @@ model! {
     table: "commande_ligne_garnitures",
     pk: id => Pk,
     {
-        commande_ligne_id: int [required],
+        ligne_id:          int [required, renamed_from: "commande_ligne_id"],
         garniture_id:      int [required],
     },
     relations: {
-        belongs_to: CommandeLigne via commande_ligne_id [cascade],
+        belongs_to: CommandeLigne via ligne_id [cascade],
         belongs_to: Garniture via garniture_id [restrict],
     },
     meta: {

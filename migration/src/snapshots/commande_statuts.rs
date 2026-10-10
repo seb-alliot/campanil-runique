@@ -1,3 +1,4 @@
+// runique: column lengths recorded
 use sea_orm_migration::prelude::*;
 
 #[derive(DeriveMigrationName)]
@@ -13,7 +14,7 @@ async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
                     .if_not_exists()
                     .col(ColumnDef::new(Alias::new("id")).integer().not_null().auto_increment().primary_key())
                     .col(ColumnDef::new(Alias::new("commande_id")).integer().not_null())
-                    .col(ColumnDef::new(Alias::new("statut")).string().not_null())
+                    .col(ColumnDef::new(Alias::new("statut")).string_len(50).not_null())
                     .col(ColumnDef::new(Alias::new("note")).text().null())
                     .col(ColumnDef::new(Alias::new("created_at")).date_time().not_null().default(Expr::current_timestamp()))
                     .to_owned()
@@ -32,6 +33,16 @@ async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
             )
             .await?;
 
+        manager
+            .create_index(
+                Index::create()
+                    .name("idx_commande_statuts_commande_id")
+                    .table(Alias::new("commande_statuts"))
+                    .col(Alias::new("commande_id"))
+                    .to_owned(),
+            )
+            .await?;
+
         Ok(())
 }
 
@@ -43,6 +54,10 @@ async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
                     .name("commande_statuts_commande_id_commandes_fkey")
                     .to_owned(),
             )
+            .await?;
+
+        manager
+            .drop_index(Index::drop().name("idx_commande_statuts_commande_id").table(Alias::new("commande_statuts")).to_owned())
             .await?;
 
         manager

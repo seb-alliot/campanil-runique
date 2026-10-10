@@ -80,6 +80,32 @@ mod m20260516_004730_create_plat_garnitures_table;
 mod m20260516_004730_create_menu_resto_plat_table;
 mod m20260516_004730_create_menu_enfants_table;
 mod m20260516_004730_create_garnitures_table;
+mod m20261010_154315_alter_avis_table;
+mod m20261010_154315_alter_avis_plats_table;
+mod m20261010_154315_alter_boissons_table;
+mod m20261010_154315_alter_commande_ligne_garnitures_table;
+mod m20261010_154315_alter_commande_lignes_table;
+mod m20261010_154315_alter_commande_menu_choix_table;
+mod m20261010_154315_alter_commande_statuts_table;
+mod m20261010_154315_alter_commandes_table;
+mod m20261010_154315_alter_dessert_allergenes_table;
+mod m20261010_154315_alter_desserts_table;
+mod m20261010_154315_alter_devis_traiteur_table;
+mod m20261010_154315_alter_entree_allergenes_table;
+mod m20261010_154315_alter_entrees_table;
+mod m20261010_154315_alter_info_resto_table;
+mod m20261010_154315_alter_menu_desserts_table;
+mod m20261010_154315_alter_menu_entrees_table;
+mod m20261010_154315_alter_menu_plats_table;
+mod m20261010_154315_alter_menu_traiteur_plats_table;
+mod m20261010_154315_alter_menus_table;
+mod m20261010_154315_alter_menus_traiteur_table;
+mod m20261010_154315_alter_plat_allergenes_table;
+mod m20261010_154315_alter_plat_garnitures_table;
+mod m20261010_154315_alter_plat_supplements_table;
+mod m20261010_154315_alter_plats_table;
+mod m20261010_154315_alter_supplements_table;
+mod m20261010_154315_extend_eihwaz_users_table;
 
 pub struct Migrator;
 
@@ -171,6 +197,32 @@ impl MigratorTrait for Migrator {
             Box::new(m20260824_224731_alter_commande_lignes_table::Migration),
             Box::new(m20260824_224731_alter_commande_statuts_table::Migration),
             Box::new(m20260824_224731_alter_avis_table::Migration),
+            Box::new(m20261010_154315_alter_avis_table::Migration),
+            Box::new(m20261010_154315_alter_avis_plats_table::Migration),
+            Box::new(m20261010_154315_alter_boissons_table::Migration),
+            Box::new(m20261010_154315_alter_commande_ligne_garnitures_table::Migration),
+            Box::new(m20261010_154315_alter_commande_lignes_table::Migration),
+            Box::new(m20261010_154315_alter_commande_menu_choix_table::Migration),
+            Box::new(m20261010_154315_alter_commande_statuts_table::Migration),
+            Box::new(m20261010_154315_alter_commandes_table::Migration),
+            Box::new(m20261010_154315_alter_dessert_allergenes_table::Migration),
+            Box::new(m20261010_154315_alter_desserts_table::Migration),
+            Box::new(m20261010_154315_alter_devis_traiteur_table::Migration),
+            Box::new(m20261010_154315_alter_entree_allergenes_table::Migration),
+            Box::new(m20261010_154315_alter_entrees_table::Migration),
+            Box::new(m20261010_154315_alter_info_resto_table::Migration),
+            Box::new(m20261010_154315_alter_menu_desserts_table::Migration),
+            Box::new(m20261010_154315_alter_menu_entrees_table::Migration),
+            Box::new(m20261010_154315_alter_menu_plats_table::Migration),
+            Box::new(m20261010_154315_alter_menu_traiteur_plats_table::Migration),
+            Box::new(m20261010_154315_alter_menus_table::Migration),
+            Box::new(m20261010_154315_alter_menus_traiteur_table::Migration),
+            Box::new(m20261010_154315_alter_plat_allergenes_table::Migration),
+            Box::new(m20261010_154315_alter_plat_garnitures_table::Migration),
+            Box::new(m20261010_154315_alter_plat_supplements_table::Migration),
+            Box::new(m20261010_154315_alter_plats_table::Migration),
+            Box::new(m20261010_154315_alter_supplements_table::Migration),
+            Box::new(m20261010_154315_extend_eihwaz_users_table::Migration),
         ]
     }
 }
