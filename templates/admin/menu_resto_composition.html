@@ -2,31 +2,31 @@
 {% block title %}Composition — {{ menu_nom }} — {{ site_title }}{% endblock %}
 {% block extra_css %}{{ super() }}<link rel="stylesheet" href="{% static "css/admin-surcharge.css" %}">{% endblock %}
 {% block breadcrumb %}
-  <span class="breadcrumb-sep">/</span>
+  <span class="admin-topbar__sep">/</span>
   <a href="{{ admin_prefix }}/menus/list">Menus</a>
-  <span class="breadcrumb-sep">/</span>
+  <span class="admin-topbar__sep">/</span>
   <span>Composition — {{ menu_nom }}</span>
 {% endblock %}
 {% block content %}
-<div class="page-header" data-admin-auto-init>
+<div class="admin-page__header" data-admin-auto-init>
   <div>
-    <h1 class="page-title">Composition — {{ menu_nom }}</h1>
-    <p class="page-subtitle">Sélectionner les plats par cours</p>
+    <h1 class="admin-page__title">Composition — {{ menu_nom }}</h1>
+    <p class="admin-page__subtitle">Sélectionner les plats par cours</p>
   </div>
-  <div class="page-actions">
-    <a href="{{ admin_prefix }}/menus/{{ menu_id }}/detail" class="btn btn-secondary btn-sm">← Détail</a>
+  <div class="admin-page__actions">
+    <a href="{{ admin_prefix }}/menus/{{ menu_id }}/edit" class="btn btn-secondary btn-sm">Modifier</a>
     <a href="{{ admin_prefix }}/menus/list" class="btn btn-secondary btn-sm">← Menus</a>
   </div>
 </div>
 {% messages %}
 
-<form method="post" action="{{ admin_prefix }}/menus/{{ menu_id }}/composition">
+<form method="post" action="/gestion/menus/{{ menu_id }}">
   {% csrf %}
   <div class="cp-grid-3">
 
-    <div class="card">
-      <div class="card-header cp-card-header">
-        <h2 class="card-title">Entrées</h2>
+    <div class="admin-card">
+      <div class="admin-card__header cp-card-header">
+        <h2 class="admin-card__title">Entrées</h2>
         <span class="badge" id="badge-entree">0</span>
       </div>
       <div class="cp-checklist">
@@ -51,9 +51,9 @@
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-header cp-card-header">
-        <h2 class="card-title">Plats</h2>
+    <div class="admin-card">
+      <div class="admin-card__header cp-card-header">
+        <h2 class="admin-card__title">Plats</h2>
         <span class="badge" id="badge-plat">0</span>
       </div>
       <div class="cp-checklist">
@@ -78,9 +78,9 @@
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-header cp-card-header">
-        <h2 class="card-title">Desserts</h2>
+    <div class="admin-card">
+      <div class="admin-card__header cp-card-header">
+        <h2 class="admin-card__title">Desserts</h2>
         <span class="badge" id="badge-dessert">0</span>
       </div>
       <div class="cp-checklist">

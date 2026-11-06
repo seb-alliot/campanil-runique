@@ -1,0 +1,40 @@
+{% extends "admin_base.html" %}
+{% block title %}{{ title }} — {{ site_title }}{% endblock %}
+{% block extra_css %}{{ super() }}<link rel="stylesheet" href="{% static "css/admin-surcharge.css" %}">{% endblock %}
+{% block content %}
+<div class="admin-page__header">
+  <div>
+    <h1 class="admin-page__title">{{ nom }}</h1>
+    <p class="admin-page__subtitle">Relations</p>
+  </div>
+  <div class="admin-page__actions">
+    <a href="{{ modifier }}" class="btn btn-secondary btn-sm">Modifier</a>
+    <a href="{{ liste }}" class="btn btn-secondary btn-sm">← Liste</a>
+  </div>
+</div>
+<form method="post">
+  {% csrf %}
+  <div class="cp-grid-3">
+    {% for groupe in groupes %}
+    <div class="admin-card">
+      <div class="admin-card__header cp-card-header">
+        <h2 class="admin-card__title">{{ groupe.titre }}</h2>
+      </div>
+      <div class="cp-checklist">
+        {% for c in groupe.choix %}
+        <label class="cp-check-label">
+          <input type="checkbox" name="{{ groupe.champ }}" value="{{ c.id }}"{% if c.coche %} checked{% endif %}>
+          <span>{{ c.libelle }}</span>
+        </label>
+        {% else %}
+        <p class="text-muted">Aucun choix disponible</p>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <div class="cp-save-row">
+    <button type="submit" class="btn btn-primary">Enregistrer</button>
+  </div>
+</form>
+{% endblock %}

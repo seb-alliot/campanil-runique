@@ -21,7 +21,7 @@ model! {
         fermeture_midi:   time [nullable],
         ouverture_soir:   time [nullable],
         fermeture_soir:   time [nullable],
-        ferme:            bool   [required, default: false],
+        ferme:            bool   [default: false],
         note:             text [nullable],
     }
 }

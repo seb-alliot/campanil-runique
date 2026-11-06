@@ -65,7 +65,7 @@ pub async fn handle_avis(request: Request) -> AppResult<Response> {
         return Ok(Redirect::to("/compte").into_response());
     }
 
-    let mut form: AvisForm = request.form();
+    let mut form: AvisForm = request.form("avis");
 
     if !form.is_valid().await {
         request
@@ -75,7 +75,7 @@ pub async fn handle_avis(request: Request) -> AppResult<Response> {
         return Ok(Redirect::to("/compte").into_response());
     }
 
-    let commentaire = form.cleaned_string("commentaire").unwrap_or_default();
+    let commentaire = form.cleaned::<String>("commentaire").unwrap_or_default();
 
     let new_avis = avis::ActiveModel {
         commande_id: Set(commande_id),

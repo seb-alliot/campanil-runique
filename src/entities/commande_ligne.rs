@@ -30,10 +30,10 @@ model! {
         boisson_id:    int     [nullable],
         supplement_id: int     [nullable],
         cuisson:       choice  [enum(CuissonViande), nullable],
-        sans_sel:      bool    [required, default: false],
+        sans_sel:      bool    [default: false],
         note:          text    [max_length: 500, nullable],
         quantite:      int     [required, default: 1, min: 1],
-        prix_unitaire: decimal [required],
+        prix_unitaire: decimal [max_digits: 10, decimal_places: 2, required],
     },
     relations: {
         belongs_to: Commande via commande_id [cascade],

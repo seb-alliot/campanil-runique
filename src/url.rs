@@ -2,11 +2,37 @@ use crate::views::*;
 use runique::axum::routing::{get as get_route, post as post_route};
 use runique::prelude::*;
 
-pub fn routes() -> Router {
+pub fn routes() -> Routes {
     urlpatterns! {
+        // Pages maison de l'admin. La route ne vérifie que l'accès à l'admin :
+        // chaque handler demande en plus sa preuve à la porte.
+        admin "/gestion/commandes/{id}" => view!{ admin_commande_detail },
+            name = "admin_commande_detail",
+            for_model = crate::entities::commande::Entity,
+            overrides = runique::admin::AdminView::Detail,
+        admin "/gestion/plats/{id}" => view!{ admin_relations_plat },
+            name = "admin_relations_plat",
+            for_model = crate::entities::plat::Entity,
+            overrides = runique::admin::AdminView::Detail,
+        admin "/gestion/entrees/{id}" => view!{ admin_relations_entree },
+            name = "admin_relations_entree",
+            for_model = crate::entities::entree::Entity,
+            overrides = runique::admin::AdminView::Detail,
+        admin "/gestion/desserts/{id}" => view!{ admin_relations_dessert },
+            name = "admin_relations_dessert",
+            for_model = crate::entities::dessert::Entity,
+            overrides = runique::admin::AdminView::Detail,
+        admin "/gestion/menus-traiteur/{id}" => view!{ admin_relations_menu_traiteur },
+            name = "admin_relations_menu_traiteur",
+            for_model = crate::entities::menu_traiteur::Entity,
+            overrides = runique::admin::AdminView::Detail,
+        admin "/gestion/menus/{id}" => view!{ admin_menu_resto_composition },
+            name = "admin_menu_resto_composition",
+            for_model = crate::entities::menu::Entity,
+            overrides = runique::admin::AdminView::Detail,
         "/"                                     => view!{ index },                  name = "index",
         "/deconnexion"                          => view!{ deconnexion },            name = "deconnexion",
-        "/activer/{token}/{encrypted_email}"    => view!{ activer },                name = "activer",
+        "/activer/{token}"                     => view!{ activer },                name = "activer",
         "/carte"                                => view!{ carte },                  name = "carte",
         "/boissons/{type}"                      => view!{ boissons_type },          name = "boissons_type",
         "/plat/{id}/avis.json"                  => view!{ plat_avis_json },         name = "plat_avis_json",
@@ -57,28 +83,4 @@ pub fn routes() -> Router {
     ])
     // 3 req / 5 min — anti-spam commandes (POST uniquement)
     .rate_limit("/panier/commander", "panier_commander", view!{ panier_commander_view }, 3, 300, vec![Method::POST])
-}
-
-// (path, admin resource, right checked, handler): both pages write on POST,
-// so both require the edit right on their resource.
-pub fn admin_extra_routes() -> Vec<(
-    &'static str,
-    &'static str,
-    CrudOperation,
-    runique::axum::routing::MethodRouter,
-)> {
-    vec![
-        (
-            "/commandes/{numero}/detail",
-            "commandes",
-            CrudOperation::Edit,
-            view! { admin_commande_detail },
-        ),
-        (
-            "/menus/{id}/composition",
-            "menus",
-            CrudOperation::Edit,
-            view! { admin_menu_resto_composition },
-        ),
-    ]
 }

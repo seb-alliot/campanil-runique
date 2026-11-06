@@ -3,7 +3,6 @@ use runique::context;
 use runique::prelude::*;
 use sea_orm::{ActiveModelTrait, ColumnTrait, QueryFilter, Set};
 
-use crate::backend::service::charger_commandes::garde_acces;
 use crate::entities::{commande, commande::StatutCommande};
 
 fn add_jours_ouvres(start: NaiveDateTime, n: u32) -> NaiveDateTime {
@@ -73,7 +72,12 @@ pub async fn process_penalites(db: &ADb, tera: &ATera) -> usize {
 }
 
 pub async fn handle_materiel_count(request: &Request) -> AppResult<Response> {
-    if !garde_acces(request) {
+    // Ce traitement modifie des commandes : le droit de modifier, pas le seul accès à l'admin.
+    let autorise = request
+        .user
+        .as_ref()
+        .is_some_and(|user| CrudAction::resolve(user, commande::Entity::KEY).has(Crud::Update));
+    if !autorise {
         return Ok((
             StatusCode::FORBIDDEN,
             Json(serde_json::json!({"error": "403"})),

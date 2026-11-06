@@ -13,7 +13,7 @@ pub async fn index(mut request: Request) -> AppResult<Response> {
 }
 
 pub async fn connexion(mut request: Request) -> AppResult<Response> {
-    let form: LoginForm = request.form();
+    let form: LoginForm = request.form("connexion");
     handle_login(&mut request, form).await
 }
 
@@ -23,19 +23,16 @@ pub async fn deconnexion(request: Request) -> AppResult<Response> {
 }
 
 pub async fn inscription(mut request: Request) -> AppResult<Response> {
-    let form: RegisterForm = request.form();
+    let form: RegisterForm = request.form("inscription");
     handle_inscription(&mut request, form).await
 }
 
-pub async fn activer(
-    Path((token, encrypted_email)): Path<(String, String)>,
-    mut request: Request,
-) -> AppResult<Response> {
-    handle_activate(&mut request, token, encrypted_email).await
+pub async fn activer(Path(token): Path<String>, mut request: Request) -> AppResult<Response> {
+    handle_activate(&mut request, token).await
 }
 
 pub async fn contact(mut request: Request) -> AppResult<Response> {
-    let form: ContactForm = request.form();
+    let form: ContactForm = request.form("contact");
     handle_contact(&mut request, form).await
 }
 
@@ -132,18 +129,18 @@ pub async fn panier_livraison_prix(request: Request) -> AppResult<Response> {
 
 pub async fn admin_commande_detail(
     Extension(admin): Extension<Arc<runique::admin::AdminState>>,
-    Extension(proto): Extension<Arc<runique::admin::PrototypeAdminState>>,
+    Extension(site): Extension<Arc<runique::admin::AdminSite>>,
     mut request: Request,
 ) -> AppResult<Response> {
-    handle_admin_commande_detail(&mut request, &admin, Some(proto)).await
+    handle_admin_commande_detail(&mut request, &admin, &site).await
 }
 
 pub async fn admin_menu_resto_composition(
     Extension(admin): Extension<Arc<runique::admin::AdminState>>,
-    Extension(proto): Extension<Arc<runique::admin::PrototypeAdminState>>,
+    Extension(site): Extension<Arc<runique::admin::AdminSite>>,
     mut request: Request,
 ) -> AppResult<Response> {
-    handle_menu_resto_composition(&mut request, &admin, Some(proto)).await
+    handle_menu_resto_composition(&mut request, &admin, &site).await
 }
 
 pub async fn track_menu_filters(mut request: Request) -> AppResult<Response> {
@@ -175,7 +172,7 @@ pub async fn service_stock_update(mut request: Request) -> AppResult<Response> {
 }
 
 pub async fn devis_traiteur(mut request: Request) -> AppResult<Response> {
-    let form: DevisTraiteurForm = request.form();
+    let form: DevisTraiteurForm = request.form("devis_traiteur");
     handle_devis_traiteur(&mut request, form).await
 }
 
@@ -247,4 +244,37 @@ pub async fn llms_txt() -> impl IntoResponse {
         d = DOMAIN
     );
     ([("content-type", "text/plain; charset=utf-8")], body)
+}
+
+pub async fn admin_relations_plat(
+    Extension(admin): Extension<Arc<runique::admin::AdminState>>,
+    Extension(site): Extension<Arc<runique::admin::AdminSite>>,
+    mut request: Request,
+) -> AppResult<Response> {
+    crate::backend::admin_relations::handle_relations_plat(&mut request, &admin, &site).await
+}
+
+pub async fn admin_relations_entree(
+    Extension(admin): Extension<Arc<runique::admin::AdminState>>,
+    Extension(site): Extension<Arc<runique::admin::AdminSite>>,
+    mut request: Request,
+) -> AppResult<Response> {
+    crate::backend::admin_relations::handle_relations_entree(&mut request, &admin, &site).await
+}
+
+pub async fn admin_relations_dessert(
+    Extension(admin): Extension<Arc<runique::admin::AdminState>>,
+    Extension(site): Extension<Arc<runique::admin::AdminSite>>,
+    mut request: Request,
+) -> AppResult<Response> {
+    crate::backend::admin_relations::handle_relations_dessert(&mut request, &admin, &site).await
+}
+
+pub async fn admin_relations_menu_traiteur(
+    Extension(admin): Extension<Arc<runique::admin::AdminState>>,
+    Extension(site): Extension<Arc<runique::admin::AdminSite>>,
+    mut request: Request,
+) -> AppResult<Response> {
+    crate::backend::admin_relations::handle_relations_menu_traiteur(&mut request, &admin, &site)
+        .await
 }

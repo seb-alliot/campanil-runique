@@ -20,10 +20,10 @@ model! {
     {
         titre:        text    [required, max_length: 255],
         type_boisson: choice  [enum(TypeBoisson), required],
-        prix:         decimal [required],
+        prix:         decimal [max_digits: 10, decimal_places: 2, required],
         description:  textarea [nullable],
         image:        image   [upload_to: "boissons/", nullable],
-        disponible:   bool    [required, default: true],
+        disponible:   bool    [default: true],
         ordre:        int     [default: 0],
         created_at:   datetime [auto_now],
     },

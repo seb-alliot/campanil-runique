@@ -16,10 +16,10 @@ model! {
         google_maps:       url [max_length: 500, nullable],
         description:       text [nullable],
         ville:             text [max_length: 100, nullable],
-        prix_km_livraison:      decimal [default: 0.59, renamed_from: "prix_livraison"],
-        prix_livraison_minimal: decimal [default: 5.00],
-        penalite_materiel:      decimal [default: 600.00],
-        latitude:          decimal [nullable],
-        longitude:         decimal [nullable],
+        prix_km_livraison:      decimal [max_digits: 10, decimal_places: 2, default: 0.59, renamed_from: "prix_livraison"],
+        prix_livraison_minimal: decimal [max_digits: 10, decimal_places: 2, default: 5.00],
+        penalite_materiel:      decimal [max_digits: 10, decimal_places: 2, default: 600.00],
+        latitude:          decimal [max_digits: 9, decimal_places: 7 , nullable],
+        longitude:         decimal [max_digits: 9, decimal_places: 7, nullable],
     }
 }

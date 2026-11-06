@@ -18,10 +18,10 @@ DELETE FROM menus_traiteur;
 DELETE FROM menu_entrees;
 DELETE FROM menu_plats;
 DELETE FROM menu_desserts;
-DELETE FROM entree_allergene;
-DELETE FROM dessert_allergene;
+DELETE FROM entree_allergenes;
+DELETE FROM dessert_allergenes;
 DELETE FROM plat_garnitures;
-DELETE FROM plat_allergene;
+DELETE FROM plat_allergenes;
 DELETE FROM plat_supplements;
 DELETE FROM supplements;
 DELETE FROM garnitures;
@@ -116,7 +116,7 @@ INSERT INTO desserts (id, titre, label, prix, description, image, disponible, us
 
 -- ── 3a. Allergènes des entrées ───────────────────────────────
 
-INSERT INTO entree_allergene (id, entree_id, allergene_id) VALUES
+INSERT INTO entree_allergenes (id, entree_id, allergene_id) VALUES
     -- Soupe jambon : gluten, céleri
     (1,  1, 1),  (2,  1, 9),
     -- Terrine sanglier : sulfites
@@ -144,7 +144,7 @@ INSERT INTO entree_allergene (id, entree_id, allergene_id) VALUES
 
 -- ── 3b. Allergènes des plats ─────────────────────────────────
 
-INSERT INTO plat_allergene (id, plat_id, allergene_id) VALUES
+INSERT INTO plat_allergenes (id, plat_id, allergene_id) VALUES
     -- Cannelloni brocciu : gluten, lait, œufs
     (1, 13, 1),  (2, 13, 7),  (3, 13, 3),
     -- Saucisses sanglier : sulfites
@@ -170,7 +170,7 @@ INSERT INTO plat_allergene (id, plat_id, allergene_id) VALUES
 
 -- ── 3c. Allergènes des desserts ──────────────────────────────
 
-INSERT INTO dessert_allergene (id, dessert_id, allergene_id) VALUES
+INSERT INTO dessert_allergenes (id, dessert_id, allergene_id) VALUES
     -- Fromages cortenais : lait
     (1, 25, 7),
     -- Fiadone : lait, œufs
@@ -206,9 +206,9 @@ INSERT INTO plat_garnitures (id, plat_id, garniture_id, est_defaut) VALUES
 
 INSERT INTO supplements (id, garniture_id, titre, libelle, prix, disponible, ordre) VALUES
     (1, NULL, 'Option Rossini',  'Foie gras frais poêlé',        7.00, true, 0),
-    (2, 6,    NULL,              'Légumes grillés en supplément', 3.50, true, 1),
-    (3, 1,    NULL,              'Purée maison en supplément',    3.50, true, 2),
-    (4, 3,    NULL,              'Frites maison en supplément',   3.50, true, 3),
+    (2, 6,    'Légumes grillés en supplément', 'Légumes grillés en supplément', 3.50, true, 1),
+    (3, 1,    'Purée maison en supplément', 'Purée maison en supplément',    3.50, true, 2),
+    (4, 3,    'Frites maison en supplément', 'Frites maison en supplément',   3.50, true, 3),
     (5, NULL, 'Pain artisanal',  NULL,                            2.00, true, 4),
     (6, NULL, 'Sauce du chef',   NULL,                            2.50, true, 5);
 
@@ -378,9 +378,9 @@ DECLARE t text;
 BEGIN
     FOREACH t IN ARRAY ARRAY[
         'allergenes',
-        'entrees', 'entree_allergene',
-        'plats', 'plat_allergene', 'garnitures', 'plat_garnitures',
-        'desserts', 'dessert_allergene',
+        'entrees', 'entree_allergenes',
+        'plats', 'plat_allergenes', 'garnitures', 'plat_garnitures',
+        'desserts', 'dessert_allergenes',
         'supplements', 'plat_supplements', 'boissons',
         'menus_traiteur', 'menu_traiteur_plats',
         'menus', 'menu_entrees', 'menu_plats', 'menu_desserts',

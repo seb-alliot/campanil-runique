@@ -7,7 +7,7 @@ model! {
     {
         plat_id:      int  [required],
         garniture_id: int  [required],
-        est_defaut:   bool [required, default: false],
+        est_defaut:   bool [default: false],
     },
     relations: {
         belongs_to: Plat via plat_id [cascade],

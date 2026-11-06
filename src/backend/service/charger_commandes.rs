@@ -56,7 +56,7 @@ pub fn garde_acces(request: &Request) -> bool {
     request
         .user
         .as_ref()
-        .map(|u| u.is_staff || u.is_superuser)
+        .map(|u| u.can_access_admin())
         .unwrap_or(false)
 }
 

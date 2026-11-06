@@ -156,6 +156,7 @@
                         <summary>Laisser un avis</summary>
                         <form method="post" action="/compte/avis/{{ c.commande_id }}" class="avis-form">
                             {% csrf %}
+                            <input type="hidden" name="runique_form" value="avis">
                             <div class="avis-etoiles">
                                 <input type="radio" name="note" value="5" id="s5-{{ c.commande_id }}" required>
                                 <label for="s5-{{ c.commande_id }}" title="5 étoiles">★</label>
@@ -247,6 +248,7 @@
                                 <summary>Laisser un avis</summary>
                                 <form method="post" action="/compte/avis-article/{{ p.type_article }}/{{ p.id }}" class="avis-form">
                                     {% csrf %}
+                                    <input type="hidden" name="runique_form" value="avis_article">
                                     <div class="avis-etoiles">
                                         <input type="radio" name="note" value="5" id="ps5-{{ p.id }}" required>
                                         <label for="ps5-{{ p.id }}" title="5 étoiles">★</label>
@@ -309,6 +311,7 @@
             <h2>Informations personnelles</h2>
             <form method="post" action="/compte/profil" class="profil-form">
                 {% csrf %}
+                <input type="hidden" name="runique_form" value="profil">
                 <div class="form-group">
                     <label for="telephone">Téléphone</label>
                     <input type="tel" id="telephone" name="telephone" class="form-control"

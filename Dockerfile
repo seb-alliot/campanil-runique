@@ -8,14 +8,10 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-# Same version as Campanile's Cargo.lock: the CLI and the app share the static files.
-ARG RUNIQUE_VERSION=3.0.2
-
-# CLI Runique
-RUN --mount=type=cache,target=/usr/local/cargo/registry \
-    cargo install runique --version "=${RUNIQUE_VERSION}" --features postgres --locked && \
-    find /usr/local/cargo/registry -path "*/runique-${RUNIQUE_VERSION}/static" -type d \
-        -exec cp -r {} /tmp/runique-static \;
+# CLI Runique, from the branch Cargo.toml follows: run `cargo update -p runique`
+# before building, so the CLI, its static files and the app share the same code.
+RUN cargo install --git https://github.com/seb-alliot/runique --branch main runique --features postgres && \
+    cp -r "$(find /usr/local/cargo/git/checkouts -type d -path '*/runique/static' | head -n 1)" /tmp/runique-static
 
 # Build de l'app
 COPY Cargo.toml Cargo.lock ./

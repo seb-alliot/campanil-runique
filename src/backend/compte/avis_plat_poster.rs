@@ -66,12 +66,12 @@ pub async fn handle_avis_plat(request: Request) -> AppResult<Response> {
         return Ok(axum::Json(json!({"ok": false, "error": "note invalide"})).into_response());
     }
 
-    let mut form: AvisForm = request.form();
+    let mut form: AvisForm = request.form("avis_plat");
     if !form.is_valid().await {
         return Ok(axum::Json(json!({"ok": false, "error": "commentaire requis"})).into_response());
     }
 
-    let commentaire = form.cleaned_string("commentaire").unwrap_or_default();
+    let commentaire = form.cleaned::<String>("commentaire").unwrap_or_default();
 
     let nouveau = avis_plat::ActiveModel {
         plat_id: Set(Some(plat_id)),

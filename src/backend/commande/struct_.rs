@@ -12,6 +12,9 @@ pub struct LigneDetail {
 
 #[derive(Serialize)]
 pub struct CommandeDetail {
+    pub id: Pk,
+    pub pret_materiel: bool,
+    pub penalite_envoyee: bool,
     pub numero: String,
     pub statut: String,
     pub statut_valeur: String,

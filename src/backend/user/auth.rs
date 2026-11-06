@@ -15,7 +15,7 @@ pub async fn handle_login(request: &mut Request, form: LoginForm) -> AppResult<R
     }
     let template = "auth/connexion.html";
 
-    let validated = match ValidationForm::try_new(form, request).await {
+    let validated = match ValidationForm::try_form(form, request).await {
         Ok(validated) => validated,
         Err(form) => {
             // No flash here: a global error (e.g. CSRF) is already rendered
@@ -65,7 +65,7 @@ pub async fn handle_inscription(request: &mut Request, form: RegisterForm) -> Ap
 
     let template = "auth/inscription.html";
 
-    let validated = match ValidationForm::try_new(form, request).await {
+    let validated = match ValidationForm::try_form(form, request).await {
         Ok(validated) => validated,
         Err(form) => {
             // No flash here: a global error (e.g. CSRF) is already rendered
@@ -88,12 +88,11 @@ pub async fn handle_inscription(request: &mut Request, form: RegisterForm) -> Ap
             )
             .await
             .unwrap_or_default();
-            let encrypted = reset_token::encrypt_email(&token, &user.email);
 
             if mailer_configured()
                 && let Some(base_url) = request.public_url()
             {
-                let activate_url = format!("{}/activer/{}/{}", base_url, token, encrypted);
+                let activate_url = format!("{}/activer/{}", base_url, token);
                 let ctx = context! {
                     "username"     => &user.username,
                     "activate_url" => &activate_url,
@@ -115,11 +114,11 @@ pub async fn handle_inscription(request: &mut Request, form: RegisterForm) -> Ap
             let is_unique =
                 msg.contains("unique") || msg.contains("UNIQUE") || msg.contains("Duplicate");
             if is_unique && msg.contains("email") {
-                form.get_form_mut()
+                form.forms_mut()
                     .errors
                     .push("Un compte avec cet email existe déjà.".to_string());
             } else if is_unique && msg.contains("username") {
-                form.get_form_mut()
+                form.forms_mut()
                     .errors
                     .push("Ce nom d'utilisateur est déjà pris.".to_string());
             } else {

@@ -9,7 +9,7 @@ pub async fn handle_contact(request: &mut Request, form: ContactForm) -> AppResu
     inject_auth(request).await;
     let template = "contact.html";
 
-    let mut validated = match ValidationForm::try_new(form, request).await {
+    let mut validated = match ValidationForm::try_form(form, request).await {
         Ok(validated) => validated,
         Err(form) => {
             // No flash here: a global error (e.g. CSRF) is already rendered
@@ -23,15 +23,15 @@ pub async fn handle_contact(request: &mut Request, form: ContactForm) -> AppResu
         }
     };
 
-    let raison_mail = match validated.cleaned_string("raison").as_deref() {
+    let raison_mail = match validated.cleaned::<String>("raison").as_deref() {
         Some("reservation") => contact::RaisonContact::Reservation,
         Some("traiteur") => contact::RaisonContact::Traiteur,
         Some("commande") => contact::RaisonContact::Commande,
         _ => contact::RaisonContact::Autre,
     };
-    let titre_mail = validated.cleaned_string("titre").unwrap_or_default();
-    let email_mail = validated.cleaned_string("email").unwrap_or_default();
-    let description_mail = validated.cleaned_string("description").unwrap_or_default();
+    let titre_mail = validated.cleaned::<String>("titre").unwrap_or_default();
+    let email_mail = validated.cleaned::<String>("email").unwrap_or_default();
+    let description_mail = validated.cleaned::<String>("description").unwrap_or_default();
 
     let model = contact::ActiveModel {
         raison: Set(raison_mail),

@@ -2,7 +2,6 @@ use crate::entities::{dessert, entree, menu, menu_dessert, menu_entree, menu_pla
 use runique::prelude::*;
 use sea_orm::{ActiveModelTrait, ColumnTrait, EntityTrait, Set};
 use serde::Serialize;
-use std::sync::Arc;
 
 #[derive(Serialize)]
 pub struct PlatDisponible {
@@ -26,12 +25,25 @@ pub struct CompositionMenu {
 pub async fn handle_menu_resto_composition(
     request: &mut Request,
     admin: &AdminState,
-    proto: Option<Arc<PrototypeAdminState>>,
+    site: &AdminSite,
 ) -> AppResult<Response> {
     let id: Pk = match request.get_path_as::<Pk>("id") {
         Some(v) => v,
         None => return Ok(StatusCode::BAD_REQUEST.into_response()),
     };
+    let liste = format!("{}/menus/list", admin.config.prefix);
+    let Some(user) = request.user.clone() else {
+        return Ok(Redirect::to(&liste).into_response());
+    };
+    let engine = request.engine.clone();
+    let ctx = GateCtx {
+        db: &engine.db,
+        user: &user,
+    };
+    if let Err(refus) = authorize_view::<menu::Entity>(&ctx, id) {
+        request.notices.error(refus.message()).await;
+        return Ok(Redirect::to(&liste).into_response());
+    }
     let db = request.db();
 
     let Some(menu_model) = menu::Entity::find_by_id(id).one(db).await.unwrap_or(None) else {
@@ -39,12 +51,35 @@ pub async fn handle_menu_resto_composition(
     };
 
     if request.method == Method::POST {
+        let preuve = match authorize_row::<Update, menu::Entity>(&ctx, id).await {
+            Ok(preuve) => preuve,
+            Err(refus) => {
+                request.notices.error(refus.message()).await;
+                return Ok(Redirect::to(&format!("/gestion/menus/{id}")).into_response());
+            }
+        };
         let Some(data) = request.prisme.checked_data() else {
             return Ok(StatusCode::FORBIDDEN.into_response());
         };
+        // Des identifiants envoyés par le client : uniquement ce que ce compte peut lire.
         let entree_ids = parse_ids(data.get("entree_ids").map(String::as_str));
         let plat_ids = parse_ids(data.get("plat_ids").map(String::as_str));
         let dessert_ids = parse_ids(data.get("dessert_ids").map(String::as_str));
+        let (entree_ids, plat_ids, dessert_ids) = match (
+            readable_ids::<entree::Entity>(&ctx, entree_ids).await,
+            readable_ids::<plat::Entity>(&ctx, plat_ids).await,
+            readable_ids::<dessert::Entity>(&ctx, dessert_ids).await,
+        ) {
+            (Ok(entrees), Ok(plats), Ok(desserts)) => (
+                entrees.ids().to_vec(),
+                plats.ids().to_vec(),
+                desserts.ids().to_vec(),
+            ),
+            (Err(refus), _, _) | (_, Err(refus), _) | (_, _, Err(refus)) => {
+                request.notices.error(refus.message()).await;
+                return Ok(Redirect::to(&format!("/gestion/menus/{id}")).into_response());
+            }
+        };
         let entree_libre_txt = data.get("entree_libre").cloned().unwrap_or_default();
         let plat_libre_txt = data.get("plat_libre").cloned().unwrap_or_default();
         let dessert_libre_txt = data.get("dessert_libre").cloned().unwrap_or_default();
@@ -96,27 +131,18 @@ pub async fn handle_menu_resto_composition(
             .ok();
         }
 
-        let mut active: menu::ActiveModel = menu_model.into();
-        active.entree_libre = Set(if entree_libre_txt.is_empty() {
-            None
-        } else {
-            Some(entree_libre_txt)
-        });
-        active.plat_libre = Set(if plat_libre_txt.is_empty() {
-            None
-        } else {
-            Some(plat_libre_txt)
-        });
-        active.dessert_libre = Set(if dessert_libre_txt.is_empty() {
-            None
-        } else {
-            Some(dessert_libre_txt)
-        });
-        active.update(db).await.ok();
+        let libre = |texte: String| if texte.is_empty() { None } else { Some(texte) };
+        let changements = menu::ActiveModel {
+            entree_libre: Set(libre(entree_libre_txt)),
+            plat_libre: Set(libre(plat_libre_txt)),
+            dessert_libre: Set(libre(dessert_libre_txt)),
+            ..Default::default()
+        };
+        if let Err(refus) = write::update(preuve, changements, &**db).await {
+            request.notices.error(refus.message()).await;
+        }
 
-        return Ok(
-            Redirect::to(&format!("{}/menus/{}/detail", admin.config.prefix, id)).into_response(),
-        );
+        return Ok(Redirect::to(&format!("/gestion/menus/{id}")).into_response());
     }
 
     let entree_ids: Vec<Pk> = search!(menu_entree::Entity => MenuId eq id as i32,)
@@ -177,23 +203,14 @@ pub async fn handle_menu_resto_composition(
         dessert_libre: menu_model.dessert_libre.clone().unwrap_or_default(),
     };
 
-    inject_admin_prefix(&mut request.context, &admin.config.prefix);
-    insert_admin_messages(&mut request.context, "base");
-
-    let resources: Vec<&AdminResource> = proto
-        .as_ref()
-        .map(|s| s.registry.all().map(|e| &e.meta).collect())
-        .unwrap_or_default();
+    admin_page_context(request, admin, site, Page::Detail, "menus");
 
     context_update!(request => {
         "composition"      => composition,
         "menu_id"          => id,
         "menu_nom"         => &menu_model.nom,
         "title"            => format!("Composition — {}", menu_model.nom),
-        "site_title"       => &admin.config.site_title,
         "current_page"     => "menus",
-        "current_resource" => "menus",
-        "resources"        => resources,
     });
 
     request.render("admin/menu_resto_composition.html")

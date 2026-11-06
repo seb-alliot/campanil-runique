@@ -1,263 +1,258 @@
-use crate::entities::*;
-use runique::admin;
+//! L'admin, déclaré avec le builder typé `ModelAdmin`. Les relations many-to-many
+//! n'ont pas d'équivalent ici : elles passent par les routes `admin` de `url.rs`.
+use crate::entities::{
+    allergene, avis, avis_plat, boisson, commande, contact, dessert, devis_traiteur, entree,
+    garniture, horaire, info_resto, menu, menu_traiteur, plat, supplement, user_profil,
+};
+use runique::prelude::*;
 
-admin! {
-    configure {
-        users: {
-            list_display: [
-                ["username", "Nom d'utilisateur"],
-                ["email", "Email"],
-                ["is_active", "Actif"],
-                ["is_staff", "Staff"],
-                ["created_at", "Inscrit le"],
-            ],
-            group_action: [["is_active", "Activer"]],
-        }
-    }
+pub fn config(admin: AdminStaging) -> AdminStaging {
+    admin
+        .site_title("Campanile — Administration")
+        .sitemap("https://ucampanile.fr/sitemap.xml")
+        .path("/admin-campanile/")
+        .resource_order([
+            "users",
+            "plats",
+            "menus",
+            "commandes",
+            "avis",
+            "allergenes",
+            "horaires",
+            "contacts",
+            "info_resto",
+        ])
+        .with_rate_limiter(RateLimiter::new().max_requests(20).retry_after(3600))
+        .with_login_guard(LoginGuard::new().max_attempts(20).lockout_secs(300))
+        .page_size(10)
+        .site(site)
+}
 
-    allergenes: allergene::Model => allergene::AdminForm {
-        title: "Allergènes",
-        list_display: [["libelle", "Libellé"]],
-    }
-    horaires: horaire::Model => horaire::AdminForm {
-        title: "Horaires",
-        create_form: crate::formulaire::HorairesGroupeForm,
-        bulk_create: jour,
-        list_display: [
-            ["jour", "Jour"],
-            ["ouverture_midi", "Ouverture midi"],
-            ["fermeture_midi", "Fermeture midi"],
-            ["ouverture_soir", "Ouverture soir"],
-            ["fermeture_soir", "Fermeture soir"],
-            ["ferme", "Fermé"],
-        ],
-        list_filter: [["ferme", "Fermé", 10]],
-        group_action: [
-            ["ferme", "Marquer fermé"],
+fn site(site: AdminSite) -> AdminSite {
+    site.accounts_users(comptes())
+        .register(allergenes())
+        .register(horaires())
+        .register(devis())
+        .register(contacts())
+        .register(garnitures())
+        .register(supplements())
+        .register(entrees())
+        .register(desserts())
+        .register(plats())
+        .register(menus())
+        .register(menus_traiteur())
+        .register(boissons())
+        .register(commandes())
+        .register(avis_clients())
+        .register(avis_plats())
+        .register(info_restaurant())
+}
 
-        ],
-    }
-    devis_traiteur: devis_traiteur::Model => devis_traiteur::AdminForm {
-        title: "Demandes de devis",
-        list_display: [
-            ["nom", "Nom"],
-            ["email", "Email"],
-            ["date_evenement", "Date événement"],
-            ["nb_personnes", "Personnes"],
-            ["prix_total", "Estimation"],
-            ["remise_appliquee", "Remise"],
-            ["statut", "Statut"],
-            ["created_at", "Reçu le"],
-        ],
-        list_filter: [["statut", "Statut", 10]],
-        group_action: [["statut", "Marquer en cours"]],
-    }
-    contacts: contact::Model => contact::AdminForm {
-        title: "Messages de contact",
-        list_display: [
-            ["raison", "Raison"],
-            ["titre", "Sujet"],
-            ["email", "Email"],
-            ["created_at", "Reçu le"],
-        ],
-        list_filter: [["raison", "Raison", 10]],
-    }
-    garnitures: garniture::Model => garniture::AdminForm {
-        title: "Garnitures",
-        list_display: [
-            ["libelle", "Libellé"],
-            ["type_garniture", "Type"],
-            ["disponible", "Disponible"],
-        ],
-        list_filter: [
-            ["type_garniture", "Type", 10],
-            ["disponible", "Disponibilité", 10],
-        ],
-        group_action: [["disponible", "Rendre disponible"]],
-    }
-    supplements: supplement::Model => supplement::AdminForm {
-        title: "Suppléments",
-        list_display: [
-            ["titre", "Nom"],
-            ["garniture_id", "Garniture", "garnitures.libelle"],
-            ["prix", "Prix"],
-            ["disponible", "Disponible"],
-        ],
-        list_filter: [
-            ["disponible", "Disponible", 10],
-        ],
-        group_action: [["disponible", "Rendre disponible"]],
-    }
-    entrees: entree::Model => entree::AdminForm {
-        title: "Entrées",
-        list_display: [
-            ["titre", "Titre"],
-            ["usage", "Usage"],
-            ["prix", "Prix"],
-            ["disponible", "Disponible"],
-        ],
-        list_filter: [
-            ["usage", "Usage", 10],
-            ["disponible", "Disponibilité", 10],
-        ],
-        group_action: [["disponible", "Rendre disponible"]],
-        m2m: [
-            ["allergenes", "Allergènes", "entree_allergenes", "entree_id", "allergene_id", "crate::entities::allergene", "libelle"],
-        ],
-    }
-    desserts: dessert::Model => dessert::AdminForm {
-        title: "Desserts",
-        list_display: [
-            ["titre", "Titre"],
-            ["usage", "Usage"],
-            ["prix", "Prix"],
-            ["disponible", "Disponible"],
-        ],
-        list_filter: [
-            ["usage", "Usage", 10],
-            ["disponible", "Disponibilité", 10],
-        ],
-        group_action: [["disponible", "Rendre disponible"]],
-        m2m: [
-            ["allergenes", "Allergènes", "dessert_allergenes", "dessert_id", "allergene_id", "crate::entities::allergene", "libelle"],
-        ],
-    }
-    plats: plat::Model => plat::AdminForm {
-        title: "Plats",
-        list_display: [
-            ["titre", "Titre"],
-            ["type_plat", "Type"],
-            ["usage", "Usage"],
-            ["prix", "Prix"],
-            ["disponible", "Disponible"],
-            ["est_viande", "Viande"],
-        ],
-        list_filter: [
-            ["type_plat", "Type de plat", 10],
-            ["usage", "Usage", 10],
-            ["disponible", "Disponibilité", 10],
-            ["est_viande", "Viande", 10],
-        ],
-        group_action: [["disponible", "Rendre disponible"]],
-        m2m: [
-            ["allergenes",   "Allergènes",   "plat_allergenes",   "plat_id", "allergene_id",   "crate::entities::allergene",   "libelle"],
-            ["garnitures",   "Garnitures",   "plat_garnitures",  "plat_id", "garniture_id",   "crate::entities::garniture",   "libelle"],
-            ["supplements",  "Suppléments",  "plat_supplements", "plat_id", "supplement_id",  "crate::entities::supplement",  "titre"],
-        ],
-    }
-    menus: menu::Model => menu::AdminForm {
-        title: "Menus",
-        list_display: [
-            ["nom", "Nom"],
-            ["type_menu", "Type"],
-            ["prix", "Prix"],
-            ["ordre", "Ordre"],
-        ],
-        list_filter: [
-            ["type_menu", "Type", 10],
-        ],
-        template_detail: "admin/menu_resto_detail.html",
-        m2m: [
-            ["entrees",  "Entrées",  "menu_entrees",  "menu_id", "entree_id", "crate::entities::entree", "titre"],
-            ["plats",    "Plats",    "menu_plats",    "menu_id", "plat_id",   "crate::entities::plat",   "titre"],
-            ["desserts", "Desserts", "menu_desserts", "menu_id", "dessert_id","crate::entities::dessert", "titre"],
-        ],
-    }
-    menus_traiteur: menu_traiteur::Model => menu_traiteur::AdminForm {
-        title: "Menus traiteur",
-        list_display: [
-            ["titre", "Titre"],
-            ["theme", "Thème"],
-            ["regime", "Régime"],
-            ["prix_par_personne", "Prix / pers."],
-            ["nb_personnes_min", "Personnes min"],
-            ["remise_groupe", "Remise groupe (%)"],
-            ["remise_groupe_min", "Remise à partir de (pers.)"],
-            ["stock", "Stock"],
-            ["actif", "Actif"],
-        ],
-        list_filter: [
-            ["theme", "Thème", 10],
-            ["regime", "Régime", 10],
-            ["actif", "Actif", 10],
-        ],
-        group_action: [["actif", "Activer"]],
-        m2m: [
-            ["plats", "Plats", "menu_traiteur_plats", "menu_traiteur_id", "plat_id", "crate::entities::plat", "titre"],
-        ],
-    }
-    boissons: boisson::Model => boisson::AdminForm {
-        title: "Boissons",
-        list_display: [
-            ["titre", "Titre"],
-            ["type_boisson", "Type"],
-            ["prix", "Prix"],
-            ["disponible", "Disponible"],
-        ],
-        list_filter: [
-            ["type_boisson", "Type", 10],
-            ["disponible", "Disponibilité", 10],
-        ],
-        group_action: [["disponible", "Rendre disponible"]],
-    }
-    commandes: commande::Model => commande::AdminForm {
-        title: "Commandes",
-        edit_form: crate::formulaire::CommandeAdminEditForm,
-        template_detail: "admin/commande_detail.html",
-        list_display: [
-            ["numero", "N°"],
-            ["user_id", "Client", "eihwaz_users.username"],
-            ["type_retrait", "Type"],
-            ["statut", "Statut"],
-            ["pret_materiel", "Matériel rendu"],
-            ["mode_paiement", "Paiement"],
-            ["prix_total", "Total"],
-            ["created_at", "Date"],
-        ],
-        list_filter: [
-            ["type_retrait", "Type", 10],
-            ["statut", "Statut", 10],
-            ["mode_paiement", "Paiement", 10],
-        ],
-    }
-    avis: avis::Model => avis::AdminForm {
-        title: "Avis clients",
-        list_display: [
-            ["commande_id", "Commande", "commandes.numero"],
-            ["note", "Note"],
-            ["statut", "Statut"],
-            ["created_at", "Date"],
-        ],
-        list_filter: [["statut", "Statut", 10]],
-        group_action: [
-            ["statut", "Valider", "valide"],
-            ["statut", "Refuser", "refuse"],
-        ],
-    }
-    avis_plats: avis_plat::Model => avis_plat::AdminForm {
-        title: "Avis sur les plats",
-        list_display: [
-            ["plat_id", "Plat", "plats.titre"],
-            ["note", "Note"],
-            ["statut", "Statut"],
-            ["created_at", "Date"],
-        ],
-        list_filter: [["statut", "Statut", 10]],
-        group_action: [
-            ["statut", "Valider", "valide"],
-            ["statut", "Refuser", "refuse"],
-        ],
-    }
-    info_resto: info_resto::Model => info_resto::AdminForm {
-        title: "Informations du restaurant",
-        list_display: [
-            ["nom", "Nom"],
-            ["adresse", "Adresse"],
-            ["telephone", "Téléphone"],
-            ["email", "Email"],
-            ["penalite_materiel", "Pénalité matériel (€)"],
-            ["latitude", "Latitude"],
-            ["longitude", "Longitude"],
-        ],
-    }
+fn comptes() -> ModelAdmin<user_profil::Entity> {
+    use user_profil::Column::*;
+    ModelAdmin::new().list(|l| {
+        l.display([Username, Email, IsActive, CreatedAt])
+            .search([Username, Email])
+    })
+}
+
+fn allergenes() -> ModelAdmin<allergene::Entity> {
+    use allergene::Column::*;
+    ModelAdmin::new()
+        .title("Allergènes")
+        .list(|l| l.display([Libelle]))
+}
+
+fn horaires() -> ModelAdmin<horaire::Entity> {
+    use horaire::Column::*;
+    ModelAdmin::new().title("Horaires").list(|l| {
+        l.display([
+            Jour,
+            OuvertureMidi,
+            FermetureMidi,
+            OuvertureSoir,
+            FermetureSoir,
+            Ferme,
+        ])
+        .filter([Ferme])
+        .action(Ferme, true, "Marquer fermé")
+    })
+}
+
+fn devis() -> ModelAdmin<devis_traiteur::Entity> {
+    use devis_traiteur::Column::*;
+    ModelAdmin::new().title("Demandes de devis").list(|l| {
+        l.display([
+            Nom,
+            Email,
+            DateEvenement,
+            NbPersonnes,
+            PrixTotal,
+            RemiseAppliquee,
+            Statut,
+            CreatedAt,
+        ])
+        .filter([Statut])
+        .action(Statut, "en_cours", "Marquer en cours")
+    })
+}
+
+fn contacts() -> ModelAdmin<contact::Entity> {
+    use contact::Column::*;
+    ModelAdmin::new().title("Messages de contact").list(|l| {
+        l.display([Raison, Titre, Email, CreatedAt])
+            .filter([Raison])
+    })
+}
+
+fn garnitures() -> ModelAdmin<garniture::Entity> {
+    use garniture::Column::*;
+    ModelAdmin::new().title("Garnitures").list(|l| {
+        l.display([Libelle, TypeGarniture, Disponible])
+            .filter([TypeGarniture, Disponible])
+            .action(Disponible, true, "Rendre disponible")
+    })
+}
+
+fn supplements() -> ModelAdmin<supplement::Entity> {
+    use supplement::Column::*;
+    ModelAdmin::new().title("Suppléments").list(|l| {
+        l.display([Titre, GarnitureId, Prix, Disponible])
+            .filter([Disponible])
+            .action(Disponible, true, "Rendre disponible")
+    })
+}
+
+fn entrees() -> ModelAdmin<entree::Entity> {
+    use entree::Column::*;
+    ModelAdmin::new().title("Entrées").list(|l| {
+        l.display([Titre, Usage, Prix, Disponible])
+            .filter([Usage, Disponible])
+            .action(Disponible, true, "Rendre disponible")
+    })
+}
+
+fn desserts() -> ModelAdmin<dessert::Entity> {
+    use dessert::Column::*;
+    ModelAdmin::new().title("Desserts").list(|l| {
+        l.display([Titre, Usage, Prix, Disponible])
+            .filter([Usage, Disponible])
+            .action(Disponible, true, "Rendre disponible")
+    })
+}
+
+fn plats() -> ModelAdmin<plat::Entity> {
+    use plat::Column::*;
+    ModelAdmin::new().title("Plats").list(|l| {
+        l.display([Titre, TypePlat, Usage, Prix, Disponible, EstViande])
+            .filter([TypePlat, Usage, Disponible, EstViande])
+            .action(Disponible, true, "Rendre disponible")
+    })
+}
+
+fn menus() -> ModelAdmin<menu::Entity> {
+    use menu::Column::*;
+    ModelAdmin::new()
+        .title("Menus")
+        .list(|l| l.display([Nom, TypeMenu, Prix, Ordre]).filter([TypeMenu]))
+}
+
+fn menus_traiteur() -> ModelAdmin<menu_traiteur::Entity> {
+    use menu_traiteur::Column::*;
+    ModelAdmin::new().title("Menus traiteur").list(|l| {
+        l.display([
+            Titre,
+            Theme,
+            Regime,
+            PrixParPersonne,
+            NbPersonnesMin,
+            RemiseGroupe,
+            RemiseGroupeMin,
+            Stock,
+            Actif,
+        ])
+        .filter([Theme, Regime, Actif])
+        .action(Actif, true, "Activer")
+    })
+}
+
+fn boissons() -> ModelAdmin<boisson::Entity> {
+    use boisson::Column::*;
+    ModelAdmin::new().title("Boissons").list(|l| {
+        l.display([Titre, TypeBoisson, Prix, Disponible])
+            .filter([TypeBoisson, Disponible])
+            .action(Disponible, true, "Rendre disponible")
+    })
+}
+
+fn commandes() -> ModelAdmin<commande::Entity> {
+    use commande::Column::*;
+    ModelAdmin::new()
+        .title("Commandes")
+        .list(|l| {
+            l.display([
+                Numero,
+                UserId,
+                TypeRetrait,
+                Statut,
+                PretMateriel,
+                ModePaiement,
+                PrixTotal,
+                CreatedAt,
+            ])
+            .filter([TypeRetrait, Statut, ModePaiement])
+        })
+        .form(|f| {
+            f.fields([
+                Numero,
+                UserId,
+                PrixTotal,
+                Statut,
+                ModePaiement,
+                TypeRetrait,
+                HeureRetrait,
+                AdresseLivraison,
+                VilleLivraison,
+                CpLivraison,
+                PrixLivraison,
+            ])
+            .create_only([Numero, UserId, PrixTotal])
+        })
+}
+
+fn avis_clients() -> ModelAdmin<avis::Entity> {
+    use avis::Column::*;
+    ModelAdmin::new().title("Avis clients").list(|l| {
+        l.display([CommandeId, Note, Statut, CreatedAt])
+            .filter([Statut])
+            .action(Statut, "valide", "Valider")
+            .action(Statut, "refuse", "Refuser")
+    })
+}
+
+fn avis_plats() -> ModelAdmin<avis_plat::Entity> {
+    use avis_plat::Column::*;
+    ModelAdmin::new().title("Avis sur les plats").list(|l| {
+        l.display([PlatId, Note, Statut, CreatedAt])
+            .filter([Statut])
+            .action(Statut, "valide", "Valider")
+            .action(Statut, "refuse", "Refuser")
+    })
+}
+
+fn info_restaurant() -> ModelAdmin<info_resto::Entity> {
+    use info_resto::Column::*;
+    ModelAdmin::new()
+        .title("Informations du restaurant")
+        .list(|l| {
+            l.display([
+                Nom,
+                Adresse,
+                Telephone,
+                Email,
+                PenaliteMateriel,
+                Latitude,
+                Longitude,
+            ])
+        })
 }

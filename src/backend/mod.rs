@@ -1,4 +1,5 @@
 pub mod admin_menu_resto;
+pub mod admin_relations;
 pub mod avis;
 pub mod carte;
 pub mod commande;

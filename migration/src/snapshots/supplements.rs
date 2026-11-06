@@ -16,7 +16,7 @@ async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
                     .col(ColumnDef::new(Alias::new("garniture_id")).integer().null())
                     .col(ColumnDef::new(Alias::new("titre")).string_len(255).null())
                     .col(ColumnDef::new(Alias::new("libelle")).string_len(500).null())
-                    .col(ColumnDef::new(Alias::new("prix")).decimal().not_null())
+                    .col(ColumnDef::new(Alias::new("prix")).decimal_len(10, 2).not_null())
                     .col(ColumnDef::new(Alias::new("disponible")).boolean().not_null().default(true))
                     .col(ColumnDef::new(Alias::new("ordre")).integer().not_null().default(0))
                     .to_owned()

@@ -13,7 +13,7 @@ async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
                     .table(Alias::new("horaires"))
                     .if_not_exists()
                     .col(ColumnDef::new(Alias::new("id")).integer().not_null().auto_increment().primary_key())
-                    .col(ColumnDef::new_with_type(Alias::new("jour"), ColumnType::Enum { name: Alias::new("Jour").into_iden(), variants: vec![Alias::new("lundi").into_iden(), Alias::new("mardi").into_iden(), Alias::new("mercredi").into_iden(), Alias::new("jeudi").into_iden(), Alias::new("vendredi").into_iden(), Alias::new("samedi").into_iden(), Alias::new("dimanche").into_iden()] }).not_null().unique_key())
+                    .col(ColumnDef::new_with_type(Alias::new("jour"), if manager.get_connection().get_database_backend() == sea_orm::DbBackend::Postgres { ColumnType::Enum { name: Alias::new("Jour").into_iden(), variants: vec![Alias::new("lundi").into_iden(), Alias::new("mardi").into_iden(), Alias::new("mercredi").into_iden(), Alias::new("jeudi").into_iden(), Alias::new("vendredi").into_iden(), Alias::new("samedi").into_iden(), Alias::new("dimanche").into_iden()] } } else { ColumnType::String(Default::default()) }).not_null().unique_key())
                     .col(ColumnDef::new(Alias::new("ouverture_midi")).time().null())
                     .col(ColumnDef::new(Alias::new("fermeture_midi")).time().null())
                     .col(ColumnDef::new(Alias::new("ouverture_soir")).time().null())

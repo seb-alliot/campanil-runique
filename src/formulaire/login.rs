@@ -14,7 +14,7 @@ pub struct LoginForm {
     pub form: Forms,
 }
 
-impl RuniqueForm for LoginForm {
+impl FormAccess for LoginForm {
     fn register_fields(form: &mut Forms) {
         form.field(&TextField::text("username").label("Identifiant").required());
         form.field(
@@ -26,6 +26,6 @@ impl RuniqueForm for LoginForm {
     }
 
     impl_form_access!();
-    // `validator_get` defaults to `false` (runique) — login never runs on a
-    // GET, no override needed.
 }
+
+impl RuniqueForm for LoginForm {}

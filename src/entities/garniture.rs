@@ -14,7 +14,7 @@ model! {
     {
         libelle:        text    [required, max_length: 100],
         type_garniture: choice  [enum(TypeGarniture), required],
-        disponible:     bool    [required, default: true],
+        disponible:     bool    [default: true],
     },
     meta: {
         ordering: [type_garniture, libelle],

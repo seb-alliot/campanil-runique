@@ -1,7 +1,7 @@
 use runique::context;
 use runique::prelude::*;
-use sea_orm::{ActiveModelTrait, Set};
-use std::{collections::HashMap, sync::Arc};
+use sea_orm::Set;
+use std::collections::HashMap;
 
 use crate::backend::commande::{
     CommandeDetail, LigneDetail, all_statuts, parse_statut, statut_info,
@@ -14,9 +14,9 @@ use crate::entities::{
 pub async fn handle_admin_commande_detail(
     request: &mut Request,
     admin: &AdminState,
-    proto: Option<Arc<PrototypeAdminState>>,
+    site: &AdminSite,
 ) -> AppResult<Response> {
-    let path_param = request.get_path("numero").unwrap_or("").to_string();
+    let path_param = request.get_path("id").unwrap_or("").to_string();
     let db = request.db();
 
     let cmd_opt = if let Ok(id) = path_param.parse::<Pk>() {
@@ -42,8 +42,32 @@ pub async fn handle_admin_commande_detail(
         );
     };
     let numero = cmd.numero.clone();
+    let retour = format!("/gestion/commandes/{numero}");
+    let Some(user_admin) = request.user.clone() else {
+        return Ok(
+            Redirect::to(&format!("{}/commandes/list", admin.config.prefix)).into_response(),
+        );
+    };
+    let engine = request.engine.clone();
+    let gate = GateCtx {
+        db: &engine.db,
+        user: &user_admin,
+    };
+    if let Err(refus) = authorize_view::<commande::Entity>(&gate, cmd.id) {
+        request.notices.error(refus.message()).await;
+        return Ok(
+            Redirect::to(&format!("{}/commandes/list", admin.config.prefix)).into_response(),
+        );
+    }
 
     if request.method == Method::POST {
+        let preuve = match authorize_row::<Update, commande::Entity>(&gate, cmd.id).await {
+            Ok(preuve) => preuve,
+            Err(refus) => {
+                request.notices.error(refus.message()).await;
+                return Ok(Redirect::to(&retour).into_response());
+            }
+        };
         let Some(data) = request.prisme.checked_data() else {
             return Ok(
                 Redirect::to(&format!("{}/commandes/list", admin.config.prefix)).into_response(),
@@ -64,22 +88,17 @@ pub async fn handle_admin_commande_detail(
                 .notices
                 .error("Aucun motif soumis à l'annulation.".to_string())
                 .await;
-            return Ok(Redirect::to(&format!(
-                "{}/commandes/{}/detail",
-                admin.config.prefix, numero
-            ))
-            .into_response());
+            return Ok(Redirect::to(&retour).into_response());
         }
 
         if let Some(statut) = parse_statut(&new_statut_str) {
             let active = commande::ActiveModel {
-                id: Set(cmd.id),
                 statut: Set(statut.clone()),
                 motif_annulation: Set(motif.clone()),
                 mode_contact_annulation: Set(mode_contact.clone()),
                 ..Default::default()
             };
-            if active.update(db).await.is_err() {
+            if write::update(preuve, active, &**db).await.is_err() {
                 request
                     .notices
                     .error("Erreur lors de la mise à jour.".to_string())
@@ -116,11 +135,7 @@ pub async fn handle_admin_commande_detail(
                     }
                 }
             }
-            return Ok(Redirect::to(&format!(
-                "{}/commandes/{}/detail",
-                admin.config.prefix, numero
-            ))
-            .into_response());
+            return Ok(Redirect::to(&retour).into_response());
         }
     }
 
@@ -317,6 +332,9 @@ pub async fn handle_admin_commande_detail(
         .unwrap_or_else(|| format!("#{}", cmd.user_id));
 
     let detail = CommandeDetail {
+        id: cmd.id,
+        pret_materiel: cmd.pret_materiel,
+        penalite_envoyee: cmd.penalite_envoyee,
         numero: cmd.numero.clone(),
         statut: statut_label,
         statut_valeur: statut_valeur.to_string(),
@@ -341,23 +359,13 @@ pub async fn handle_admin_commande_detail(
         lignes,
     };
 
-    inject_admin_prefix(&mut request.context, &admin.config.prefix);
-    insert_admin_messages(&mut request.context, "base");
-
-    let resources: Vec<&AdminResource> = proto
-        .as_ref()
-        .map(|s| s.registry.all().map(|e| &e.meta).collect())
-        .unwrap_or_default();
+    admin_page_context(request, admin, site, Page::Detail, "commandes");
 
     context_update!(request => {
         "detail"           => detail,
         "statuts"          => all_statuts(),
         "title"            => format!("Commande {}", numero),
-        "site_title"       => &admin.config.site_title,
-        "site_url"         => &request.public_url(),
         "current_page"     => "commandes",
-        "current_resource" => "commandes",
-        "resources"        => resources,
     });
     request.render("admin/commande_detail.html")
 }

@@ -16,7 +16,7 @@ model! {
         nom:           text    [required, max_length: 255],
         description:   textarea [nullable],
         image:         image   [upload_to: "menus/", nullable],
-        prix:          decimal [required],
+        prix:          decimal [max_digits: 10, decimal_places: 2, required],
         ordre:         int     [default: 0],
         entree_libre:  text    [max_length: 500, nullable],
         plat_libre:    text    [max_length: 500, nullable],

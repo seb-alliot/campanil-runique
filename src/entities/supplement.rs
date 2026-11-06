@@ -8,8 +8,8 @@ model! {
         garniture_id: int     [nullable],
         titre:        text    [max_length: 255, nullable],
         libelle:      text    [max_length: 500, nullable],
-        prix:         decimal [required],
-        disponible:   bool    [required, default: true],
+        prix:         decimal [max_digits: 10, decimal_places: 2, required],
+        disponible:   bool    [default: true],
         ordre:      int    [default: 0],
     },
     relations: {

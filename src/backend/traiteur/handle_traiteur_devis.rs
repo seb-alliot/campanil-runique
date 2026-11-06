@@ -38,7 +38,7 @@ pub async fn handle_devis_traiteur(
 
     let user_email = user_full.as_ref().map(|u| u.email.as_str()).unwrap_or("");
 
-    let mut form = match ValidationForm::try_new(form, request).await {
+    let mut form = match ValidationForm::try_form(form, request).await {
         Ok(validated) => validated.into_form(),
         Err(form) => {
             // No flash here: a global error (e.g. CSRF) is already rendered
@@ -55,16 +55,16 @@ pub async fn handle_devis_traiteur(
 
     let nom = current_user.username.clone();
     let email = user_email.to_string();
-    let telephone = form.cleaned_string("telephone").filter(|s| !s.is_empty());
+    let telephone = form.cleaned::<String>("telephone").filter(|s| !s.is_empty());
     let date_evenement = form
-        .cleaned_naive_date("date_evenement")
+        .cleaned::<chrono::NaiveDate>("date_evenement")
         .unwrap_or_default();
-    let nb_personnes = form.cleaned_i32("nb_personnes").unwrap_or(0);
+    let nb_personnes = form.cleaned::<i32>("nb_personnes").unwrap_or(0);
 
     if let Some(menu) = &menu_model
         && nb_personnes < menu.nb_personnes_min
     {
-        if let Some(f) = form.get_form_mut().fields.get_mut("nb_personnes") {
+        if let Some(f) = form.forms_mut().fields.get_mut("nb_personnes") {
             f.set_error(format!(
                 "Ce menu nécessite au moins {} personnes.",
                 menu.nb_personnes_min
@@ -77,7 +77,7 @@ pub async fn handle_devis_traiteur(
         });
         return request.render(template);
     }
-    let message = form.cleaned_string("message").unwrap_or_default();
+    let message = form.cleaned::<String>("message").unwrap_or_default();
 
     let (prix_total, remise_appliquee) = menu_model
         .as_ref()
@@ -165,7 +165,7 @@ pub async fn handle_devis_traiteur(
             }
             return Ok(Redirect::to("/traiteur/devis/confirmation").into_response());
         }
-        Err(err) => form.get_form_mut().database_error(&err),
+        Err(err) => form.forms_mut().database_error(&err),
     }
 
     context_update!(request => {

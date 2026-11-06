@@ -4,5 +4,4 @@ use runique::prelude::*;
 pub struct ProfilForm;
 
 impl RuniqueForm for ProfilForm {
-    impl_form_access!(model);
 }

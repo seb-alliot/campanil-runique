@@ -1,7 +1,7 @@
 use crate::backend::service::charger_commandes::garde_acces;
 use crate::entities::menu_traiteur;
 use runique::prelude::*;
-use sea_orm::{ActiveModelTrait, Set};
+use sea_orm::Set;
 
 pub async fn ajax_stock_get(request: &Request) -> AppResult<Response> {
     if !garde_acces(request) {
@@ -33,16 +33,30 @@ pub async fn ajax_stock_get(request: &Request) -> AppResult<Response> {
 }
 
 pub async fn ajax_stock_update(request: &mut Request) -> AppResult<Response> {
-    if !garde_acces(request) {
+    let Some(id) = request.get_path_as::<i32>("id") else {
+        return Ok(Json(serde_json::json!({ "ok": false })).into_response());
+    };
+    let Some(user) = request.user.clone() else {
         return Ok((
             StatusCode::FORBIDDEN,
             Json(serde_json::json!({"error": "403"})),
         )
             .into_response());
-    }
-
-    let Some(id) = request.get_path_as::<i32>("id") else {
-        return Ok(Json(serde_json::json!({ "ok": false })).into_response());
+    };
+    let engine = request.engine.clone();
+    let gate = GateCtx {
+        db: &engine.db,
+        user: &user,
+    };
+    let preuve = match authorize_row::<Update, menu_traiteur::Entity>(&gate, id).await {
+        Ok(preuve) => preuve,
+        Err(refus) => {
+            return Ok((
+                StatusCode::FORBIDDEN,
+                Json(serde_json::json!({"error": refus.message()})),
+            )
+                .into_response());
+        }
     };
 
     let Some(menu) = search!(menu_traiteur::Entity => Id eq id,)
@@ -69,9 +83,14 @@ pub async fn ajax_stock_update(request: &mut Request) -> AppResult<Response> {
         return Ok(Json(serde_json::json!({ "ok": false })).into_response());
     };
 
-    let mut active: menu_traiteur::ActiveModel = menu.into();
-    active.stock = Set(new_stock);
-    if active.save(request.db()).await.is_err() {
+    let changements = menu_traiteur::ActiveModel {
+        stock: Set(new_stock),
+        ..Default::default()
+    };
+    if write::update(preuve, changements, &*engine.db)
+        .await
+        .is_err()
+    {
         return Ok(Json(serde_json::json!({ "ok": false })).into_response());
     }
 

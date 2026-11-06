@@ -13,7 +13,7 @@ async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
                     .table(Alias::new("contacts"))
                     .if_not_exists()
                     .col(ColumnDef::new(Alias::new("id")).integer().not_null().auto_increment().primary_key())
-                    .col(ColumnDef::new_with_type(Alias::new("raison"), ColumnType::Enum { name: Alias::new("RaisonContact").into_iden(), variants: vec![Alias::new("reservation").into_iden(), Alias::new("traiteur").into_iden(), Alias::new("commande").into_iden(), Alias::new("autre").into_iden()] }).not_null())
+                    .col(ColumnDef::new_with_type(Alias::new("raison"), if manager.get_connection().get_database_backend() == sea_orm::DbBackend::Postgres { ColumnType::Enum { name: Alias::new("RaisonContact").into_iden(), variants: vec![Alias::new("reservation").into_iden(), Alias::new("traiteur").into_iden(), Alias::new("commande").into_iden(), Alias::new("autre").into_iden()] } } else { ColumnType::String(Default::default()) }).not_null())
                     .col(ColumnDef::new(Alias::new("titre")).string_len(255).not_null())
                     .col(ColumnDef::new(Alias::new("description")).text().not_null())
                     .col(ColumnDef::new(Alias::new("email")).string_len(254).not_null())

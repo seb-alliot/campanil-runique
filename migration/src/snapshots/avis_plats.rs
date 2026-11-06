@@ -19,7 +19,7 @@ async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
                     .col(ColumnDef::new(Alias::new("user_id")).integer().null())
                     .col(ColumnDef::new(Alias::new("note")).integer().not_null())
                     .col(ColumnDef::new(Alias::new("commentaire")).text().not_null())
-                    .col(ColumnDef::new_with_type(Alias::new("statut"), ColumnType::Enum { name: Alias::new("StatutAvisPlat").into_iden(), variants: vec![Alias::new("en_attente").into_iden(), Alias::new("valide").into_iden(), Alias::new("refuse").into_iden()] }).not_null().default("en_attente"))
+                    .col(ColumnDef::new_with_type(Alias::new("statut"), if manager.get_connection().get_database_backend() == sea_orm::DbBackend::Postgres { ColumnType::Enum { name: Alias::new("StatutAvisPlat").into_iden(), variants: vec![Alias::new("en_attente").into_iden(), Alias::new("valide").into_iden(), Alias::new("refuse").into_iden()] } } else { ColumnType::String(Default::default()) }).not_null().default("en_attente"))
                     .col(ColumnDef::new(Alias::new("created_at")).date_time().not_null().default(Expr::current_timestamp()))
                     .to_owned()
             )

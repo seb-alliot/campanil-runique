@@ -4,19 +4,19 @@
 <link rel="stylesheet" href="{% static "css/admin-surcharge.css" %}">
 {% endblock %}
 {% block content %}
-<div class="page-header">
-    <div class="page-header-left">
-        <h1 class="page-title">Commande {{ detail.numero }}</h1>
+<div class="admin-page__header">
+    <div class="">
+        <h1 class="admin-page__title">Commande {{ detail.numero }}</h1>
     </div>
-    <div class="page-header-actions">
+    <div class="admin-page__actions">
         <a href="{{ admin_prefix }}/commandes/list" class="btn btn-secondary btn-sm">← Retour</a>
     </div>
 </div>
 {% messages %}
 <div class="commande-detail-grid">
-    <div class="card">
-        <div class="card-header"><h2 class="card-title">Informations</h2></div>
-        <div class="card-body">
+    <div class="admin-card">
+        <div class="admin-card__header"><h2 class="admin-card__title">Informations</h2></div>
+        <div class="admin-card__body">
             <table class="data-table">
                 <tbody>
                     <tr><th>Client</th><td>{{ detail.client }}</td></tr>
@@ -43,9 +43,9 @@
             </table>
         </div>
     </div>
-    <div class="card">
-        <div class="card-header"><h2 class="card-title">Statut</h2></div>
-        <div class="card-body">
+    <div class="admin-card">
+        <div class="admin-card__header"><h2 class="admin-card__title">Statut</h2></div>
+        <div class="admin-card__body">
             <p class="statut-actuel">Statut actuel :
                 <span class="badge-statut badge-statut--{{ detail.statut_valeur }}">{{ detail.statut }}</span>
             </p>
@@ -58,7 +58,7 @@
                 {% endif %}
             </div>
             {% endif %}
-            <form method="POST" action="/admin-campanile/commandes/{{ detail.numero }}/detail">
+            <form method="POST" action="/gestion/commandes/{{ detail.numero }}">
                 {% csrf %}
                 <div class="statut-form-row">
                     <select name="statut" class="form-control statut" id="select-statut">
@@ -83,13 +83,22 @@
                     </div>
                 </div>
             </form>
-            <script src="{% static "js/admin/commande_detail.js" %}"></script>
+            {% if detail.statut_valeur == "livre" and not detail.pret_materiel %}
+            <div id="materiel-actions" data-commande-id="{{ detail.id }}" class="statut-form-row">
+                <button type="button" id="btn-materiel-rendu" class="btn btn-secondary">Matériel rendu</button>
+                {% if not detail.penalite_envoyee %}
+                <button type="button" id="btn-penalite" class="btn btn-danger">Appliquer la pénalité</button>
+                {% endif %}
+            </div>
+            {% endif %}
+            <script {% csp %} src="{% static "js/admin/commande_detail.js" %}"></script>
+            <script {% csp %} src="{% static "js/admin/commande_materiel.js" %}"></script>
         </div>
     </div>
 </div>
-<div class="card card-articles">
-    <div class="card-header"><h2 class="card-title">Articles commandés</h2></div>
-    <div class="card-body">
+<div class="admin-card card-articles">
+    <div class="admin-card__header"><h2 class="admin-card__title">Articles commandés</h2></div>
+    <div class="admin-card__body">
         {% if detail.lignes %}
         <table class="articles-table">
             <thead>

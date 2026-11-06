@@ -1,11 +1,12 @@
 use runique::prelude::*;
 mod admin;
-mod admins;
 mod backend;
 mod entities;
 mod formulaire;
 mod url;
 mod views;
+#[cfg(test)]
+mod runique_test;
 use runique::app::builder::RuniqueAppBuilder as builder;
 
 #[tokio::main]
@@ -26,8 +27,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let app = builder::new(config)
         .routes(url::routes())
-        // Base of the links sent by email (reset, activation, admin). Empty in
-        // dev: the request's Host is used, in debug only.
+        // Base of the links sent by email; `RUNIQUE_ENV=dev` uses the local server.
         .with_public_url("https://test-itsuki.fr")
         .with_database(db)
         .with_custom_db(mongo)
@@ -53,35 +53,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 })
                 .with_csp(|c| {
                     c.policy(SecurityPolicy::strict())
-                        .with_upgrade_insecure(!is_debug())
                         .scripts(vec!["'self'", "'strict-dynamic'"])
                 })
                 .with_anti_bot()
         })
-        .with_admin(|a| {
-            a.sitemap("https://ucampanile.fr/sitemap.xml")
-                .routes(admins::routes("/admin-campanile"))
-                .extra_routes(url::admin_extra_routes())
-                .with_state(admins::admin_state())
-                .site_title("Campanile — Administration")
-                .hot_reload(is_debug())
-                .resource_order([
-                    "users",
-                    "plats",
-                    "menus",
-                    "commandes",
-                    "avis",
-                    "themes",
-                    "regimes",
-                    "allergenes",
-                    "horaires",
-                    "contacts",
-                    "info resto",
-                ])
-                .with_rate_limiter(RateLimiter::new().max_requests(20).retry_after(3600))
-                .with_login_guard(LoginGuard::new().max_attempts(20).lockout_secs(300))
-                .page_size(10)
-        })
+        .with_admin(admin::config)
         .build()
         .await
         .map_err(|e| -> Box<dyn std::error::Error> { Box::new(e) })?;

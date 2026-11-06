@@ -14,8 +14,8 @@ name = "campanile-migration"
 path = "src/main.rs"
 
 [dependencies]
-tokio = { version = "1.53.2", features = ["macros", "rt", "rt-multi-thread"] }
-runique = { version = "3.0.2", features = ["postgres"] }
+tokio = { version = "1.54.1", features = ["macros", "rt", "rt-multi-thread"] }
+runique = { git = "https://github.com/seb-alliot/runique", branch = "main", features = ["postgres"] }
 
 [dependencies.sea-orm-migration]
 version = "2.0.4"

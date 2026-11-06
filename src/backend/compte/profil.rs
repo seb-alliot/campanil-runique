@@ -19,14 +19,14 @@ pub async fn handle_profil_post(request: &mut Request) -> AppResult<Response> {
     if !request.prisme.csrf_valid {
         return Ok(Redirect::to("/compte").into_response());
     }
-    let mut form: ProfilForm = request.form();
+    let mut form: ProfilForm = request.form("profil");
     if !form.is_valid().await {
         return Ok(Redirect::to("/compte?tab=profil").into_response());
     }
-    let telephone = form.cleaned_string("telephone").unwrap_or_default();
-    let adresse = form.cleaned_string("adresse").unwrap_or_default();
-    let ville = form.cleaned_string("ville").unwrap_or_default();
-    let code_postal = form.cleaned_string("code_postal").unwrap_or_default();
+    let telephone = form.cleaned::<String>("telephone").unwrap_or_default();
+    let adresse = form.cleaned::<String>("adresse").unwrap_or_default();
+    let ville = form.cleaned::<String>("ville").unwrap_or_default();
+    let code_postal = form.cleaned::<String>("code_postal").unwrap_or_default();
 
     user_profil::ActiveModel {
         id: Set(user.id),
