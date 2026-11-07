@@ -66,28 +66,31 @@ pub async fn handle_avis_plat(request: Request) -> AppResult<Response> {
         return Ok(axum::Json(json!({"ok": false, "error": "note invalide"})).into_response());
     }
 
-    let mut form: AvisForm = request.form("avis_plat");
-    if !form.is_valid().await {
-        return Ok(axum::Json(json!({"ok": false, "error": "commentaire requis"})).into_response());
+    let form: AvisForm = request.form("avis_plat");
+    match ValidationForm::try_form(form, &request).await {
+        Ok(form) => {
+            let commentaire = form.cleaned::<String>("commentaire").unwrap_or_default();
+
+            let nouveau = avis_plat::ActiveModel {
+                plat_id: Set(Some(plat_id)),
+                entree_id: Set(None),
+                dessert_id: Set(None),
+                user_id: Set(Some(user.id)),
+                note: Set(note),
+                commentaire: Set(commentaire.trim().to_string()),
+                statut: Set(avis_plat::StatutAvisPlat::EnAttente),
+                ..Default::default()
+            };
+
+            if let Err(e) = avis_plat::Entity::insert(nouveau).exec(request.db()).await {
+                tracing::error!("Erreur insertion avis plat: {e}");
+                return Ok(axum::Json(json!({"ok": false, "error": "db"})).into_response());
+            }
+
+            Ok(axum::Json(json!({"ok": true, "note": note})).into_response())
+        }
+        Err(_) => {
+            Ok(axum::Json(json!({"ok": false, "error": "commentaire requis"})).into_response())
+        }
     }
-
-    let commentaire = form.cleaned::<String>("commentaire").unwrap_or_default();
-
-    let nouveau = avis_plat::ActiveModel {
-        plat_id: Set(Some(plat_id)),
-        entree_id: Set(None),
-        dessert_id: Set(None),
-        user_id: Set(Some(user.id)),
-        note: Set(note),
-        commentaire: Set(commentaire.trim().to_string()),
-        statut: Set(avis_plat::StatutAvisPlat::EnAttente),
-        ..Default::default()
-    };
-
-    if let Err(e) = avis_plat::Entity::insert(nouveau).exec(request.db()).await {
-        tracing::error!("Erreur insertion avis plat: {e}");
-        return Ok(axum::Json(json!({"ok": false, "error": "db"})).into_response());
-    }
-
-    Ok(axum::Json(json!({"ok": true, "note": note})).into_response())
 }

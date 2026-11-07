@@ -65,41 +65,46 @@ pub async fn handle_avis(request: Request) -> AppResult<Response> {
         return Ok(Redirect::to("/compte").into_response());
     }
 
-    let mut form: AvisForm = request.form("avis");
+    let form: AvisForm = request.form("avis");
 
-    if !form.is_valid().await {
-        request
-            .notices
-            .error("Formulaire invalide.".to_string())
-            .await;
-        return Ok(Redirect::to("/compte").into_response());
+    match ValidationForm::try_form(form, &request).await {
+        Ok(form) => {
+            let commentaire = form.cleaned::<String>("commentaire").unwrap_or_default();
+
+            let new_avis = avis::ActiveModel {
+                commande_id: Set(commande_id),
+                user_id: Set(user.id),
+                note: Set(note),
+                commentaire: Set(commentaire.trim().to_string()),
+                statut: Set(avis::StatutAvis::EnAttente),
+                ..Default::default()
+            };
+
+            if let Err(e) = avis::Entity::insert(new_avis).exec(request.db()).await {
+                tracing::error!("Erreur insertion avis: {e}");
+                request
+                    .notices
+                    .error("Une erreur est survenue.".to_string())
+                    .await;
+                return Ok(Redirect::to("/compte").into_response());
+            }
+
+            request
+                .notices
+                .success(
+                    "Votre avis a bien été envoyé. Il sera publié après modération.".to_string(),
+                )
+                .await;
+            Ok(Redirect::to("/compte").into_response())
+        }
+        Err(_) => {
+            request
+                .notices
+                .error("Formulaire invalide.".to_string())
+                .await;
+            Ok(Redirect::to("/compte").into_response())
+        }
     }
-
-    let commentaire = form.cleaned::<String>("commentaire").unwrap_or_default();
-
-    let new_avis = avis::ActiveModel {
-        commande_id: Set(commande_id),
-        user_id: Set(user.id),
-        note: Set(note),
-        commentaire: Set(commentaire.trim().to_string()),
-        statut: Set(avis::StatutAvis::EnAttente),
-        ..Default::default()
-    };
-
-    if let Err(e) = avis::Entity::insert(new_avis).exec(request.db()).await {
-        tracing::error!("Erreur insertion avis: {e}");
-        request
-            .notices
-            .error("Une erreur est survenue.".to_string())
-            .await;
-        return Ok(Redirect::to("/compte").into_response());
-    }
-
-    request
-        .notices
-        .success("Votre avis a bien été envoyé. Il sera publié après modération.".to_string())
-        .await;
-    Ok(Redirect::to("/compte").into_response())
 }
 
 pub async fn handle_avis_supprimer(request: Request) -> AppResult<Response> {
