@@ -10,3 +10,5 @@ nginx-campanile.conf
 Cargo.lock
 /.claude/nginx-campanile.conf
 /.ECORIDE - Raccourci.lnk
+deploy.log
+commande.txt

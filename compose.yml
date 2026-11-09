@@ -6,3 +6,9 @@ services:
     restart: unless-stopped
     volumes:
       - ./media:/app/media
+    # journald plutôt que le fichier json par défaut, sans limite : les logs
+    # suivent la rétention de journald (MaxRetentionSec).
+    logging:
+      driver: journald
+      options:
+        tag: campanile

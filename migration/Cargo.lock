@@ -1401,7 +1401,8 @@ dependencies = [
 [[package]]
 name = "derive_form"
 version = "4.0.0"
-source = "git+https://github.com/seb-alliot/runique?branch=main#a94eb6eb1fea0249bd1565a4af37775c4700f677"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d6c769c4d28833f003a7dfe2bf82adc97c954d23433a82e644c753f987f84059"
 dependencies = [
  "dotenvy",
  "proc-macro2",
@@ -3881,7 +3882,8 @@ dependencies = [
 [[package]]
 name = "runique"
 version = "4.0.0"
-source = "git+https://github.com/seb-alliot/runique?branch=main#a94eb6eb1fea0249bd1565a4af37775c4700f677"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a07b1c18333cd856a1f777825e11412bb9cc374c9b945f77e78bc72c7ee048c8"
 dependencies = [
  "ammonia",
  "anyhow",
@@ -3957,7 +3959,8 @@ dependencies = [
 [[package]]
 name = "runique_dsl"
 version = "0.2.0"
-source = "git+https://github.com/seb-alliot/runique?branch=main#a94eb6eb1fea0249bd1565a4af37775c4700f677"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "728fa636b1fb5ecb9410bfe001ab3bd37f38c6e55f68c65cfef699b354e08b01"
 dependencies = [
  "proc-macro2",
  "syn 3.0.9",
@@ -4853,7 +4856,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "32497e9a4c7b38532efcdebeef879707aa9f794296a4f0244f6f69e9bc8574bd"
 dependencies = [
  "fastrand",
- "getrandom 0.4.3",
+ "getrandom 0.3.4",
  "once_cell",
  "rustix",
  "windows-sys 0.61.2",
@@ -5437,9 +5440,9 @@ checksum = "06abde3611657adf66d383f00b093d7faecc7fa57071cce2578660c9f1010821"
 
 [[package]]
 name = "uuid"
-version = "1.27.0"
+version = "1.29.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "97277d36b9c3ace13e58fa6e753f8b0bbbf302a18dd193240d70f9e29681059a"
+checksum = "4a06f08a856b009bc7bbaf7d3e79808595d032dd19074c0c2ef26e49e03e6bdc"
 dependencies = [
  "getrandom 0.4.3",
  "js-sys",
