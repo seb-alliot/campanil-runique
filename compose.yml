@@ -6,6 +6,8 @@ services:
     restart: unless-stopped
     volumes:
       - ./media:/app/media
+      # MEDIA_ROOT (.env) : médias servis par l'app et envoyés par l'admin.
+      - /var/www/campanile/media:/var/www/campanile/media
     # journald plutôt que le fichier json par défaut, sans limite : les logs
     # suivent la rétention de journald (MaxRetentionSec).
     logging:
